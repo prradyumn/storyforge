@@ -3,6 +3,7 @@
     python -m storyforge.cli examples/returns_portal.txt --backend stub --out out/
     python -m storyforge.cli notes.txt --publish            # real Jira
     python -m storyforge.cli notes.txt --publish --dry-run  # show what would be created
+    python -m storyforge.cli out/backlog.json --from-json --publish   # publish a saved result, no model calls
 """
 from __future__ import annotations
 
@@ -23,7 +24,8 @@ from .publishers.markdown import render_backlog, render_brd, render_csv
 
 def main(argv: list[str] | None = None) -> int:
     ap = argparse.ArgumentParser(prog="storyforge", description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("notes", help="path to a .txt/.md file of discovery notes, or '-' for stdin")
+    ap.add_argument("notes", help="path to a .txt/.md file of discovery notes, or '-' for stdin, or a saved backlog.json (see --from-json)")
+    ap.add_argument("--from-json", action="store_true", help="treat NOTES as a saved AnalysisResult json and skip the model calls")
     ap.add_argument("--backend", default=None, help="groq,gemini | stub (default: $STORYFORGE_BACKEND)")
     ap.add_argument("--prompt-version", default=DEFAULT_VERSION)
     ap.add_argument("--rounds", type=int, default=2, help="max review/revise rounds")
@@ -33,8 +35,13 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--quiet", action="store_true")
     a = ap.parse_args(argv)
 
-    notes = sys.stdin.read() if a.notes == "-" else Path(a.notes).read_text(encoding="utf-8")
-    result = analyze(notes, backend=a.backend, prompt_version=a.prompt_version, max_review_rounds=a.rounds)
+    if a.from_json:
+        from .schemas import AnalysisResult
+
+        result = AnalysisResult.model_validate_json(Path(a.notes).read_text(encoding="utf-8"))
+    else:
+        notes = sys.stdin.read() if a.notes == "-" else Path(a.notes).read_text(encoding="utf-8")
+        result = analyze(notes, backend=a.backend, prompt_version=a.prompt_version, max_review_rounds=a.rounds)
 
     if not a.quiet:
         t = result.trace
