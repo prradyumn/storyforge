@@ -63,7 +63,7 @@ footer{max-width:1200px;margin:0 auto;padding:10px 24px 30px;color:var(--muted);
     <textarea id="notes" placeholder="Paste meeting notes, an interview transcript, or a rough brief. Speaker labels like 'Meera (Head of Ops): …' help but aren't required."></textarea>
     <div class="row">
       <select id="backend" title="Which model answers">
-        <option value="">Live (Groq → Gemini)</option>
+        <option value="">Live (Gemini → Groq)</option>
         <option value="stub">Stub (offline heuristics)</option>
       </select>
       <select id="pv" title="Prompt version"></select>
@@ -98,7 +98,7 @@ let R=null, tab='brief', health=null;
 async function init(){
   try{health=await (await fetch('/api/health')).json();
     const live=health.backends.groq||health.backends.gemini;
-    $('#health').innerHTML=`<span class="dot ${live?'ok':''}"></span>${live?'live models ready':'stub only (no keys)'} · Jira ${health.jira_configured?'connected ('+esc(health.jira_project)+')':'dry-run only'}`;
+    $('#health').innerHTML=`<span class="dot ${live?'ok':''}"></span>${live?`live models ready · ${health.live_runs_remaining_today} live runs left today`:'stub only (no keys)'} · Jira ${health.jira_configured?'connected ('+esc(health.jira_project)+')':'dry-run only'}`;
     if(!live){$('#backend').value='stub';$('#backend').options[0].disabled=true;}
     $('#pv').innerHTML=health.prompt_versions.map(v=>`<option ${v===health.default_prompt_version?'selected':''}>${v}</option>`).join('');
   }catch(e){$('#health').textContent='API unreachable';}
@@ -176,7 +176,7 @@ function exportPanel(){return `
   <h4>Documents</h4><div class="row"><button class="ghost" data-x="brd">Download BRD (.md)</button><button class="ghost" data-x="backlog">Download backlog (.md)</button><button class="ghost" data-x="csv">Jira CSV import</button><button class="ghost" data-x="json">Raw JSON</button></div>
   <h4 style="margin-top:20px">Publish to Jira</h4>
   <p class="hint">${health&&health.jira_configured?`Connected to project <b>${esc(health.jira_project)}</b>. Dry run shows the exact REST bodies; publish creates ${R.backlog.epics.length} epics and ${R.backlog.stories.length} stories (idempotent — re-publishing the same run skips existing issues).`:'No Jira credentials on this deployment — dry run only, which still shows the exact REST API payloads that would be sent.'}</p>
-  <div class="row"><button class="ghost" id="dry">Dry run (show payloads)</button>${health&&health.jira_configured?'<button class="primary" id="pub">Publish to Jira →</button>':''}</div>
+  <div class="row"><button class="ghost" id="dry">Dry run (show payloads)</button>${health&&health.jira_configured?`${health.publish_requires_admin_key?'<input id="adminkey" type="password" placeholder="admin key" style="width:140px">':''}<button class="primary" id="pub">Publish to Jira →</button>`:''}</div>
   <pre class="log" id="publog" hidden></pre>`;}
 
 function download(name,text,type='text/markdown'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();}
@@ -186,7 +186,8 @@ function wireExport(){
     const r=await fetch('/api/export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({result:R,format:f})});
     download(f==='csv'?'jira-import.csv':f+'.md',await r.text(),f==='csv'?'text/csv':'text/markdown');});
   const go=async dry=>{const log=$('#publog');log.hidden=false;log.textContent=dry?'Building payloads…':'Publishing…';
-    const r=await fetch('/api/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({result:R,dry_run:dry})});
+    const hdrs={'Content-Type':'application/json'};const ak=$('#adminkey');if(!dry&&ak&&ak.value)hdrs['X-Admin-Key']=ak.value;
+    const r=await fetch('/api/publish',{method:'POST',headers:hdrs,body:JSON.stringify({result:R,dry_run:dry})});
     const j=await r.json();if(!r.ok){log.textContent='Error: '+(j.detail||r.statusText);return;}
     if(dry){log.textContent=`${j.requests.length} issues would be created in ${health?health.jira_project:'SF'}:\n\n`+j.requests.map(q=>`POST /rest/api/3/issue  ${q.issuetype.name.padEnd(5)} ${q.summary}`).join('\n')+`\n\n— first payload —\n`+JSON.stringify(j.requests[0],null,1).slice(0,1500);}
     else{log.innerHTML=`created ${j.created.length}, skipped ${j.skipped.length}, errors ${j.errors.length}\n\n`+j.created.map(c=>`${c.kind.padEnd(5)} ${c.id} → <a href="${c.url}" target="_blank">${c.key}</a>`).join('\n')+(j.skipped.length?`\n\nalready existed: ${j.skipped.map(s=>s.key).join(', ')}`:'')+(j.errors.length?`\n\nerrors:\n${j.errors.map(esc).join('\n')}`:'');}};

@@ -57,7 +57,7 @@ Full methodology and every prompt change with its before/after numbers:
 git clone https://github.com/prradyumn/storyforge && cd storyforge
 python3 -m venv .venv && . .venv/bin/activate
 pip install -r requirements-dev.txt
-cp .env.example .env            # add GROQ_API_KEY (free at console.groq.com); GEMINI_API_KEY optional
+cp .env.example .env            # add GEMINI_API_KEY (free at aistudio.google.com) and/or GROQ_API_KEY (console.groq.com)
 
 uvicorn storyforge.api:app --reload        # → http://localhost:8000
 ```
@@ -67,7 +67,7 @@ No keys? Everything still runs on the offline stub backend:
 ```bash
 STORYFORGE_BACKEND=stub uvicorn storyforge.api:app
 python -m storyforge.cli examples/returns_portal.txt --backend stub --out out/
-pytest -q                                  # 37 tests, no network
+pytest -q                                  # 43 tests, no network
 python eval/run_eval.py --backend stub     # the eval harness end to end
 ```
 
@@ -82,10 +82,19 @@ python -m storyforge.cli notes.txt --publish             # creates epics + stori
 
 Publishing is idempotent (label + summary); re-running the same analysis skips issues that already exist.
 
+### Deploy the demo (Hugging Face Spaces, free)
+
+```bash
+bash scripts/deploy_hf.sh      # creates the Space, pushes HEAD, sets secrets, waits for the build, runs preflight
+```
+
+Public-demo guards: `STORYFORGE_DAILY_LIVE_LIMIT` caps live model runs per day (stub is unlimited) and
+`STORYFORGE_ADMIN_KEY` is required for live Jira publishing (dry run is open).
+
 ### API
 
 ```
-POST /api/analyze   {"notes": "...", "backend": "groq,gemini", "prompt_version": "v3", "max_review_rounds": 2}
+POST /api/analyze   {"notes": "...", "backend": "gemini,groq", "prompt_version": "v3", "max_review_rounds": 2}
 POST /api/publish   {"result": <AnalysisResult>, "dry_run": true}
 POST /api/export    {"result": <AnalysisResult>, "format": "brd" | "backlog" | "csv"}
 GET  /api/health
@@ -113,7 +122,7 @@ docs/
   PRD.md                the product spec for StoryForge itself
   ARCHITECTURE.md       why five agents, context engineering table, guardrail design
   UAT.md                14-step acceptance script
-tests/                  37 tests, offline
+tests/                  43 tests, offline
 ```
 
 ## Design decisions in one breath
@@ -128,7 +137,7 @@ so that "ask a bigger model" is never the fix.
 
 ## Built with
 
-Python 3.11 · FastAPI · Pydantic v2 · httpx · Groq (Llama 3.3 70B) · Gemini 2.0 Flash · Jira Cloud REST v3 · pytest · ruff · GitHub Actions · Docker.
+Python 3.10+ · FastAPI · Pydantic v2 · httpx · Gemini 2.5 Flash · Groq (gpt-oss-120b) · Jira Cloud REST v3 · pytest · ruff · GitHub Actions · Docker.
 Developed with Claude Code; every design decision and prompt iteration is documented in `eval/DECISIONS.md`.
 
 MIT © 2026 Pradyumn Awasthi

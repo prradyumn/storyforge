@@ -13,10 +13,12 @@ from dotenv import load_dotenv
 load_dotenv()
 
 import os
+import threading
+import time
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, Header, HTTPException
 from fastapi.responses import FileResponse, PlainTextResponse
 from pydantic import BaseModel, Field
 
@@ -30,6 +32,37 @@ from .publishers.markdown import render_backlog, render_brd, render_csv
 from .schemas import AnalysisResult
 
 WEB_DIR = Path(__file__).resolve().parent.parent / "web"
+
+
+class DailyBudget:
+    """Public-demo protection: at most N live (non-stub) analyses per UTC day.
+
+    In-memory and per-process, which is exactly right for a single free-tier
+    container — it resets on restart and needs no storage."""
+
+    def __init__(self, limit: int):
+        self.limit = limit
+        self._day = ""
+        self._used = 0
+        self._lock = threading.Lock()
+
+    def take(self) -> tuple[bool, int]:
+        today = time.strftime("%Y-%m-%d", time.gmtime())
+        with self._lock:
+            if today != self._day:
+                self._day, self._used = today, 0
+            if self._used >= self.limit:
+                return False, 0
+            self._used += 1
+            return True, self.limit - self._used
+
+    @property
+    def remaining(self) -> int:
+        today = time.strftime("%Y-%m-%d", time.gmtime())
+        return self.limit if today != self._day else max(0, self.limit - self._used)
+
+
+BUDGET = DailyBudget(int(os.environ.get("STORYFORGE_DAILY_LIVE_LIMIT", "40")))
 
 app = FastAPI(
     title="StoryForge",
@@ -66,7 +99,7 @@ def health():
     return {
         "ok": True,
         "version": __version__,
-        "default_backend": os.environ.get("STORYFORGE_BACKEND", "groq,gemini"),
+        "default_backend": os.environ.get("STORYFORGE_BACKEND", "gemini,groq"),
         "backends": {
             "groq": bool(os.environ.get("GROQ_API_KEY")),
             "gemini": bool(os.environ.get("GEMINI_API_KEY")),
@@ -76,6 +109,8 @@ def health():
         "jira_project": os.environ.get("JIRA_PROJECT_KEY", "SCRUM"),
         "prompt_versions": available_versions(),
         "default_prompt_version": DEFAULT_VERSION,
+        "live_runs_remaining_today": BUDGET.remaining,
+        "publish_requires_admin_key": bool(os.environ.get("STORYFORGE_ADMIN_KEY")),
     }
 
 
@@ -83,6 +118,10 @@ def health():
 def api_analyze(req: AnalyzeRequest):
     if req.backend and req.backend != "stub" and os.environ.get("STORYFORGE_LOCK_BACKEND") == "1":
         raise HTTPException(403, "backend selection is disabled on this deployment")
+    if req.backend != "stub":
+        ok, left = BUDGET.take()
+        if not ok:
+            raise HTTPException(429, "This demo's daily budget of live model runs is used up — try the stub backend, or come back tomorrow (resets 00:00 UTC).")
     try:
         return analyze(req.notes, backend=req.backend, prompt_version=req.prompt_version, max_review_rounds=req.max_review_rounds)
     except ValueError as e:
@@ -92,7 +131,10 @@ def api_analyze(req: AnalyzeRequest):
 
 
 @app.post("/api/publish")
-def api_publish(req: PublishRequest):
+def api_publish(req: PublishRequest, x_admin_key: str | None = Header(default=None)):
+    admin = os.environ.get("STORYFORGE_ADMIN_KEY")
+    if not req.dry_run and admin and x_admin_key != admin:
+        raise HTTPException(401, "Live publishing on this deployment needs the admin key (X-Admin-Key header). Dry run is open to everyone.")
     try:
         cfg = jira_pub.JiraConfig.from_env() if not req.dry_run else jira_pub.JiraConfig(
             base_url=os.environ.get("JIRA_BASE_URL", "https://example.atlassian.net"),

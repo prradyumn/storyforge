@@ -52,7 +52,7 @@ class LLMRouter:
 
 def build_router(spec: str | None = None) -> LLMRouter:
     """Build from a comma-separated spec, e.g. 'groq,gemini' or 'stub'."""
-    spec = (spec or os.environ.get("STORYFORGE_BACKEND") or "groq,gemini").lower()
+    spec = (spec or os.environ.get("STORYFORGE_BACKEND") or "gemini,groq").lower()
     clients: list[LLMClient] = []
     for name in [s.strip() for s in spec.split(",") if s.strip()]:
         if name == "stub":
