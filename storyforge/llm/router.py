@@ -13,7 +13,7 @@ from .base import LLMClient, LLMError, RateLimited, Usage
 
 
 class LLMRouter:
-    def __init__(self, clients: list[LLMClient], max_attempts_per_client: int = 6, backoff_s: float = 3.0):
+    def __init__(self, clients: list[LLMClient], max_attempts_per_client: int = 8, backoff_s: float = 5.0):
         if not clients:
             raise LLMError("no LLM clients configured")
         self.clients = clients
@@ -39,7 +39,8 @@ class LLMRouter:
                     return client.complete_json(system, user, **kwargs)
                 except RateLimited as e:
                     last = e
-                    wait = min((e.retry_after or self.backoff_s * attempt) + 0.5, 90)
+                    # Groq's suggested wait is optimistic under a sliding TPM window; back off harder each time.
+                    wait = min(max(e.retry_after or 0, self.backoff_s * (2 ** (attempt - 1))) + 1.0, 75)
                     if os.environ.get("STORYFORGE_VERBOSE"):
                         print(f"    [{client.name}] rate limited, waiting {wait:.1f}s (attempt {attempt})", flush=True)
                     time.sleep(wait)

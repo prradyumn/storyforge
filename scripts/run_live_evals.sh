@@ -39,10 +39,10 @@ EOF
 
 echo "→ probing models on your Groq account…"
 if probe "groq/compound"; then
-  PLAN="single"; MODEL="groq/compound"
+  PLAN="single"; MODEL="groq/compound"; export GROQ_TPM=30000   # compound runs on llama-4-scout: 30K TPM
   echo "  ✔ groq/compound answers JSON — using it for every case (no daily token cap)"
 else
-  PLAN="spread"
+  PLAN="spread"; export GROQ_TPM=8000
   echo "  ⚠ groq/compound unavailable — spreading cases across 200K/day models (same model per case for all versions)"
 fi
 
