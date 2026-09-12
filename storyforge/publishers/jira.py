@@ -41,7 +41,7 @@ class JiraConfig:
                 base_url=os.environ["JIRA_BASE_URL"].rstrip("/"),
                 email=os.environ["JIRA_EMAIL"],
                 api_token=os.environ["JIRA_API_TOKEN"],
-                project_key=os.environ.get("JIRA_PROJECT_KEY", "SF"),
+                project_key=os.environ.get("JIRA_PROJECT_KEY", "SCRUM"),
             )
         except KeyError as e:
             raise JiraError(f"missing Jira setting {e}") from e

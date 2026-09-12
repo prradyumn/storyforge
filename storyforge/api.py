@@ -73,7 +73,7 @@ def health():
             "stub": True,
         },
         "jira_configured": all(os.environ.get(k) for k in ("JIRA_BASE_URL", "JIRA_EMAIL", "JIRA_API_TOKEN")),
-        "jira_project": os.environ.get("JIRA_PROJECT_KEY", "SF"),
+        "jira_project": os.environ.get("JIRA_PROJECT_KEY", "SCRUM"),
         "prompt_versions": available_versions(),
         "default_prompt_version": DEFAULT_VERSION,
     }
@@ -98,7 +98,7 @@ def api_publish(req: PublishRequest):
             base_url=os.environ.get("JIRA_BASE_URL", "https://example.atlassian.net"),
             email=os.environ.get("JIRA_EMAIL", "dry-run@example.com"),
             api_token="dry-run",
-            project_key=os.environ.get("JIRA_PROJECT_KEY", "SF"),
+            project_key=os.environ.get("JIRA_PROJECT_KEY", "SCRUM"),
         )
         report = jira_pub.publish(req.result, cfg, dry_run=req.dry_run, label=req.label)
     except jira_pub.JiraError as e:
