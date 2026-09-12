@@ -86,7 +86,7 @@ def throttle_for(model: str) -> TokenThrottle | None:
 class GroqClient:
     name = "groq"
 
-    def __init__(self, api_key: str | None = None, model: str | None = None, timeout: float = 60.0):
+    def __init__(self, api_key: str | None = None, model: str | None = None, timeout: float = 120.0):
         self.api_key = api_key or os.environ.get("GROQ_API_KEY")
         if not self.api_key:
             raise LLMError("GROQ_API_KEY not set")
@@ -109,7 +109,10 @@ class GroqClient:
         throttle = throttle_for(self.model)
         if throttle:
             throttle.wait_for(len(system) + len(user))
-        r = self._http.post(GROQ_URL, json=body, headers=headers)
+        try:
+            r = self._http.post(GROQ_URL, json=body, headers=headers)
+        except httpx.TimeoutException as e:
+            raise RateLimited(f"groq timeout: {e}", retry_after=5.0) from e
         if r.status_code == 400 and "reasoning_effort" in r.text and "reasoning_effort" in body:
             body.pop("reasoning_effort")
             r = self._http.post(GROQ_URL, json=body, headers=headers)

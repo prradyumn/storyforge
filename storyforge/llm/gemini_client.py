@@ -26,7 +26,7 @@ DEFAULT_MODEL = "gemini-2.5-flash"
 class GeminiClient:
     name = "gemini"
 
-    def __init__(self, api_key: str | None = None, model: str | None = None, timeout: float = 60.0):
+    def __init__(self, api_key: str | None = None, model: str | None = None, timeout: float = 180.0):
         self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
         if not self.api_key:
             raise LLMError("GEMINI_API_KEY not set")
@@ -44,7 +44,11 @@ class GeminiClient:
             "contents": [{"role": "user", "parts": [{"text": user}]}],
             "generationConfig": gen,
         }
-        r = self._http.post(url, params={"key": self.api_key}, json=body)
+        try:
+            r = self._http.post(url, params={"key": self.api_key}, json=body)
+        except httpx.TimeoutException as e:
+            # Long generations occasionally exceed the read timeout; treat as transient so the router retries.
+            raise RateLimited(f"gemini timeout: {e}", retry_after=5.0) from e
         if r.status_code == 400 and "thinking" in r.text.lower() and "thinkingConfig" in gen:
             gen.pop("thinkingConfig")
             r = self._http.post(url, params={"key": self.api_key}, json=body)
