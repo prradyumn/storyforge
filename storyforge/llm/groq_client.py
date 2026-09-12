@@ -98,6 +98,8 @@ class GroqClient:
             "model": self.model,
             "temperature": temperature,
             "response_format": {"type": "json_object"},
+            **({"max_completion_tokens": int(os.environ["GROQ_MAX_TOKENS"])} if os.environ.get("GROQ_MAX_TOKENS") else {}),
+            **({"reasoning_effort": os.environ["GROQ_REASONING_EFFORT"]} if os.environ.get("GROQ_REASONING_EFFORT") else {}),
             "messages": [
                 {"role": "system", "content": system},
                 {"role": "user", "content": user},
@@ -108,6 +110,9 @@ class GroqClient:
         if throttle:
             throttle.wait_for(len(system) + len(user))
         r = self._http.post(GROQ_URL, json=body, headers=headers)
+        if r.status_code == 400 and "reasoning_effort" in r.text and "reasoning_effort" in body:
+            body.pop("reasoning_effort")
+            r = self._http.post(GROQ_URL, json=body, headers=headers)
         if r.status_code == 400 and "response_format" in r.text:
             # Some models (e.g. compound systems) reject JSON mode; fall back to prompt-only JSON.
             body.pop("response_format", None)

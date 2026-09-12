@@ -2,12 +2,25 @@
 from __future__ import annotations
 
 import os
+import re
 
 import httpx
 
 from .base import LLMError, RateLimited, Usage, parse_json_loosely
 
-DEFAULT_MODEL = "gemini-2.0-flash"
+_RETRY_DELAY = re.compile(r'"retryDelay":\s*"([0-9.]+)s"')
+
+
+def _retry_after(r: httpx.Response) -> float | None:
+    if r.headers.get("retry-after"):
+        try:
+            return float(r.headers["retry-after"])
+        except ValueError:
+            pass
+    m = _RETRY_DELAY.search(r.text)
+    return float(m.group(1)) if m else None
+
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 
 class GeminiClient:
@@ -22,14 +35,23 @@ class GeminiClient:
 
     def complete_json(self, system: str, user: str, *, temperature: float = 0.2) -> tuple[dict, Usage]:
         url = f"https://generativelanguage.googleapis.com/v1beta/models/{self.model}:generateContent"
+        gen: dict = {"temperature": temperature, "responseMimeType": "application/json"}
+        budget = os.environ.get("GEMINI_THINKING_BUDGET")
+        if budget is not None and budget != "":
+            gen["thinkingConfig"] = {"thinkingBudget": int(budget)}
         body = {
             "systemInstruction": {"parts": [{"text": system}]},
             "contents": [{"role": "user", "parts": [{"text": user}]}],
-            "generationConfig": {"temperature": temperature, "responseMimeType": "application/json"},
+            "generationConfig": gen,
         }
         r = self._http.post(url, params={"key": self.api_key}, json=body)
+        if r.status_code == 400 and "thinking" in r.text.lower() and "thinkingConfig" in gen:
+            gen.pop("thinkingConfig")
+            r = self._http.post(url, params={"key": self.api_key}, json=body)
         if r.status_code == 429:
-            raise RateLimited(r.text[:300])
+            raise RateLimited(r.text[:300], retry_after=_retry_after(r))
+        if r.status_code in (500, 502, 503, 504):
+            raise RateLimited(f"gemini {r.status_code} transient: {r.text[:200]}", retry_after=8.0)
         if r.status_code >= 400:
             raise LLMError(f"gemini {r.status_code}: {r.text[:300]}")
         data = r.json()
@@ -40,7 +62,7 @@ class GeminiClient:
         meta = data.get("usageMetadata", {})
         return parse_json_loosely(text), Usage(
             prompt_tokens=meta.get("promptTokenCount"),
-            completion_tokens=meta.get("candidatesTokenCount"),
+            completion_tokens=(meta.get("candidatesTokenCount") or 0) + (meta.get("thoughtsTokenCount") or 0),
             model=self.model,
             provider=self.name,
         )
