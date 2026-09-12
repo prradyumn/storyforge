@@ -1,0 +1,27 @@
+Discovery call — KYC onboarding workflow for BrightPath Lending app — 22 Jan 2026
+
+Sarah Chen (Head of Compliance): Right now onboarding is a mess of PDF uploads and manual review, and it takes an average of three days to approve an applicant. We need an automated KYC flow that verifies identity documents the moment someone applies.
+
+Marcus Webb (Product Manager): From the applicant's side, they should be able to upload a driver's license or passport, take a selfie, and get a decision in real time — ideally under 60 seconds for the straightforward cases.
+
+Derek Osei (Engineering Lead): For document and identity verification we're planning to use Persona, since we already have a contract with them. The system needs to call the Persona API and take their verification result as the source of truth for identity match.
+
+Sarah Chen (Head of Compliance): We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval. That check is non-negotiable — if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved.
+
+Jenna Fitzgerald (Risk Analyst): We also pull credit data from Experian for the underwriting decision. That's a separate call from Persona, but both results need to land in the same applicant record so underwriting can see everything in one place.
+
+Marcus Webb (Product Manager): Ideally we'd also support a manual fallback — if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright.
+
+Sarah Chen (Head of Compliance): Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit. Last year's exam took our team almost three weeks because records were scattered across six different systems.
+
+Derek Osei (Engineering Lead): On the technical side, we're expecting up to 5,000 applications a day at peak, mostly evenings. The verification pipeline needs to sustain that without falling over — 99.9% uptime is the target we've committed to the board.
+
+Jenna Fitzgerald (Risk Analyst): One thing to flag — re-verification for existing customers who want a second loan is out of scope for this phase. We'll handle that with the existing process for now and revisit later.
+
+Marcus Webb (Product Manager): There's also a hard deadline — legal wants this live before our state lending license renewal on March 31st, since the regulator specifically asked about our onboarding controls.
+
+Sarah Chen (Head of Compliance): Address verification should also happen — we need to confirm the address on the ID matches what they entered in the application, since mismatches are one of our biggest fraud signals.
+
+Derek Osei (Engineering Lead): Honestly the current manual review queue has become a running joke internally, people call it 'the black hole' because applications just sit there for days.
+
+Marcus Webb (Product Manager): Budget for this phase is capped at $250,000, and that has to include the Persona and Experian integration costs.

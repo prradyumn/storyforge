@@ -1,0 +1,29 @@
+Discovery call — Leave & attendance system for plant workforce — 15 Jan 2026
+
+Sunita Rao (HR Head): We have about 400 workers across two shifts at the Pune plant, plus 60 staff in the office. Right now attendance is marked on paper registers at the shop floor and leave requests come in on WhatsApp. We need this to move onto one system.
+
+Vikram Singh (Plant Manager): The shop floor already has biometric fingerprint scanners at each gate, three of them. Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware.
+
+Sunita Rao (HR Head): Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours. If the supervisor doesn't respond, it should escalate to the HR desk automatically.
+
+Deepak Joshi (Payroll Lead): Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th. Late changes have caused us real problems — last March we had to redo payroll for 40 workers because someone changed an attendance record after the export.
+
+Vikram Singh (Plant Manager): There are different leave types — casual, sick, earned, and for factory workers specifically, the Factories Act requires we track earned leave accrual at one day for every 20 days worked. That calculation has to be built in, it's a compliance thing, we can't get that wrong.
+
+Sunita Rao (HR Head): Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after.
+
+Anjali Mehta (IT Manager): We already use Tally for accounting, but payroll is on a separate system called GreytHR. The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month.
+
+Deepak Joshi (Payroll Lead): Overtime is a big one for us. Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x.
+
+Vikram Singh (Plant Manager): One thing that's explicitly out of scope right now — we are not doing shift scheduling or roster planning in this system. That's a separate initiative next year.
+
+Sunita Rao (HR Head): We need at least two years of attendance history retained for labour audits — the last labour inspection asked for two years of records and we scrambled to pull it together from paper files.
+
+Anjali Mehta (IT Manager): From a technical side, the system needs to handle punch data for all 460 people syncing every few minutes without lag — let's say attendance status should update within 5 minutes of a punch.
+
+Deepak Joshi (Payroll Lead): Honestly the WhatsApp leave process has been chaos, people forward screenshots of screenshots and we lose track of who approved what.
+
+Sunita Rao (HR Head): Budget-wise we've been told to keep this under 8 lakh rupees for the first year including any licensing, and it needs to be live before the next audit cycle in April.
+
+Vikram Singh (Plant Manager): Contract workers are a separate category — they're managed by contractors, not us directly, so their attendance doesn't need to feed into our payroll system, just a simple log for compliance reporting.

@@ -1,0 +1,27 @@
+Discovery call — Housekeeping task management system — 4 Mar 2026
+
+Carlos Ibarra (General Manager): Across our three Singapore properties we have about 620 rooms combined, and housekeeping assignments are still handed out on a printed sheet each morning. We need room status and task assignment to move onto a mobile system the housekeepers can use directly.
+
+Mei Ling Tan (Director of Rooms): When a guest checks out, the room needs to automatically appear as "dirty" and get assigned to a housekeeper based on their current workload, not just whoever's next on a list.
+
+Aaliyah Rahman (Housekeeping Supervisor): Housekeepers need a simple app on a handheld device to mark a room as in-progress, then clean, then ready for inspection. It has to work without needing a strong signal — a lot of our stairwells and back corridors have terrible WiFi.
+
+Mei Ling Tan (Director of Rooms): Rooms marked "ready for inspection" should notify a supervisor automatically, and the supervisor needs to approve it before the room shows as available for the front desk to sell again.
+
+Josef Novak (IT Systems Manager): Our property management system is Opera Cloud. Room status changes have to sync with Opera in both directions — if front desk marks a room out of order in Opera, housekeeping should see that immediately, and vice versa.
+
+Carlos Ibarra (General Manager): We get a lot of same-day requests — a guest wants late checkout, or an early check-in needs a room rushed. Ideally supervisors can flag a room as priority and it jumps to the top of a housekeeper's queue.
+
+Mei Ling Tan (Director of Rooms): For VIP guests, there's a checklist that's different from standard rooms — turndown service, specific amenity placement — housekeepers should see that VIP checklist automatically when the room is tagged VIP in Opera.
+
+Aaliyah Rahman (Housekeeping Supervisor): Lost and found is a constant headache — when a housekeeper finds an item, they should be able to log it with a photo right from the same app, tagged to the room number and date.
+
+Josef Novak (IT Systems Manager): On performance, room status changes need to reflect across all devices within 15 seconds — if two housekeepers are near the same room, we don't want them both walking in.
+
+Carlos Ibarra (General Manager): Minibar restocking and billing is out of scope for this project — that's handled by a separate F&B system already, we don't want to touch that.
+
+Mei Ling Tan (Director of Rooms): I remember when we first opened this property, guests kept complaining that rooms weren't ready even after 3pm check-in, and it took forever to figure out which housekeeper had actually been assigned.
+
+Josef Novak (IT Systems Manager): We need at least one year of room status and inspection history retained, mainly so Rooms can pull data for quality audits.
+
+Carlos Ibarra (General Manager): We're aiming to launch this before the year-end peak season in December, and ownership has approved a budget of SGD 150,000 for the initial rollout across all three properties.
