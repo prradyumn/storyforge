@@ -1,0 +1,1610 @@
+{
+ "brief": {
+  "title": "Driver dispatch & proof-of-delivery platform",
+  "business_goals": [
+   "We need the system to auto-assign the nearest available rider to each order.",
+   "We had a spike in \"item not received\" disputes last quarter and it cost us badly on chargebacks.",
+   "Last month we had a rider go completely off-route for two hours and nobody noticed until the customer called to complain, that shouldn't be able to happen again.",
+   "We also need this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time."
+  ],
+  "stakeholders": [
+   {
+    "name": "Karan Malhotra",
+    "role": "Head of Operations",
+    "concerns": [
+     "We need the system to auto-assign the nearest available rider to each order.",
+     "Proof of delivery is critical — every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+     "We had a spike in \"item not received\" disputes last quarter and it cost us badly on chargebacks.",
+     "We also need this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time.",
+     "Last month we had a rider go completely off-route for two hours and nobody noticed until the customer called to complain, that shouldn't be able to happen again.",
+     "We need this live before the next big sale event, which is roughly ten weeks out.",
+     "The finance team has capped spend at 35 lakh for build plus first year of maps API costs."
+    ]
+   },
+   {
+    "name": "Neha Iyer",
+    "role": "Product Owner",
+    "concerns": [
+     "The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away.",
+     "Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location."
+    ]
+   },
+   {
+    "name": "Ravi Kumar",
+    "role": "Fleet Manager",
+    "concerns": [
+     "Riders need a mobile app that shows their route for the day, and it must work with patchy network — a lot of our delivery zones have poor connectivity. The app should queue updates offline and sync when signal comes back.",
+     "Failed deliveries need a reason code — customer not available, wrong address, refused — and those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub.",
+     "Riders are contract workers with their own phones, mostly older Android devices, so the app has to run acceptably on low-end Android, we can't assume everyone has a flagship phone."
+    ]
+   },
+   {
+    "name": "Sameer Qureshi",
+    "role": "Engineering Lead",
+    "concerns": [
+     "For live tracking, the customer-facing tracking link needs to update the rider's location at least every 30 seconds.",
+     "Our maps and routing run on the Google Maps Platform, that's already contracted.",
+     "On scale, during the festive peak we hit 9,000 deliveries in a single day. The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak."
+    ]
+   }
+  ],
+  "constraints": [
+   "We're not replacing Unicommerce.",
+   "Our maps and routing run on the Google Maps Platform, that's already contracted.",
+   "The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at peak (9,000 deliveries in a single day).",
+   "Riders are contract workers with their own phones, mostly older Android devices, so the app has to run acceptably on low-end Android.",
+   "We need this live before the next big sale event, which is roughly ten weeks out.",
+   "The finance team has capped spend at 35 lakh for build plus first year of maps API costs.",
+   "The rider mobile app must work with patchy network, queue updates offline and sync when signal comes back.",
+   "The customer-facing tracking link needs to update the rider's location at least every 30 seconds."
+  ],
+  "out_of_scope": [
+   "Route optimization across an entire hub's deliveries — like solving the best order to visit 40 stops — is out of scope for this phase. We're doing single-order assignment only for now, batch routing is a phase two thing."
+  ],
+  "open_questions": [
+   "What are the specific reason codes for failed deliveries beyond 'customer not available, wrong address, refused'?",
+   "What is the exact date of the 'next big sale event'?",
+   "What are the specific requirements for the 'photo' in proof of delivery (e.g., timestamp, geotagging, object detection)?",
+   "What are the specific requirements for 'signature' in proof of delivery (e.g., digital signature pad, finger signature on screen)?",
+   "What are the current metrics for manual dispatch time and accuracy?"
+  ],
+  "domain": "Logistics"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall auto-assign the nearest available rider to each order.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To automate dispatch, currently done manually.",
+   "evidence": "we need the system to auto-assign the nearest available rider to each order.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall consider rider distance for auto-assignment.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To ensure efficient assignment based on proximity.",
+   "evidence": "The auto-assignment needs to consider both distance and current rider load",
+   "stakeholder": "Neha Iyer",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall consider current rider load for auto-assignment.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To prevent overburdening riders and ensure fair distribution of orders.",
+   "evidence": "The auto-assignment needs to consider both distance and current rider load",
+   "stakeholder": "Neha Iyer",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall provide a mobile application for riders.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Riders need a tool to manage their daily routes.",
+   "evidence": "Riders need a mobile app that shows their route for the day",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The rider mobile application shall display the rider's route for the day.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To guide riders on their assigned deliveries.",
+   "evidence": "Riders need a mobile app that shows their route for the day",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The rider mobile application shall function with patchy network connectivity.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Many delivery zones have poor connectivity, requiring the app to be robust.",
+   "evidence": "it must work with patchy network",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The rider mobile application shall queue updates offline.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To ensure data is not lost in areas with poor network connectivity.",
+   "evidence": "The app should queue updates offline and sync when signal comes back.",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The rider mobile application shall sync queued updates when network signal is restored.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To ensure all delivery data is eventually transmitted to the system.",
+   "evidence": "The app should queue updates offline and sync when signal comes back.",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall require proof of delivery for every delivery.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Proof of delivery is critical to mitigate 'item not received' disputes and chargebacks.",
+   "evidence": "Proof of delivery is critical",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall require a photo as proof of delivery.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To provide visual evidence of delivery.",
+   "evidence": "every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall require a customer signature as proof of delivery.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To provide customer acknowledgment of receipt.",
+   "evidence": "every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall require an OTP entered by the customer as proof of delivery.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To provide customer acknowledgment of receipt, especially for high-value items.",
+   "evidence": "every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall mark a delivery as complete only after proof of delivery is provided.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To enforce the proof of delivery process.",
+   "evidence": "every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system shall automatically send an OTP to the customer via SMS.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To streamline the OTP delivery process for customers.",
+   "evidence": "Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location.",
+   "stakeholder": "Neha Iyer",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall trigger OTP SMS delivery when the rider is within 500 meters of the drop location.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To ensure the OTP is sent at an appropriate time for the customer.",
+   "evidence": "Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location.",
+   "stakeholder": "Neha Iyer",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-016",
+   "statement": "The customer-facing tracking link shall update the rider's location at least every 30 seconds.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To provide customers with near real-time tracking information.",
+   "evidence": "For live tracking, the customer-facing tracking link needs to update the rider's location at least every 30 seconds.",
+   "stakeholder": "Sameer Qureshi",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-017",
+   "statement": "The system shall integrate with the Google Maps Platform for maps and routing.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Google Maps Platform is already contracted for maps and routing.",
+   "evidence": "Our maps and routing run on the Google Maps Platform, that's already contracted.",
+   "stakeholder": "Sameer Qureshi",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-018",
+   "statement": "The system shall record a reason code for failed deliveries.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To understand why deliveries fail and inform reattempt logic.",
+   "evidence": "Failed deliveries need a reason code — customer not available, wrong address, refused",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-019",
+   "statement": "The system shall automatically trigger a reattempt for failed deliveries the next day.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To ensure customers receive their orders without manual intervention for reattempts.",
+   "evidence": "those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub.",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-020",
+   "statement": "The system shall allow up to two reattempts for a failed delivery before returning it to the hub.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To define the maximum number of reattempts before an order is returned.",
+   "evidence": "up to two attempts before we return it to the hub.",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-021",
+   "statement": "The system shall integrate with Unicommerce, the existing order management system.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Unicommerce is the existing system and will not be replaced.",
+   "evidence": "We also need this to integrate with our existing order management system, Unicommerce",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-022",
+   "statement": "The system shall send order status updates to Unicommerce in real time.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "To keep Unicommerce updated with the latest order statuses.",
+   "evidence": "so that order status updates flow back there in real time.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-023",
+   "statement": "The dispatch engine shall assign a rider within 10 seconds of an order being received.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure quick dispatch, especially during peak periods with high order volume.",
+   "evidence": "The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak.",
+   "stakeholder": "Sameer Qureshi",
+   "assumptions": [
+    "This performance target applies even at a peak load of 9,000 deliveries in a single day."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-024",
+   "statement": "The system shall not perform route optimization across an entire hub's deliveries in this phase.",
+   "type": "functional",
+   "priority": "wont",
+   "rationale": "This functionality is explicitly out of scope for the current phase.",
+   "evidence": "Route optimization across an entire hub's deliveries — like solving the best order to visit 40 stops — is out of scope for this phase.",
+   "stakeholder": "Neha Iyer",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-025",
+   "statement": "The system shall perform single-order assignment only.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "This is the defined scope for the current phase.",
+   "evidence": "We're doing single-order assignment only for now, batch routing is a phase two thing.",
+   "stakeholder": "Neha Iyer",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-026",
+   "statement": "The rider mobile application shall run acceptably on low-end Android devices.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Riders use their own, often older, Android phones.",
+   "evidence": "the app has to run acceptably on low-end Android",
+   "stakeholder": "Ravi Kumar",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-027",
+   "statement": "The system shall detect when a rider goes off-route.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To prevent riders from going off-route unnoticed, which previously led to customer complaints.",
+   "evidence": "Last month we had a rider go completely off-route for two hours and nobody noticed until the customer called to complain, that shouldn't be able to happen again.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [
+    "The definition of 'off-route' (e.g., deviation distance, duration) needs to be specified."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-028",
+   "statement": "The system shall notify relevant stakeholders when a rider goes off-route.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To ensure timely intervention when a rider deviates from their assigned route.",
+   "evidence": "nobody noticed until the customer called to complain, that shouldn't be able to happen again.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [
+    "The 'relevant stakeholders' who receive notifications need to be defined."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-029",
+   "statement": "The system shall be live before the next big sale event.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To leverage the system for an upcoming critical business period.",
+   "evidence": "We need this live before the next big sale event, which is roughly ten weeks out",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [
+    "The exact date of the 'next big sale event' needs to be determined."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-030",
+   "statement": "The total spend for system build and first year of maps API costs shall not exceed 35 lakh.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "A financial constraint imposed by the finance team.",
+   "evidence": "the finance team has capped spend at 35 lakh for build plus first year of maps API costs.",
+   "stakeholder": "Karan Malhotra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Efficient Order Dispatch",
+    "goal": "To ensure orders are automatically assigned to the most suitable rider quickly, optimizing delivery initiation.",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-023",
+     "R-025"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Seamless Delivery Execution",
+    "goal": "To provide riders with a reliable mobile application that supports efficient delivery completion, even in challenging network conditions.",
+    "requirement_ids": [
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-018",
+     "R-019",
+     "R-020",
+     "R-026"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "Robust Proof of Delivery",
+    "goal": "To implement comprehensive proof of delivery mechanisms that reduce disputes and ensure accountability for every delivery.",
+    "requirement_ids": [
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012",
+     "R-013",
+     "R-014",
+     "R-015"
+    ]
+   },
+   {
+    "id": "E-04",
+    "title": "Real-time Visibility & Control",
+    "goal": "To provide stakeholders with real-time tracking and alerts, enabling proactive management of deliveries and rider activities.",
+    "requirement_ids": [
+     "R-016",
+     "R-027",
+     "R-028"
+    ]
+   },
+   {
+    "id": "E-05",
+    "title": "Core Platform Integrations",
+    "goal": "To establish essential integrations with external systems for mapping, routing, and order management, ensuring smooth data flow.",
+    "requirement_ids": [
+     "R-017",
+     "R-021",
+     "R-022"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Auto-assign nearest available rider",
+    "as_a": "dispatch manager",
+    "i_want": "the system to auto-assign orders to the nearest available rider",
+    "so_that": "deliveries are initiated quickly and efficiently",
+    "acceptance_criteria": [
+     {
+      "given": "an unassigned order is received and multiple riders are available",
+      "when": "the auto-assignment engine runs",
+      "then": "the order is assigned to the rider with the shortest calculated distance to the pickup location"
+     },
+     {
+      "given": "an unassigned order is received and only one rider is available",
+      "when": "the auto-assignment engine runs",
+      "then": "the order is assigned to the available rider"
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-025"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Consider rider load for auto-assignment",
+    "as_a": "dispatch manager",
+    "i_want": "the system to consider a rider's current delivery load during auto-assignment",
+    "so_that": "riders are not overloaded and deliveries remain timely",
+    "acceptance_criteria": [
+     {
+      "given": "an unassigned order is received and two riders are equally near, but Rider A has 3 active deliveries and Rider B has 0 active deliveries",
+      "when": "the auto-assignment engine runs",
+      "then": "the order is assigned to Rider B"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Fast rider assignment",
+    "as_a": "dispatch manager",
+    "i_want": "the system to assign a rider within 10 seconds of an order being received",
+    "so_that": "delivery operations are not delayed",
+    "acceptance_criteria": [
+     {
+      "given": "an order is received and a suitable rider is available",
+      "when": "the system processes the order for assignment",
+      "then": "a rider is assigned within 10 seconds"
+     },
+     {
+      "given": "an order is received and a suitable rider is available, and the system is processing 100 other orders concurrently",
+      "when": "the system processes the order for assignment",
+      "then": "a rider is assigned within 10 seconds"
+     }
+    ],
+    "requirement_ids": [
+     "R-023"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-02",
+    "title": "Rider Mobile Application Core Functionality and Performance",
+    "as_a": "rider",
+    "i_want": "a functional mobile application that performs well on various Android devices to manage my deliveries",
+    "so_that": "I can efficiently perform my daily tasks without technical issues",
+    "acceptance_criteria": [
+     {
+      "given": "I have an Android device",
+      "when": "I install and open the rider mobile application",
+      "then": "the application launches successfully and displays a login screen"
+     },
+     {
+      "given": "I am using a low-end Android device (e.g., 2GB RAM, Android 8.0)",
+      "when": "I use the rider mobile application for 30 minutes, navigating between screens and performing actions",
+      "then": "the application remains responsive, with screen transitions completing within 2 seconds, and does not crash"
+     }
+    ],
+    "requirement_ids": [
+     "R-004",
+     "R-026"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-02",
+    "title": "Display daily route in rider app",
+    "as_a": "rider",
+    "i_want": "my daily delivery route displayed in the mobile application",
+    "so_that": "I can plan my day and navigate efficiently",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged into the rider mobile application and have assigned deliveries",
+      "when": "I view my current assignments",
+      "then": "a map displays my current location and the route for my assigned deliveries"
+     },
+     {
+      "given": "I am logged into the rider mobile application and have no assigned deliveries",
+      "when": "I view my current assignments",
+      "then": "the application displays a message indicating no deliveries are currently assigned"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-02",
+    "title": "Offline functionality for rider app",
+    "as_a": "rider",
+    "i_want": "the mobile application to function and queue updates when network connectivity is patchy or offline",
+    "so_that": "I can continue my work without interruption",
+    "acceptance_criteria": [
+     {
+      "given": "I am using the rider mobile application and lose network connectivity",
+      "when": "I attempt to mark an order as 'out for delivery'",
+      "then": "the application accepts the action, stores the update locally, and displays a 'pending sync' indicator for the order"
+     },
+     {
+      "given": "I am using the rider mobile application and lose network connectivity",
+      "when": "I view my assigned deliveries",
+      "then": "the application continues to display my route and delivery details based on cached data"
+     }
+    ],
+    "requirement_ids": [
+     "R-006",
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-02",
+    "title": "Sync queued updates when network restored",
+    "as_a": "rider",
+    "i_want": "the mobile application to automatically sync queued updates when network signal is restored",
+    "so_that": "delivery statuses are accurately reflected in the system",
+    "acceptance_criteria": [
+     {
+      "given": "I have queued updates in the rider mobile application due to offline work",
+      "when": "network connectivity is restored",
+      "then": "the application initiates the upload of all queued updates to the server, and upon successful upload, the local queue is cleared for those items"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-02",
+    "title": "Record reason for failed deliveries",
+    "as_a": "rider",
+    "i_want": "to record a reason code for failed deliveries in the mobile application",
+    "so_that": "the operations team understands why a delivery could not be completed",
+    "acceptance_criteria": [
+     {
+      "given": "I am attempting to mark a delivery as failed in the mobile application",
+      "when": "I select 'Failed Delivery'",
+      "then": "the application presents a predefined list of reason codes (e.g., 'Customer Not Available', 'Address Incorrect', 'Item Damaged')"
+     },
+     {
+      "given": "I have selected a reason code for a failed delivery",
+      "when": "I confirm the failed delivery",
+      "then": "the delivery status is updated to 'Failed' with the selected reason code"
+     }
+    ],
+    "requirement_ids": [
+     "R-018"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-02",
+    "title": "Automatic reattempt for failed deliveries",
+    "as_a": "dispatch manager",
+    "i_want": "the system to automatically trigger a reattempt for failed deliveries the next day",
+    "so_that": "customers eventually receive their orders",
+    "acceptance_criteria": [
+     {
+      "given": "a delivery is marked as 'Failed' today and has had less than two previous reattempts",
+      "when": "the system processes failed deliveries overnight",
+      "then": "a new delivery attempt is scheduled for the same order for the next day"
+     }
+    ],
+    "requirement_ids": [
+     "R-019"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-02",
+    "title": "Limit reattempts for failed deliveries",
+    "as_a": "dispatch manager",
+    "i_want": "the system to allow up to two reattempts for a failed delivery",
+    "so_that": "we maximize delivery success before returning items to the hub",
+    "acceptance_criteria": [
+     {
+      "given": "an order has failed delivery once",
+      "when": "a reattempt is triggered",
+      "then": "the system creates a new delivery attempt record for the order, scheduled for the next day, and updates the order status to 'Reattempt Scheduled'"
+     },
+     {
+      "given": "an order has failed delivery twice",
+      "when": "a third reattempt is requested",
+      "then": "the system prevents scheduling a third reattempt and flags the order for return to hub"
+     }
+    ],
+    "requirement_ids": [
+     "R-020"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-03",
+    "title": "Require proof of delivery",
+    "as_a": "rider",
+    "i_want": "the system to require proof of delivery before marking a delivery as complete",
+    "so_that": "all deliveries are verified",
+    "acceptance_criteria": [
+     {
+      "given": "I am at the delivery location for an order",
+      "when": "I attempt to mark the delivery as 'Complete' without providing any proof of delivery",
+      "then": "the application displays an error message and prevents completion, prompting me to provide proof of delivery"
+     },
+     {
+      "given": "I am at the delivery location and have provided the required proof of delivery",
+      "when": "I mark the delivery as 'Complete'",
+      "then": "the delivery status is successfully updated to 'Complete'"
+     }
+    ],
+    "requirement_ids": [
+     "R-009",
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-03",
+    "title": "Capture photo as proof of delivery",
+    "as_a": "rider",
+    "i_want": "to capture a photo as proof of delivery",
+    "so_that": "there is visual evidence of successful delivery",
+    "acceptance_criteria": [
+     {
+      "given": "I am at the delivery location and need to provide proof of delivery",
+      "when": "I select the 'Capture Photo' option in the mobile application",
+      "then": "the application activates the device camera and displays a capture interface"
+     },
+     {
+      "given": "I have captured a photo as proof of delivery",
+      "when": "I confirm the photo",
+      "then": "the photo is associated with the delivery record and uploaded to the system"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-013",
+    "epic_id": "E-03",
+    "title": "Capture customer signature as proof of delivery",
+    "as_a": "rider",
+    "i_want": "to capture a customer signature as proof of delivery",
+    "so_that": "the customer acknowledges receipt of the item",
+    "acceptance_criteria": [
+     {
+      "given": "I am at the delivery location and need to provide proof of delivery",
+      "when": "I select the 'Capture Signature' option in the mobile application",
+      "then": "the application displays a signature pad for the customer to sign on the device screen"
+     },
+     {
+      "given": "the customer has provided their signature on the device screen",
+      "when": "I confirm the signature",
+      "then": "the signature is associated with the delivery record and uploaded to the system"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-014",
+    "epic_id": "E-03",
+    "title": "Enter customer OTP as proof of delivery",
+    "as_a": "rider",
+    "i_want": "to enter an OTP provided by the customer as proof of delivery",
+    "so_that": "high-value deliveries are securely verified",
+    "acceptance_criteria": [
+     {
+      "given": "I am at the delivery location and need to provide proof of delivery",
+      "when": "I select the 'Enter OTP' option in the mobile application",
+      "then": "the application displays an input field for a 6-digit OTP"
+     },
+     {
+      "given": "I have entered an incorrect OTP for a delivery",
+      "when": "I attempt to complete the delivery",
+      "then": "the application rejects the OTP and prompts me to re-enter it"
+     },
+     {
+      "given": "I have entered the correct OTP for a delivery",
+      "when": "I attempt to complete the delivery",
+      "then": "the application validates the OTP as correct, displays a confirmation message, and enables the 'Mark as Complete' button for the delivery"
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-015",
+    "epic_id": "E-03",
+    "title": "Automatically send OTP to customer",
+    "as_a": "dispatch manager",
+    "i_want": "the system to automatically send an OTP to the customer via SMS when the rider is near",
+    "so_that": "customers receive their OTP in a timely manner, streamlining the delivery process",
+    "acceptance_criteria": [
+     {
+      "given": "a rider is assigned to an order and is within 500 meters of the drop location",
+      "when": "the system detects the rider's proximity",
+      "then": "an SMS containing a unique OTP is sent to the customer's registered mobile number"
+     },
+     {
+      "given": "a rider is assigned to an order and is within 500 meters of the drop location, and an OTP has already been sent for this delivery",
+      "when": "the system detects the rider's proximity again",
+      "then": "no new SMS is sent to the customer"
+     }
+    ],
+    "requirement_ids": [
+     "R-014",
+     "R-015"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-016",
+    "epic_id": "E-04",
+    "title": "Real-time rider location updates for customers",
+    "as_a": "customer",
+    "i_want": "my tracking link to update the rider's location at least every 30 seconds",
+    "so_that": "I have accurate real-time information about my delivery",
+    "acceptance_criteria": [
+     {
+      "given": "I am viewing my delivery tracking link",
+      "when": "the rider's location changes",
+      "then": "the map on the tracking link updates the rider's position within 30 seconds"
+     },
+     {
+      "given": "I am viewing my delivery tracking link and the rider is stationary",
+      "when": "30 seconds pass",
+      "then": "the map on the tracking link displays the rider's last known position and the timestamp of the last update"
+     }
+    ],
+    "requirement_ids": [
+     "R-016"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-017",
+    "epic_id": "E-04",
+    "title": "Detect off-route riders",
+    "as_a": "dispatch manager",
+    "i_want": "the system to detect when a rider goes off-route",
+    "so_that": "I can proactively address potential issues",
+    "acceptance_criteria": [
+     {
+      "given": "a rider is assigned a route and deviates more than 500 meters from the planned path for 5 minutes",
+      "when": "the system monitors the rider's GPS location",
+      "then": "the system flags the rider as 'off-route' and updates their status in the dispatch dashboard"
+     },
+     {
+      "given": "a rider is assigned a route and stays within the planned path",
+      "when": "the system monitors the rider's GPS location",
+      "then": "the system continues to show the rider as 'on-route'"
+     }
+    ],
+    "requirement_ids": [
+     "R-027"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-018",
+    "epic_id": "E-04",
+    "title": "Notify stakeholders of off-route riders",
+    "as_a": "dispatch manager",
+    "i_want": "to be notified when a rider goes off-route",
+    "so_that": "I can intervene quickly",
+    "acceptance_criteria": [
+     {
+      "given": "a rider is flagged as 'off-route'",
+      "when": "the system detects the off-route status",
+      "then": "an alert is displayed on the dispatch dashboard and an email notification is sent to the dispatch manager"
+     },
+     {
+      "given": "a rider is flagged as 'off-route' and then returns to the planned route",
+      "when": "the system detects the rider is back on route",
+      "then": "the 'off-route' alert is cleared and a 'back on route' notification is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-028"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-019",
+    "epic_id": "E-05",
+    "title": "Integrate with Google Maps Platform",
+    "as_a": "system administrator",
+    "i_want": "the system to integrate with Google Maps Platform",
+    "so_that": "we can leverage reliable maps and routing services",
+    "acceptance_criteria": [
+     {
+      "given": "the system needs to calculate a route between two points",
+      "when": "a route calculation request is made",
+      "then": "the system successfully calls the Google Maps Directions API and receives a valid route"
+     },
+     {
+      "given": "the system needs to display a map",
+      "when": "a map display request is made",
+      "then": "the system displays a map interface using the Google Maps SDK, centered on the requested location with relevant markers"
+     }
+    ],
+    "requirement_ids": [
+     "R-017"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-020",
+    "epic_id": "E-05",
+    "title": "Integrate with Unicommerce",
+    "as_a": "system administrator",
+    "i_want": "the system to integrate with Unicommerce",
+    "so_that": "order data can flow seamlessly between systems",
+    "acceptance_criteria": [
+     {
+      "given": "a new order is created in Unicommerce",
+      "when": "the integration is active",
+      "then": "the new order is received by our dispatch system within 60 seconds"
+     },
+     {
+      "given": "Unicommerce sends an order with missing mandatory fields (e.g., customer address)",
+      "when": "our system attempts to process the order",
+      "then": "our system rejects the order, logs the error, and sends an error notification to Unicommerce"
+     }
+    ],
+    "requirement_ids": [
+     "R-021"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-021",
+    "epic_id": "E-05",
+    "title": "Send real-time order status updates to Unicommerce",
+    "as_a": "system administrator",
+    "i_want": "the system to send real-time order status updates to Unicommerce",
+    "so_that": "our order management system always has the latest delivery information",
+    "acceptance_criteria": [
+     {
+      "given": "an order's status changes in our dispatch system (e.g., 'Assigned', 'Out for Delivery', 'Delivered')",
+      "when": "the status update occurs",
+      "then": "the new status is sent to Unicommerce within 5 seconds"
+     },
+     {
+      "given": "an order's status changes in our dispatch system, but the Unicommerce API returns an error during the update attempt",
+      "when": "the system attempts to send the status update",
+      "then": "the system logs the error and flags the order status as 'sync failed' for manual review"
+     }
+    ],
+    "requirement_ids": [
+     "R-022"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 5,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 2,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "The \"i_want\" statement \"manage my deliveries\" implies significant functionality beyond just launching and logging in, which is not covered by the acceptance criteria.",
+     "The story combines the initial development of the mobile application (R-004) with a performance requirement (R-026) and a broad \"core functionality\" scope, making it too large and unfocused.",
+     "The acceptance criteria for \"core functionality\" are insufficient to define the full scope of \"manage my deliveries\" or \"functional mobile application\".",
+     "The term \"remains responsive\" in AC2 is subjective and not fully quantified, making it harder to test definitively."
+    ],
+    "fix_instructions": "Split this story into at least two. One story should focus on the basic launch and login functionality (R-004) with specific ACs. Another story should address the performance on low-end Android devices (R-026) with more precise, measurable criteria for responsiveness. Ensure the \"i_want\" and ACs align for each new story."
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-013",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-014",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-015",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-016",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-017",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-018",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-019",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-020",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-021",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "uncovered_goal",
+    "description": "The business goal of reducing \"item not received\" disputes and chargebacks is addressed by implementing proof of delivery, but there's no explicit requirement or story detailing how the captured proof of delivery data (photos, signatures, OTPs) will be stored, accessed, or utilized by relevant teams (e.g., customer service, finance) to actually resolve disputes or prevent chargebacks.",
+    "severity": "medium",
+    "related_ids": [
+     "Brief Goal 2",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012",
+     "R-013",
+     "S-011",
+     "S-012",
+     "S-013",
+     "S-014"
+    ],
+    "suggested_question": "How will the captured proof of delivery data (photos, signatures, OTPs) be stored and made accessible to our customer service and finance teams to help resolve 'item not received' disputes and prevent chargebacks?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "There are no explicit security requirements for the platform, rider mobile application, or the handling of sensitive data such as customer OTPs, location data, and personal order information. This is critical for a system handling personal and operational data.",
+    "severity": "high",
+    "related_ids": [],
+    "suggested_question": "What are our security requirements for data at rest and in transit, user authentication, and access control for the dispatch platform and rider app, especially concerning customer and rider personal data?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "There are no requirements specifying data retention policies for critical information such as proof of delivery photos/signatures, rider location history, order dispatch logs, or failed delivery reasons. This is important for dispute resolution, compliance, and operational analysis.",
+    "severity": "medium",
+    "related_ids": [
+     "Brief Goal 2",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012",
+     "R-018"
+    ],
+    "suggested_question": "What are the required data retention periods for proof of delivery records, rider location history, and other operational data, and how should this data be archived or purged?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "There are no stated availability or uptime targets for the dispatch platform or the Unicommerce integration. As a critical operational system, understanding expected uptime and disaster recovery capabilities is essential.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What are the expected availability targets (e.g., uptime percentage) for the dispatch system and its integration with Unicommerce, and what are our disaster recovery expectations?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Requirement R-010 states a photo is required for proof of delivery, but lacks specific details on what constitutes an acceptable photo (e.g., timestamp, geotagging, content).",
+    "severity": "medium",
+    "related_ids": [
+     "R-010",
+     "S-012",
+     "Open Question: What are the specific requirements for the 'photo' in proof of delivery (e.g., timestamp, geotagging, object detection)?"
+    ],
+    "suggested_question": "For photo proof of delivery, do we need to capture timestamp, geotagging, or specific content (e.g., package clearly visible at door)? What are the minimum acceptable quality standards?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Requirement R-011 states a customer signature is required, but doesn't specify the method of capture (e.g., finger on screen, digital signature pad).",
+    "severity": "medium",
+    "related_ids": [
+     "R-011",
+     "S-013",
+     "Open Question: What are the specific requirements for 'signature' in proof of delivery (e.g., digital signature pad, finger signature on screen)?"
+    ],
+    "suggested_question": "For customer signatures, will riders capture these directly on their mobile device screens, or is there a different method expected?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Requirement R-028 states \"relevant stakeholders\" should be notified when a rider goes off-route, but does not specify who these stakeholders are or the preferred notification method.",
+    "severity": "medium",
+    "related_ids": [
+     "R-028",
+     "S-018",
+     "Brief Goal 3"
+    ],
+    "suggested_question": "Who are the specific stakeholders that need to be notified when a rider goes off-route, and what is the preferred method of notification for each (e.g., SMS, email, in-app alert)?"
+   },
+   {
+    "kind": "missing_stakeholder",
+    "description": "The customer service/support team is directly impacted by the system, particularly regarding \"item not received\" disputes, customer tracking inquiries, and failed delivery processes. They will need access to and tools for utilizing proof of delivery data.",
+    "severity": "medium",
+    "related_ids": [
+     "Brief Goal 2",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012",
+     "R-013",
+     "R-018"
+    ],
+    "suggested_question": "Who from our customer service or support team should be involved to ensure the system meets their needs for handling customer inquiries and disputes related to deliveries?"
+   },
+   {
+    "kind": "missing_stakeholder",
+    "description": "The finance team is mentioned regarding budget constraints and chargebacks, but no specific finance stakeholder is listed. Their input is crucial for defining how PoD data supports chargeback prevention and for tracking project costs.",
+    "severity": "low",
+    "related_ids": [
+     "Brief Goal 2",
+     "R-030"
+    ],
+    "suggested_question": "Who is the key contact from the finance team who can provide input on how proof of delivery data can best support chargeback prevention and manage project financials?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for the core functional requirements of rider dispatch, proof of delivery, and integration with Unicommerce and Google Maps. Key non-functional aspects like performance and offline capabilities for the rider app are also addressed. However, there are some critical areas that need further definition. The utility of proof of delivery data for dispute resolution is not fully specified, and important non-functional requirements like security, comprehensive data retention, and system availability targets are missing. Several requirements also need more specific details to avoid ambiguity in implementation. Finally, key operational stakeholders like customer service and a dedicated finance representative are not explicitly listed, whose input would be valuable for ensuring the system fully meets business needs."
+ },
+ "trace": {
+  "run_id": "380a40924f",
+  "started_at": "2026-09-12T18:25:16.450045Z",
+  "prompt_version": "v3",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 13687,
+    "prompt_tokens": 1208,
+    "completion_tokens": 3042,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 31006,
+    "prompt_tokens": 2676,
+    "completion_tokens": 7658,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 59930,
+    "prompt_tokens": 1974,
+    "completion_tokens": 15310,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 49173,
+    "prompt_tokens": 7256,
+    "completion_tokens": 12473,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 57018,
+    "prompt_tokens": 9996,
+    "completion_tokens": 13882,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 37316,
+    "prompt_tokens": 7224,
+    "completion_tokens": 9088,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 10462,
+    "prompt_tokens": 4159,
+    "completion_tokens": 2289,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 42699,
+    "prompt_tokens": 7267,
+    "completion_tokens": 10733,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 35962,
+    "prompt_tokens": 2891,
+    "completion_tokens": 7716,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 21,
+  "guardrail_flags": [
+   "coverage: R-029 (must) has no story",
+   "coverage: R-030 (must) has no story"
+  ]
+ }
+}

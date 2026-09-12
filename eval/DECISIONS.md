@@ -36,7 +36,7 @@ estimated. Where a number is missing, it was not measured.
 | Groq `llama-3.3-70b-versatile` | No longer offered on the account | — |
 | Groq `groq/compound` | Answers JSON, no daily token cap on paper. In practice each request consumed 25–60K tokens internally (its own reasoning/tool loop), tripping its 70K/min cap and llama-4-scout's 30K/min on nearly every call. Two full eval attempts: 0/8 cases completed. | **Rejected** |
 | Groq `openai/gpt-oss-120b`, `gpt-oss-20b`, `qwen3.x-27b` | 8K tokens/min, 200K tokens/day each — a single story-writer call is ~5–7K tokens. Only viable by spreading cases across models and trimming review rounds. Kept as the fallback plan in `scripts/run_live_evals.sh`. | Fallback |
-| Gemini `gemini-2.5-flash` | Free tier covered the whole 24-run matrix in one sitting. | **Primary** |
+| Gemini `gemini-2.5-flash` | Free tier ran the full 8-case v3 matrix in ~35 minutes with no rate-limit failures; one read timeout at 60 s (fixed by raising the client timeout to 180 s). | **Primary** |
 
 Consequence for the product: the router order is `gemini,groq`, and the
 Groq client gained a client-side tokens-per-minute throttle and exponential
@@ -55,7 +55,36 @@ tight enough that "retry on 429" is not a strategy.
 ## 3. Results
 
 <!-- results-table:start -->
-_Pending — filled from eval/results once the live matrix completes._
+Live matrix on `gemini-2.5-flash`, 2 review rounds, 8 transcripts. v3 is the
+shipped default. v2 and v1 are being run against the same set for the
+before/after comparison; v4 (see §2) is queued. Rows are added here as the
+JSON reports land in `eval/results/` — the README table is generated from the
+same files by `scripts/render_eval_table.py`.
+
+| Metric | stub baseline | v3 (Gemini) |
+|---|---|---|
+| Requirement recall | 74% | **82%** |
+| Requirement precision (strict) | 70% | 57% |
+| Traceability (evidence verbatim in notes) | 100% | **99.5%** (199 / 200) |
+| Distractor leakage | 6% | 25% (4 / 16) |
+| Priority accuracy (MoSCoW) | 57% | **82%** |
+| Type accuracy | 57% | 79% |
+| Must/should requirements with ≥ 1 story | 74% | 76% |
+| Stories sprint-ready after loop | 71% | **85%** (93 / 109) |
+| Gherkin-clean stories | 100% | 98% |
+| Generic "as a user" stories | 0% | **0%** |
+| Out-of-scope recall | 0% | 62% |
+| Schema repairs | 0 | **0** in 68 model calls |
+| Stories revised by the loop | — | 83 |
+| Mean latency / tokens per transcript | — | 245 s / 88.7K tokens |
+
+Reading it: the model beats the heuristic baseline on everything that
+requires understanding (recall, priority, type, story quality) and ties it on
+the one thing the baseline gets for free (a regex that copies sentences cannot
+mis-quote). The two places it is *worse* than the baseline — precision and
+distractor leakage — are the same phenomenon seen from two sides: the model
+infers. Section 4 shows exactly what that looked like; v4 is the response.
+
 <!-- results-table:end -->
 
 ## 4. Failure analysis on v3 (what the numbers hide)

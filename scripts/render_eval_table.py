@@ -28,7 +28,9 @@ COLS = [
 
 
 def pct(v):
-    return "–" if v is None else f"{v*100:.0f}%"
+    if v is None:
+        return "–"
+    return f"{v*100:.1f}%" if 0.985 <= v < 1 else f"{v*100:.0f}%"
 
 
 def render() -> str:
@@ -53,7 +55,10 @@ def render() -> str:
             label += f" ({len(d['failures'])} case(s) failed)"
         rows.append(f"| {label} | " + " | ".join(cells) + " |")
     n_cases = reports[0]["aggregate"]["cases"] if reports else 0
-    note = f"\n_{n_cases} transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline._"
+    note = (
+        f"\n_{n_cases} transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline "
+        "(it copies sentences verbatim, which the keyword rubric rewards on precision; read precision together with traceability)._"
+    )
     return "\n".join([head, sep, *rows]) + note
 
 

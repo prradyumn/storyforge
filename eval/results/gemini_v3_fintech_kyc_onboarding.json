@@ -1,0 +1,1346 @@
+{
+ "brief": {
+  "title": "KYC onboarding workflow for BrightPath Lending app",
+  "business_goals": [
+   "automated KYC flow that verifies identity documents the moment someone applies",
+   "get a decision in real time — ideally under 60 seconds for the straightforward cases",
+   "run every applicant against OFAC and other sanctions lists before approval",
+   "application must be frozen and routed to a compliance officer, never auto-approved if there's a sanctions hit",
+   "both results [Persona & Experian] need to land in the same applicant record so underwriting can see everything in one place",
+   "support a manual fallback — if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright",
+   "Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit",
+   "Address verification should also happen — we need to confirm the address on the ID matches what they entered in the application"
+  ],
+  "stakeholders": [
+   {
+    "name": "Sarah Chen",
+    "role": "Head of Compliance",
+    "concerns": [
+     "onboarding is a mess of PDF uploads and manual review, and it takes an average of three days to approve an applicant",
+     "We need an automated KYC flow that verifies identity documents the moment someone applies",
+     "We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval",
+     "if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved",
+     "Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit",
+     "Last year's exam took our team almost three weeks because records were scattered across six different systems",
+     "Address verification should also happen — we need to confirm the address on the ID matches what they entered in the application, since mismatches are one of our biggest fraud signals"
+    ]
+   },
+   {
+    "name": "Marcus Webb",
+    "role": "Product Manager",
+    "concerns": [
+     "From the applicant's side, they should be able to upload a driver's license or passport, take a selfie, and get a decision in real time — ideally under 60 seconds for the straightforward cases",
+     "Ideally we'd also support a manual fallback — if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright",
+     "There's also a hard deadline — legal wants this live before our state lending license renewal on March 31st, since the regulator specifically asked about our onboarding controls",
+     "Budget for this phase is capped at $250,000, and that has to include the Persona and Experian integration costs"
+    ]
+   },
+   {
+    "name": "Derek Osei",
+    "role": "Engineering Lead",
+    "concerns": [
+     "For document and identity verification we're planning to use Persona, since we already have a contract with them",
+     "The system needs to call the Persona API and take their verification result as the source of truth for identity match",
+     "We're expecting up to 5,000 applications a day at peak, mostly evenings",
+     "The verification pipeline needs to sustain that without falling over — 99.9% uptime is the target we've committed to the board",
+     "Honestly the current manual review queue has become a running joke internally, people call it 'the black hole' because applications just sit there for days"
+    ]
+   },
+   {
+    "name": "Jenna Fitzgerald",
+    "role": "Risk Analyst",
+    "concerns": [
+     "We also pull credit data from Experian for the underwriting decision",
+     "That's a separate call from Persona, but both results need to land in the same applicant record so underwriting can see everything in one place",
+     "re-verification for existing customers who want a second loan is out of scope for this phase"
+    ]
+   }
+  ],
+  "constraints": [
+   "use Persona for document and identity verification",
+   "take Persona's verification result as the source of truth for identity match",
+   "required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval",
+   "sanctions check is non-negotiable",
+   "pull credit data from Experian for the underwriting decision",
+   "Every KYC decision, and the data that led to it, has to be retained for five years",
+   "expecting up to 5,000 applications a day at peak",
+   "99.9% uptime is the target for the verification pipeline",
+   "hard deadline: live before state lending license renewal on March 31st",
+   "Budget for this phase is capped at $250,000, including Persona and Experian integration costs"
+  ],
+  "out_of_scope": [
+   "re-verification for existing customers who want a second loan"
+  ],
+  "open_questions": [],
+  "domain": "Fintech"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall provide an automated KYC flow.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Current onboarding is a mess of PDF uploads and manual review, taking an average of three days.",
+   "evidence": "We need an automated KYC flow that verifies identity documents the moment someone applies.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall verify identity documents the moment an applicant applies.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Current onboarding is a mess of PDF uploads and manual review, taking an average of three days.",
+   "evidence": "We need an automated KYC flow that verifies identity documents the moment someone applies.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall allow applicants to upload a driver's license.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "From the applicant's side, they should be able to upload a driver's license or passport",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall allow applicants to upload a passport.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "From the applicant's side, they should be able to upload a driver's license or passport",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall allow applicants to take a selfie.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "take a selfie",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall provide a KYC decision in real time.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "get a decision in real time — ideally under 60 seconds for the straightforward cases.",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall provide a KYC decision within 60 seconds for straightforward cases.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "get a decision in real time — ideally under 60 seconds for the straightforward cases.",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [
+    "The definition of 'straightforward cases' will be provided."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall integrate with the Persona API.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Persona is the chosen vendor for document and identity verification.",
+   "evidence": "The system needs to call the Persona API",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall use Persona's verification result as the source of truth for identity match.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Persona is the chosen vendor for document and identity verification.",
+   "evidence": "take their verification result as the source of truth for identity match.",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall run every applicant against OFAC and other sanctions lists.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "Required under the Bank Secrecy Act.",
+   "evidence": "We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall perform sanctions list checks before approving an applicant.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "Required under the Bank Secrecy Act.",
+   "evidence": "We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall freeze an application if there is a sanctions hit.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Sanctions check is non-negotiable.",
+   "evidence": "if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall route applications with a sanctions hit to a compliance officer.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Sanctions check is non-negotiable.",
+   "evidence": "if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system shall prevent auto-approval for applications with a sanctions hit.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Sanctions check is non-negotiable.",
+   "evidence": "if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall pull credit data from Experian.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Credit data is needed for the underwriting decision.",
+   "evidence": "We also pull credit data from Experian for the underwriting decision.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-016",
+   "statement": "The system shall store Persona verification results in the applicant record.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "Underwriting needs to see all results in one place.",
+   "evidence": "both results need to land in the same applicant record so underwriting can see everything in one place.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-017",
+   "statement": "The system shall store Experian credit data in the applicant record.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "Underwriting needs to see all results in one place.",
+   "evidence": "both results need to land in the same applicant record so underwriting can see everything in one place.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-018",
+   "statement": "The system shall display all verification and credit results in a single applicant record for underwriting.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Underwriting needs to see all results in one place.",
+   "evidence": "both results need to land in the same applicant record so underwriting can see everything in one place.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-019",
+   "statement": "The system shall support a manual review fallback for KYC applications.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To avoid outright rejecting applicants if automated checks fail or confidence is low.",
+   "evidence": "Ideally we'd also support a manual fallback",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-020",
+   "statement": "The system shall route applications to a human reviewer if the automated check fails.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To avoid outright rejecting applicants if automated checks fail or confidence is low.",
+   "evidence": "if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright.",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-021",
+   "statement": "The system shall route applications to a human reviewer if the confidence score is low.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To avoid outright rejecting applicants if automated checks fail or confidence is low.",
+   "evidence": "if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright.",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [
+    "The threshold for a 'low confidence score' will be defined."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-022",
+   "statement": "The system shall retain every KYC decision for five years.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "To satisfy regulators during an audit.",
+   "evidence": "Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-023",
+   "statement": "The system shall retain all data that led to a KYC decision for five years.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "To satisfy regulators during an audit.",
+   "evidence": "Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-024",
+   "statement": "The system shall process up to 5,000 applications per day at peak.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Expected application volume.",
+   "evidence": "On the technical side, we're expecting up to 5,000 applications a day at peak, mostly evenings. The verification pipeline needs to sustain that without falling over",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-025",
+   "statement": "The system's verification pipeline shall have 99.9% uptime.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Commitment to the board.",
+   "evidence": "99.9% uptime is the target we've committed to the board.",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-026",
+   "statement": "The system shall be live before March 31st.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Hard deadline due to state lending license renewal.",
+   "evidence": "legal wants this live before our state lending license renewal on March 31st",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-027",
+   "statement": "The system shall perform address verification.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "Address mismatches are a significant fraud signal.",
+   "evidence": "Address verification should also happen",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-028",
+   "statement": "The system shall confirm the address on the ID matches the address entered in the application.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Address mismatches are a significant fraud signal.",
+   "evidence": "we need to confirm the address on the ID matches what they entered in the application",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Automated Identity Verification",
+    "goal": "To enable applicants to quickly verify their identity through an automated process, ensuring accurate and real-time decisions.",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-027",
+     "R-028"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Sanctions Compliance & Risk Management",
+    "goal": "To automatically screen all applicants against sanctions lists and ensure proper handling of any matches to prevent unauthorized approvals.",
+    "requirement_ids": [
+     "R-010",
+     "R-011",
+     "R-012",
+     "R-013",
+     "R-014"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "Comprehensive Applicant Data for Underwriting",
+    "goal": "To consolidate all identity verification and credit data into a single, accessible record for efficient underwriting decisions.",
+    "requirement_ids": [
+     "R-015",
+     "R-016",
+     "R-017",
+     "R-018"
+    ]
+   },
+   {
+    "id": "E-04",
+    "title": "Manual Review Workflow",
+    "goal": "To provide a robust fallback mechanism for applications that cannot be fully processed by the automated KYC system, ensuring no valid applicant is unfairly rejected.",
+    "requirement_ids": [
+     "R-019",
+     "R-020",
+     "R-021"
+    ]
+   },
+   {
+    "id": "E-05",
+    "title": "Regulatory Data Retention",
+    "goal": "To ensure all KYC decisions and supporting data are securely retained for the required regulatory period, facilitating audits.",
+    "requirement_ids": [
+     "R-022",
+     "R-023"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Upload Driver's License",
+    "as_a": "Loan applicant",
+    "i_want": "to upload my driver's license",
+    "so_that": "my identity can be automatically verified.",
+    "acceptance_criteria": [
+     {
+      "given": "I am on the identity verification screen",
+      "when": "I upload a valid image of my driver's license",
+      "then": "the system accepts the upload and I am redirected to the selfie capture screen."
+     },
+     {
+      "given": "I am on the identity verification screen",
+      "when": "I upload a file that is not an image (e.g., PDF, DOCX)",
+      "then": "the system displays an error message 'Please upload an image file (JPG, PNG)'."
+     },
+     {
+      "given": "I am on the identity verification screen",
+      "when": "I upload an image that is blurry or unreadable",
+      "then": "the system displays a message 'Image is blurry or unreadable. Please re-upload a clearer image.'"
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Upload Passport",
+    "as_a": "Loan applicant",
+    "i_want": "to upload my passport",
+    "so_that": "my identity can be automatically verified.",
+    "acceptance_criteria": [
+     {
+      "given": "I am on the identity verification screen",
+      "when": "I upload a valid image of my passport",
+      "then": "the system accepts the upload and I am redirected to the selfie capture screen."
+     },
+     {
+      "given": "I am on the identity verification screen",
+      "when": "I upload a file larger than 10MB",
+      "then": "the system displays an error message 'File size exceeds maximum limit of 10MB'."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-004"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Take Selfie for Liveness Check",
+    "as_a": "Loan applicant",
+    "i_want": "to take a selfie",
+    "so_that": "my liveness can be confirmed as part of identity verification.",
+    "acceptance_criteria": [
+     {
+      "given": "I am on the liveness check screen with camera access granted",
+      "when": "I successfully capture a clear selfie",
+      "then": "the system displays a 'Selfie captured successfully' message and proceeds to document processing."
+     },
+     {
+      "given": "I am on the liveness check screen",
+      "when": "I submit a selfie where my face is not clearly visible or is obscured",
+      "then": "the system displays a message 'Face not clearly visible. Please retake your selfie, ensuring your face is centered and well-lit.'"
+     },
+     {
+      "given": "I am on the liveness check screen",
+      "when": "I fail to provide a selfie after 3 attempts",
+      "then": "the system displays an option to 'Proceed to Manual Review' or 'Cancel Application'."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-005"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Integrate with Identity Verification Service",
+    "as_a": "System administrator",
+    "i_want": "to send identity document and selfie data to an external verification service",
+    "so_that": "we can reliably verify applicant identities and receive a trusted identity match decision.",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant has submitted their identity documents and selfie",
+      "when": "the system calls the external identity verification service with the collected data",
+      "then": "the system receives a verification result (e.g., 'verified', 'unverified', 'review_required') from the identity verification service."
+     },
+     {
+      "given": "the external identity verification service is temporarily unavailable",
+      "when": "the system attempts to call the service",
+      "then": "the system logs the error and routes the application for manual review."
+     },
+     {
+      "given": "the identity verification service returns an 'unverified' result",
+      "when": "the system receives the service response",
+      "then": "the application is flagged as 'failed' and routed for manual review."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-008",
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Verify Address Against ID Document",
+    "as_a": "Compliance officer",
+    "i_want": "to compare the address on the uploaded ID with the application address",
+    "so_that": "we can ensure the applicant's address is valid and consistent with their provided ID.",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant's ID document has been processed and an address extracted",
+      "when": "the extracted ID address exactly matches the address entered in the application",
+      "then": "the address verification status is marked as 'matched'."
+     },
+     {
+      "given": "an applicant's ID document has been processed and an address extracted",
+      "when": "the extracted ID address does not match the address entered in the application",
+      "then": "the address verification status is marked as 'mismatched' and the application is routed for manual review."
+     },
+     {
+      "given": "an applicant's ID document does not contain an address",
+      "when": "the system attempts address verification",
+      "then": "the address verification status is marked as 'not applicable' and does not block further processing."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-027",
+     "R-028"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Display Real-time KYC Decision",
+    "as_a": "Loan applicant",
+    "i_want": "to receive a real-time KYC decision",
+    "so_that": "I know immediately if my identity verification is successful.",
+    "acceptance_criteria": [
+     {
+      "given": "my identity verification is straightforward and successful",
+      "when": "the automated KYC flow completes",
+      "then": "I receive a 'verified' decision displayed on screen within 60 seconds."
+     },
+     {
+      "given": "my identity verification requires additional processing (e.g., complex data)",
+      "when": "the automated KYC flow completes",
+      "then": "I receive a 'decision pending' message and an estimated wait time or next steps."
+     },
+     {
+      "given": "the Persona API times out or returns an error during verification",
+      "when": "the system attempts to get a real-time decision",
+      "then": "the system displays a message 'Identity verification requires manual review. We will contact you within 2 business days.'"
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-006",
+     "R-007"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-02",
+    "title": "Screen Applicants Against Sanctions Lists",
+    "as_a": "Compliance officer",
+    "i_want": "to automatically check every applicant against OFAC and other sanctions lists",
+    "so_that": "we can comply with regulations and avoid approving high-risk applicants.",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant submits their information",
+      "when": "the system performs a sanctions list check",
+      "then": "the system records a 'no match' result if no sanctions hit is found."
+     },
+     {
+      "given": "an applicant's name or details match an entry on a sanctions list",
+      "when": "the system performs a sanctions list check",
+      "then": "the system records a 'potential match' result."
+     },
+     {
+      "given": "the sanctions list screening service is unavailable",
+      "when": "the system attempts to perform a sanctions list check",
+      "then": "the system logs an error 'Sanctions screening service unavailable' and routes the application to the compliance officer's manual review queue."
+     }
+    ],
+    "requirement_ids": [
+     "R-010",
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-02",
+    "title": "Route Sanctions Hits to Compliance Officer",
+    "as_a": "Compliance officer",
+    "i_want": "to freeze applications with a sanctions hit and route them to a compliance officer",
+    "so_that": "we can ensure regulatory compliance and prevent high-risk applicants from being approved automatically.",
+    "acceptance_criteria": [
+     {
+      "given": "an application has a 'potential match' result from sanctions screening",
+      "when": "the system processes the application",
+      "then": "the application status is set to 'frozen' and it is added to the compliance officer's review queue."
+     },
+     {
+      "given": "an application has a 'potential match' result from sanctions screening",
+      "when": "the system attempts to auto-approve the application",
+      "then": "the auto-approval process is blocked, and an alert is sent to the compliance team."
+     },
+     {
+      "given": "an application has no sanctions hit",
+      "when": "the system processes the application",
+      "then": "the application status remains 'In Progress' and it continues through the automated approval workflow."
+     }
+    ],
+    "requirement_ids": [
+     "R-012",
+     "R-013",
+     "R-014"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-03",
+    "title": "Integrate with Credit Bureau for Credit Data",
+    "as_a": "Loan underwriter",
+    "i_want": "to pull credit data from a credit bureau",
+    "so_that": "I can assess the applicant's creditworthiness.",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant has completed identity verification",
+      "when": "the system calls the credit bureau API with the applicant's details",
+      "then": "the credit bureau returns the applicant's credit report data."
+     },
+     {
+      "given": "the credit bureau service returns an error or is unavailable",
+      "when": "the system attempts to pull credit data",
+      "then": "the system logs the error and flags the application for manual review."
+     },
+     {
+      "given": "an applicant has no credit history with the credit bureau",
+      "when": "the system pulls credit data from the credit bureau",
+      "then": "the credit bureau returns a 'no record found' response, and this status is recorded."
+     }
+    ],
+    "requirement_ids": [
+     "R-015"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-03",
+    "title": "Store All Verification and Credit Data",
+    "as_a": "Loan underwriter",
+    "i_want": "to store all identity verification results and credit data in the applicant's record",
+    "so_that": "I can access all necessary information to make a loan decision and satisfy audit requirements.",
+    "acceptance_criteria": [
+     {
+      "given": "identity verification results and credit data have been obtained",
+      "when": "the system processes these results",
+      "then": "all verification and credit data are stored in the applicant's digital record."
+     },
+     {
+      "given": "identity verification results are available but credit data fails to return",
+      "when": "the system processes the available results",
+      "then": "identity verification results are stored, and the absence of credit data is noted in the applicant's record."
+     },
+     {
+      "given": "data storage fails for an applicant's record",
+      "when": "the system attempts to store verification and credit data",
+      "then": "an error is logged, and the application is flagged for immediate manual intervention."
+     }
+    ],
+    "requirement_ids": [
+     "R-016",
+     "R-017"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-03",
+    "title": "Display Unified Applicant Record for Underwriting",
+    "as_a": "Loan underwriter",
+    "i_want": "to view all identity verification and credit results in a single applicant record",
+    "so_that": "I can make an informed decision quickly.",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant has completed KYC and credit checks",
+      "when": "I access the applicant's record",
+      "then": "the system displays identity verification results, credit data, and sanctions screening results clearly organized on a single screen."
+     },
+     {
+      "given": "an applicant's record is missing credit data",
+      "when": "I access the applicant's record",
+      "then": "the system displays identity verification results and sanctions screening results, with a clear indication that credit data is unavailable."
+     },
+     {
+      "given": "I am viewing an applicant's record",
+      "when": "I navigate to different sections of the record",
+      "then": "the system ensures the displayed verification and credit data remains consistent and accessible across all sections of the record."
+     }
+    ],
+    "requirement_ids": [
+     "R-018"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-04",
+    "title": "Route Failed Automated Checks to Manual Review",
+    "as_a": "Human reviewer",
+    "i_want": "to route applications with failed automated checks to a human reviewer",
+    "so_that": "we can recover applications that encountered technical issues and prevent unnecessary rejections.",
+    "acceptance_criteria": [
+     {
+      "given": "an automated KYC check (e.g., identity verification service call) fails due to a system error",
+      "when": "the system detects the failure",
+      "then": "the application status is updated to 'Manual Review Required' and added to the human reviewer's queue."
+     },
+     {
+      "given": "an automated KYC check fails due to invalid document format",
+      "when": "the system detects the failure",
+      "then": "the application status is updated to 'Manual Review Required' and added to the human reviewer's queue."
+     },
+     {
+      "given": "all automated KYC checks pass successfully",
+      "when": "the system processes the application",
+      "then": "the application proceeds to the next automated step and is not routed for manual review due to automated check failure."
+     }
+    ],
+    "requirement_ids": [
+     "R-019",
+     "R-020"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-013",
+    "epic_id": "E-04",
+    "title": "Route Low-Confidence Applications to Manual Review",
+    "as_a": "Human reviewer",
+    "i_want": "to route applications with low confidence scores from automated checks to a human reviewer",
+    "so_that": "we can ensure accurate decisions on borderline applications and reduce false negatives.",
+    "acceptance_criteria": [
+     {
+      "given": "an automated identity verification service returns a confidence score below a defined threshold (e.g., 70%)",
+      "when": "the system evaluates the verification result",
+      "then": "the application status is updated to 'Manual Review Required' and added to the human reviewer's queue."
+     },
+     {
+      "given": "an automated identity verification service returns a confidence score above the defined threshold (e.g., 70%)",
+      "when": "the system evaluates the verification result",
+      "then": "the application proceeds through the automated workflow and is not routed for low-confidence manual review."
+     },
+     {
+      "given": "an application is routed for low-confidence manual review",
+      "when": "a human reviewer accesses the application",
+      "then": "the confidence score and the reason for routing are clearly displayed within the application record."
+     }
+    ],
+    "requirement_ids": [
+     "R-019",
+     "R-021"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-014",
+    "epic_id": "E-05",
+    "title": "Retain KYC Decisions and Supporting Data",
+    "as_a": "Auditor",
+    "i_want": "to retain every KYC decision and all data that led to it for five years",
+    "so_that": "BrightPath Lending can satisfy regulatory audit requirements.",
+    "acceptance_criteria": [
+     {
+      "given": "a KYC decision is made and supporting data is generated",
+      "when": "the system finalizes the application",
+      "then": "the KYC decision and all associated data (e.g., identity verification results, credit data, sanctions checks, uploaded documents) are stored and timestamped for a minimum of five years."
+     },
+     {
+      "given": "an audit request is made for an application from three years ago",
+      "when": "an authorized auditor queries the system for the application's KYC data",
+      "then": "the system retrieves and displays the complete KYC decision and all supporting data."
+     },
+     {
+      "given": "an application's KYC data is five years and one day old",
+      "when": "the data retention policy is executed",
+      "then": "the system automatically purges the KYC decision and supporting data, and it is no longer retrievable through standard queries."
+     }
+    ],
+    "requirement_ids": [
+     "R-022",
+     "R-023"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC1.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC1.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 3,
+     "negotiable": 3,
+     "valuable": 4,
+     "estimable": 5,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The 'as_a System administrator' role is not appropriate for a user story describing an automated system capability with business value. A system administrator does not 'want to send data' in the context of a business process flow."
+    ],
+    "fix_instructions": "Change 'As a System administrator' to 'As the KYC system' or 'As a business owner' to better reflect the nature of the story and its value."
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "AC3 tests a failure condition of an upstream service (Persona API) and its routing, which is outside the scope of 'Display Real-time KYC Decision'. This story should focus on displaying the decision, whatever it may be."
+    ],
+    "fix_instructions": "Revise AC3 to focus on displaying a decision (e.g., 'the system displays a message indicating the application requires manual review due to a technical issue'). Remove the specific mention of Persona API timeout/error and the routing logic."
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 3,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The story's 'i_want' and ACs refer to 'a credit bureau' generically, while R-015 specifically names 'Experian'. The story should align with the requirement's specificity."
+    ],
+    "fix_instructions": "Update the story title, 'i_want', and ACs to explicitly mention 'Experian' to align with R-015."
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 3,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 5,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "AC3 is vague. 'consistent and accessible' is not specific enough to be testable. It should describe observable behavior or specific data points."
+    ],
+    "fix_instructions": "Revise AC3 to specify what 'consistent and accessible' means in terms of observable data or UI elements. For example, 'the system ensures that the displayed identity verification results, credit data, and sanctions screening results are present and correct when navigating between relevant tabs or sections of the record.'"
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-013",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-014",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [
+   [
+    "S-012",
+    "S-013"
+   ]
+  ],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "uncovered_goal",
+    "description": "The critical non-functional requirements for system performance (R-024: 5,000 applications per day) and availability (R-025: 99.9% uptime) are stated in the brief and requirements, but there are no explicit stories in the backlog addressing the engineering work, architecture, or testing needed to achieve and maintain these targets.",
+    "severity": "high",
+    "related_ids": [
+     "R-024",
+     "R-025",
+     "Derek Osei"
+    ],
+    "suggested_question": "We have committed to processing 5,000 applications per day and achieving 99.9% uptime (R-024, R-025). What specific stories or architectural tasks are planned to ensure the system meets these performance and availability targets?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "Beyond sanctions screening, there are no explicit requirements or stories for general application security, data encryption (at rest/in transit), or robust access controls, which are critical non-functional requirements for a Fintech application handling sensitive personal and financial data.",
+    "severity": "high",
+    "related_ids": [],
+    "suggested_question": "Given the sensitive nature of the data handled, what are our explicit security requirements for data encryption, access controls, and overall application security? Are there stories planned to address these foundational security measures?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "The definition of 'straightforward cases' in R-007 is not specified, making it difficult to objectively measure compliance with the 60-second decision time.",
+    "severity": "medium",
+    "related_ids": [
+     "R-007"
+    ],
+    "suggested_question": "How do we define a 'straightforward case' for the 60-second KYC decision time (R-007)? What criteria or conditions would classify an application as straightforward versus complex?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "The threshold for a 'low confidence score' in R-021, which triggers manual review, is not defined.",
+    "severity": "medium",
+    "related_ids": [
+     "R-021"
+    ],
+    "suggested_question": "What is the specific threshold or criteria for a 'low confidence score' (R-021) that will trigger an application to be routed to a human reviewer?"
+   },
+   {
+    "kind": "missing_stakeholder",
+    "description": "A dedicated operations or support team will be responsible for performing manual reviews (R-019, R-020, R-021) and managing applications with sanctions hits (R-013). Their specific workflow, tools, and training needs are not explicitly represented by a stakeholder.",
+    "severity": "medium",
+    "related_ids": [
+     "R-013",
+     "R-019",
+     "R-020",
+     "R-021",
+     "Derek Osei"
+    ],
+    "suggested_question": "Who will be performing the manual reviews and handling sanctions hits? Should we include a representative from the operations or support team as a stakeholder to ensure their workflow and tool needs are addressed?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for the core functional requirements of the KYC onboarding workflow, including identity verification, sanctions screening, data consolidation, and the manual fallback process. All explicit business goals from the brief appear to be addressed by at least one requirement and corresponding story. However, there are some critical non-functional aspects and ambiguities that need further attention. Specifically, the backlog does not explicitly address the engineering work required to meet the stated performance and availability targets. There's also a notable absence of general security requirements beyond sanctions screening, which is crucial for a Fintech application handling sensitive data. Finally, some key terms related to decision criteria and operational workflows need clearer definitions to ensure consistent implementation and acceptance. A key operational stakeholder for manual reviews also appears to be missing."
+ },
+ "trace": {
+  "run_id": "3f8e5a3fb2",
+  "started_at": "2026-09-12T18:04:59.196357Z",
+  "prompt_version": "v3",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 11948,
+    "prompt_tokens": 1184,
+    "completion_tokens": 2587,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 32803,
+    "prompt_tokens": 2628,
+    "completion_tokens": 8055,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 43045,
+    "prompt_tokens": 1944,
+    "completion_tokens": 10176,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 38284,
+    "prompt_tokens": 6211,
+    "completion_tokens": 9497,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 24329,
+    "prompt_tokens": 7521,
+    "completion_tokens": 5753,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 50523,
+    "prompt_tokens": 6267,
+    "completion_tokens": 12126,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 29072,
+    "prompt_tokens": 9167,
+    "completion_tokens": 7216,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 41812,
+    "prompt_tokens": 6326,
+    "completion_tokens": 9886,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 24422,
+    "prompt_tokens": 2746,
+    "completion_tokens": 5554,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 22,
+  "guardrail_flags": [
+   "coverage: R-024 (must) has no story",
+   "coverage: R-025 (must) has no story",
+   "coverage: R-026 (must) has no story"
+  ]
+ }
+}

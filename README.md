@@ -45,7 +45,11 @@ like requirements but are not. The rubric is deterministic (keyword groups +
 string matching), fixed before any prompt was tuned.
 
 <!-- eval-table:start -->
-_Live numbers are filled in from `eval/results/` — see `eval/DECISIONS.md`._
+| Backend · prompts | Req. recall | Req. precision | Traceable | Distractor leak | Priority acc. | Must/should covered | Stories sprint-ready | Generic 'user' role | Out-of-scope recall | Mean s / transcript |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `stub` · v3 | 74% | 70% | 100% | 6% | 57% | 74% | 71% | 0% | 0% | 0 |
+| `gemini` · v3 | 82% | 57% | 99.5% | 25% | 82% | 76% | 85% | 0% | 62% | 245 |
+_8 transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline (it copies sentences verbatim, which the keyword rubric rewards on precision; read precision together with traceability)._
 <!-- eval-table:end -->
 
 Full methodology and every prompt change with its before/after numbers:
@@ -107,7 +111,7 @@ Interactive docs at `/docs`.
 storyforge/
   schemas.py            Pydantic contracts every agent must satisfy
   agents/               five agents; base.py = call → validate → repair loop; __init__.py = what each agent sees
-  prompts/v1 v2 v3/     versioned system prompts — never edited, only superseded
+  prompts/v1 … v4/      versioned system prompts — never edited, only superseded
   guardrails/           deterministic checks: traceability, Gherkin, role, size, coverage, duplicates
   pipeline.py           the orchestrator and the bounded review/revise loop
   llm/                  groq, gemini, stub clients + fallback router (httpx, no SDKs)

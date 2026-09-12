@@ -1,0 +1,1475 @@
+{
+ "brief": {
+  "title": "Outpatient Appointment Scheduling System",
+  "business_goals": [
+   "Enable patients to self-manage appointments online (book, reschedule, cancel)",
+   "Provide real-time, clinician-specific appointment availability online",
+   "Reduce no-shows, especially for first appointments",
+   "Automatically free up slots for late cancellations",
+   "Identify persistent late-cancellers for reception follow-up",
+   "Enable patients to request specific clinicians or book 'next available' based on clinic type",
+   "Reduce A&E walk-ins caused by phone line congestion",
+   "Eliminate double-bookings across clinics"
+  ],
+  "stakeholders": [
+   {
+    "name": "Dr. Fiona Marsh",
+    "role": "Clinical Director",
+    "concerns": [
+     "Eliminate double-bookings from shared paper diaries",
+     "Enable patients to book, reschedule, and cancel appointments online",
+     "Ensure NHS Spine lookup confirms NHS number before first appointment",
+     "Comply with UK GDPR for patient data residency (within UK)",
+     "Implement audit trail for patient record views (CQC requirement)",
+     "Retain appointment and attendance history for at least seven years (NHS guidance)"
+    ]
+   },
+   {
+    "name": "Tom Reilly",
+    "role": "Operations Manager",
+    "concerns": [
+     "Show real-time availability per clinician, including those splitting time across sites",
+     "Automatically free up slots for cancellations within 24 hours",
+     "Flag persistent late-cancellers for reception follow-up",
+     "Project must go live before the new financial year (April)",
+     "Project budget capped at £180,000 for this phase"
+    ]
+   },
+   {
+    "name": "Ben Coulson",
+    "role": "Patient Services Manager",
+    "concerns": [
+     "Reduce no-shows, especially for first appointments, via SMS and email reminders",
+     "Allow patients to request specific clinicians or book 'next available' for certain clinic types (e.g., physiotherapy)",
+     "Reduce A&E walk-ins caused by backed-up phone lines on Monday mornings"
+    ]
+   },
+   {
+    "name": "Aisha Patel",
+    "role": "IT Lead",
+    "concerns": [
+     "Two-way sync of appointment data with existing EMIS practice management system",
+     "Achieve under 3 seconds load time for available slots, even during peak times"
+    ]
+   }
+  ],
+  "constraints": [
+   "NHS number must be verified via NHS Spine lookup before first appointment confirmation (hard requirement from trust)",
+   "Appointment data must sync both ways with the existing EMIS practice management system",
+   "Patient data must remain within the UK (UK GDPR)",
+   "An audit trail of who viewed which patient record and when is required (CQC inspection finding)",
+   "Target performance: under 3 seconds to load available slots for any clinic, even during peak times",
+   "At least seven years of appointment and attendance history must be retained (NHS records retention guidance)",
+   "Go-live deadline: before the new financial year (April)",
+   "Budget cap: £180,000 for this phase"
+  ],
+  "out_of_scope": [
+   "Referrals from GPs (these will continue through the existing e-Referral Service process)"
+  ],
+  "open_questions": [
+   "Is the online booking system exclusively for existing patients, or can new patients use it after NHS number verification?",
+   "For which clinic types is 'specific clinician' booking mandatory versus 'next available'?"
+  ],
+  "domain": "Healthcare"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall enable patients to book appointments online.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Patients need to be able to book, reschedule, and cancel appointments online.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall enable patients to reschedule appointments online.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Patients need to be able to book, reschedule, and cancel appointments online.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall enable patients to cancel appointments online.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Patients need to be able to book, reschedule, and cancel appointments online.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall display real-time appointment availability per clinician.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites.",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall display appointment availability for clinicians splitting time across multiple sites.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites.",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall send an SMS reminder 48 hours before an appointment.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "We get a lot of no-shows, especially for first appointments.",
+   "evidence": "Ideally the system sends an SMS and email reminder 48 hours before the appointment, and again 2 hours before.",
+   "stakeholder": "Ben Coulson",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall send an email reminder 48 hours before an appointment.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "We get a lot of no-shows, especially for first appointments.",
+   "evidence": "Ideally the system sends an SMS and email reminder 48 hours before the appointment, and again 2 hours before.",
+   "stakeholder": "Ben Coulson",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall send an SMS reminder 2 hours before an appointment.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "We get a lot of no-shows, especially for first appointments.",
+   "evidence": "Ideally the system sends an SMS and email reminder 48 hours before the appointment, and again 2 hours before.",
+   "stakeholder": "Ben Coulson",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall send an email reminder 2 hours before an appointment.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "We get a lot of no-shows, especially for first appointments.",
+   "evidence": "Ideally the system sends an SMS and email reminder 48 hours before the appointment, and again 2 hours before.",
+   "stakeholder": "Ben Coulson",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall perform an NHS Spine lookup to confirm the NHS number for any patient record.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "evidence": "Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall confirm the NHS number before the first appointment is confirmed.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "evidence": "Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall sync appointment data with the EMIS practice management system.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots.",
+   "stakeholder": "Aisha Patel",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall ensure online bookings are reflected in EMIS.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "a booking made online should show in EMIS",
+   "stakeholder": "Aisha Patel",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system shall remove online availability for time blocked by a clinician in EMIS.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "if a clinician blocks time in EMIS, it should disappear from the online slots.",
+   "stakeholder": "Aisha Patel",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall automatically free up appointment slots for cancellations made within 24 hours of the appointment.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Cancellations within 24 hours of the appointment should free the slot for another patient automatically",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-016",
+   "statement": "The system shall flag patients who make late cancellations.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "persistent late-cancellers are a real problem for us.",
+   "evidence": "we also want to flag those patients so reception can follow up — persistent late-cancellers are a real problem for us.",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-017",
+   "statement": "The system shall ensure patient data resides within the UK.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "Under UK GDPR",
+   "evidence": "Under UK GDPR, patient data has to stay within the UK",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-018",
+   "statement": "The system shall maintain an audit trail of all patient record views.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "that's something our last CQC inspection specifically asked about.",
+   "evidence": "we need an audit trail of who viewed which patient record and when",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-019",
+   "statement": "The system shall record the identity of the user who viewed a patient record in the audit trail.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "audit trail of who viewed which patient record and when",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-020",
+   "statement": "The system shall record the timestamp of when a patient record was viewed in the audit trail.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "audit trail of who viewed which patient record and when",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-021",
+   "statement": "The system shall enable patients to request a specific clinician when booking an appointment.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We'd like patients to be able to request a specific clinician",
+   "stakeholder": "Ben Coulson",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-022",
+   "statement": "The system shall enable patients to book the \"next available\" appointment for certain clinic types.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "ideally the system should also let them just book \"next available\" instead.",
+   "stakeholder": "Ben Coulson",
+   "assumptions": [
+    "The system will need a configuration to define which clinic types allow \"next available\" booking."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-023",
+   "statement": "The system shall load available appointment slots for any given clinic within 3 seconds.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "we're targeting under 3 seconds to load the available slots for any given clinic, even during the Monday morning rush when everyone's trying to book at once.",
+   "stakeholder": "Aisha Patel",
+   "assumptions": [
+    "\"Peak times\" refers to \"Monday morning rush when everyone's trying to book at once.\""
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-024",
+   "statement": "The system shall not handle referrals from GPs.",
+   "type": "functional",
+   "priority": "wont",
+   "rationale": "",
+   "evidence": "Referrals from GPs are out of scope for this project — those still come through the existing e-Referral Service process",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-025",
+   "statement": "The system shall support self-service booking for existing patients only.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "we're only building patient self-service booking for existing patients.",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [
+    "\"Existing patients\" are those whose NHS number has already been verified via NHS Spine lookup."
+   ],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-026",
+   "statement": "The system shall retain appointment history for at least seven years.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "in line with NHS records retention guidance.",
+   "evidence": "We need at least seven years of appointment and attendance history retained, in line with NHS records retention guidance.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-027",
+   "statement": "The system shall retain attendance history for at least seven years.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "in line with NHS records retention guidance.",
+   "evidence": "We need at least seven years of appointment and attendance history retained, in line with NHS records retention guidance.",
+   "stakeholder": "Dr. Fiona Marsh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-028",
+   "statement": "The system shall go live before April.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "this needs to go live before the new financial year starts in April",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-029",
+   "statement": "The project cost for this phase shall not exceed £180,000.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "the board has capped the budget at £180,000 for this phase.",
+   "stakeholder": "Tom Reilly",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Patient Self-Service Appointment Management",
+    "goal": "Enable existing patients to independently manage their appointments online, reducing administrative burden.",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-021",
+     "R-022",
+     "R-025"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Real-time Availability & Automated Reminders",
+    "goal": "Provide accurate, up-to-date appointment availability and reduce no-shows through automated reminders.",
+    "requirement_ids": [
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-015",
+     "R-023"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "Core System Integrations",
+    "goal": "Ensure seamless data flow and consistency between the online scheduling system and the EMIS practice management system, and verify patient identity.",
+    "requirement_ids": [
+     "R-010",
+     "R-011",
+     "R-012",
+     "R-013",
+     "R-014"
+    ]
+   },
+   {
+    "id": "E-04",
+    "title": "Data Compliance & Patient Insights",
+    "goal": "Maintain patient data security, privacy, and integrity through audit trails, data retention, and identification of specific patient behaviors.",
+    "requirement_ids": [
+     "R-016",
+     "R-017",
+     "R-018",
+     "R-019",
+     "R-020",
+     "R-026",
+     "R-027"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Book New Appointment",
+    "as_a": "existing patient",
+    "i_want": "to book a new appointment online",
+    "so_that": "I can secure a slot at my convenience",
+    "acceptance_criteria": [
+     {
+      "given": "I am an existing patient logged into the system",
+      "when": "I select an available appointment slot and confirm the booking",
+      "then": "my appointment is confirmed and added to my schedule"
+     },
+     {
+      "given": "I am an existing patient logged into the system",
+      "when": "I attempt to book an appointment but no suitable slots are available",
+      "then": "the system informs me that no slots are available and suggests alternative actions"
+     },
+     {
+      "given": "I am a new patient not yet registered with the system",
+      "when": "I attempt to book an appointment",
+      "then": "the system displays a message preventing me from proceeding and directs me to register or contact the clinic"
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-025"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Request Specific Clinician",
+    "as_a": "existing patient",
+    "i_want": "to select a specific clinician when booking an appointment",
+    "so_that": "I can continue care with a preferred provider",
+    "acceptance_criteria": [
+     {
+      "given": "I am booking a new appointment",
+      "when": "I select a specific clinician from the available list",
+      "then": "the system displays only the available slots for that clinician"
+     },
+     {
+      "given": "I am booking a new appointment and have selected a specific clinician",
+      "when": "the selected clinician has no available slots",
+      "then": "the system informs me that the clinician is unavailable and offers to show other clinicians' availability"
+     }
+    ],
+    "requirement_ids": [
+     "R-021"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Book Next Available Appointment",
+    "as_a": "existing patient",
+    "i_want": "to book the 'next available' appointment for certain clinic types",
+    "so_that": "I can be seen as soon as possible",
+    "acceptance_criteria": [
+     {
+      "given": "I am booking a new appointment for a clinic type that supports 'next available'",
+      "when": "I choose the 'next available' option",
+      "then": "the system displays the earliest available slot across all relevant clinicians for that clinic type"
+     },
+     {
+      "given": "I am booking a new appointment for a clinic type that supports 'next available'",
+      "when": "I choose the 'next available' option but no slots are available for that clinic type",
+      "then": "the system informs me that no 'next available' slots are found and suggests checking later"
+     }
+    ],
+    "requirement_ids": [
+     "R-022"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Reschedule Existing Appointment",
+    "as_a": "existing patient",
+    "i_want": "to reschedule an existing appointment online",
+    "so_that": "I can adjust my schedule without calling the clinic",
+    "acceptance_criteria": [
+     {
+      "given": "I have an upcoming appointment and am logged in",
+      "when": "I select to reschedule my appointment and choose a new available slot",
+      "then": "my original appointment is cancelled, and a new appointment is confirmed for the chosen slot"
+     },
+     {
+      "given": "I have an upcoming appointment and am logged in",
+      "when": "I attempt to reschedule but no suitable alternative slots are available",
+      "then": "the system informs me that no suitable slots are found and offers to let me cancel or try again later"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Cancel Existing Appointment",
+    "as_a": "existing patient",
+    "i_want": "to cancel an existing appointment online",
+    "so_that": "I can free up my time and notify the clinic",
+    "acceptance_criteria": [
+     {
+      "given": "I have an upcoming appointment and am logged in",
+      "when": "I select to cancel my appointment and confirm the action",
+      "then": "my appointment is marked as cancelled and I receive a confirmation message"
+     },
+     {
+      "given": "I have an upcoming appointment and am logged in",
+      "when": "I attempt to cancel an appointment that has already passed",
+      "then": "the system displays an error message preventing the cancellation and informs me the appointment has already occurred"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-02",
+    "title": "View Clinician Availability",
+    "as_a": "existing patient",
+    "i_want": "to see real-time appointment availability for each clinician",
+    "so_that": "I can choose a suitable time and provider",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged in and viewing appointment booking options",
+      "when": "I select a clinician",
+      "then": "the system displays all available appointment slots for that clinician within 3 seconds"
+     },
+     {
+      "given": "I am logged in and viewing appointment booking options",
+      "when": "I select a clinician who has no upcoming available slots",
+      "then": "the system displays a message indicating no availability for that clinician within 3 seconds"
+     }
+    ],
+    "requirement_ids": [
+     "R-004",
+     "R-023"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-02",
+    "title": "View Multi-Site Clinician Availability",
+    "as_a": "existing patient",
+    "i_want": "to see a clinician's availability across all their practice sites",
+    "so_that": "I can book at the most convenient location",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged in and viewing appointment booking options for a clinician working at multiple sites",
+      "when": "I select that clinician",
+      "then": "the system displays available slots grouped by site for that clinician within 3 seconds"
+     },
+     {
+      "given": "I am logged in and viewing appointment booking options for a clinician working at multiple sites",
+      "when": "I select that clinician but they have no availability across any site",
+      "then": "the system displays a message indicating no availability for that clinician across all sites within 3 seconds"
+     }
+    ],
+    "requirement_ids": [
+     "R-005",
+     "R-023"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-02",
+    "title": "Send 48-Hour Appointment Reminders",
+    "as_a": "system",
+    "i_want": "to send an SMS and email reminder 48 hours before an appointment",
+    "so_that": "patients are less likely to forget their appointment",
+    "acceptance_criteria": [
+     {
+      "given": "a patient has an appointment scheduled in exactly 48 hours and valid contact details",
+      "when": "the scheduled reminder job runs",
+      "then": "an SMS reminder is sent to the patient's mobile number and an email reminder is sent to their email address"
+     },
+     {
+      "given": "a patient has an appointment scheduled in exactly 48 hours but no valid mobile number is on file",
+      "when": "the scheduled reminder job runs",
+      "then": "an email reminder is sent, and no SMS is attempted"
+     },
+     {
+      "given": "a patient has an appointment scheduled in exactly 48 hours but no valid email address is on file",
+      "when": "the scheduled reminder job runs",
+      "then": "an SMS reminder is sent, and no email is attempted"
+     }
+    ],
+    "requirement_ids": [
+     "R-006",
+     "R-007"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-02",
+    "title": "Send 2-Hour Appointment Reminders",
+    "as_a": "system",
+    "i_want": "to send an SMS and email reminder 2 hours before an appointment",
+    "so_that": "patients have a final prompt before their appointment",
+    "acceptance_criteria": [
+     {
+      "given": "a patient has an appointment scheduled in exactly 2 hours and valid contact details",
+      "when": "the scheduled reminder job runs",
+      "then": "an SMS reminder is sent to the patient's mobile number and an email reminder is sent to their email address"
+     },
+     {
+      "given": "a patient has an appointment scheduled in exactly 2 hours but no valid mobile number is on file",
+      "when": "the scheduled reminder job runs",
+      "then": "an email reminder is sent, and no SMS is attempted"
+     },
+     {
+      "given": "a patient has an appointment scheduled in exactly 2 hours but no valid email address is on file",
+      "when": "the scheduled reminder job runs",
+      "then": "an SMS reminder is sent, and no email is attempted"
+     }
+    ],
+    "requirement_ids": [
+     "R-008",
+     "R-009"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-02",
+    "title": "Auto-Free Up Late Cancellation Slots",
+    "as_a": "clinic administrator",
+    "i_want": "appointment slots to be automatically freed up for rebooking after a late cancellation",
+    "so_that": "the clinic can maximize appointment utilization",
+    "acceptance_criteria": [
+     {
+      "given": "a patient cancels an appointment within 24 hours of its scheduled time",
+      "when": "the cancellation is processed",
+      "then": "the cancelled slot immediately appears as available for other patients to book online"
+     }
+    ],
+    "requirement_ids": [
+     "R-015"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-03",
+    "title": "Verify NHS Number via Spine",
+    "as_a": "system",
+    "i_want": "to perform an NHS Spine lookup for a patient's NHS number",
+    "so_that": "patient identity can be accurately confirmed",
+    "acceptance_criteria": [
+     {
+      "given": "a patient's demographic details are entered for verification",
+      "when": "the system initiates an NHS Spine lookup",
+      "then": "the system receives a confirmed NHS number for the patient"
+     },
+     {
+      "given": "a patient's demographic details are entered for verification",
+      "when": "the NHS Spine lookup fails or returns no match",
+      "then": "the system flags the patient record for manual review and prevents further automated processing"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 8,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-03",
+    "title": "Confirm NHS Number for First Appointment",
+    "as_a": "patient booking their first appointment",
+    "i_want": "my NHS number to be confirmed",
+    "so_that": "my patient record is correctly identified before my visit",
+    "acceptance_criteria": [
+     {
+      "given": "I am booking my first appointment and my NHS number has been successfully verified via Spine",
+      "when": "I confirm the appointment details",
+      "then": "my first appointment is successfully booked and confirmed"
+     },
+     {
+      "given": "I am booking my first appointment and my NHS number verification via Spine has failed",
+      "when": "I attempt to confirm the appointment details",
+      "then": "the system displays an error message preventing the booking and instructs me to contact the clinic for manual verification"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-013",
+    "epic_id": "E-03",
+    "title": "Sync Online Bookings to EMIS",
+    "as_a": "clinic administrator",
+    "i_want": "online appointment bookings to be automatically synced to EMIS",
+    "so_that": "all patient appointments are managed in a single system",
+    "acceptance_criteria": [
+     {
+      "given": "a patient successfully books an appointment online",
+      "when": "the booking is confirmed in the online system",
+      "then": "the appointment details are automatically created in EMIS within 60 seconds"
+     },
+     {
+      "given": "a patient successfully books an appointment online",
+      "when": "the sync to EMIS fails due to a system error",
+      "then": "the online system logs the error and flags the booking for manual review by an administrator"
+     }
+    ],
+    "requirement_ids": [
+     "R-012",
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": 8,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-014",
+    "epic_id": "E-03",
+    "title": "Sync EMIS Blocked Time to Online Availability",
+    "as_a": "clinic administrator",
+    "i_want": "clinician time blocked in EMIS to be removed from online availability",
+    "so_that": "double-bookings are prevented",
+    "acceptance_criteria": [
+     {
+      "given": "a clinician blocks out a time slot in EMIS (e.g., for leave or training)",
+      "when": "the EMIS system updates are processed",
+      "then": "that time slot is immediately marked as unavailable for online booking"
+     },
+     {
+      "given": "a clinician unblocks a time slot in EMIS",
+      "when": "the EMIS system updates are processed",
+      "then": "that time slot immediately appears as available for online booking if no other conflicts exist"
+     },
+     {
+      "given": "a clinician blocks out a time slot in EMIS",
+      "when": "the sync process to the online system fails",
+      "then": "the system logs the error and notifies an administrator to manually verify online availability"
+     }
+    ],
+    "requirement_ids": [
+     "R-014"
+    ],
+    "priority": "must",
+    "story_points": 8,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-015",
+    "epic_id": "E-04",
+    "title": "Flag Late-Cancelling Patients",
+    "as_a": "reception staff",
+    "i_want": "to see a flag on patient records for those who frequently make late cancellations",
+    "so_that": "I can follow up with them appropriately",
+    "acceptance_criteria": [
+     {
+      "given": "a patient cancels an appointment within 24 hours of its scheduled time",
+      "when": "the cancellation is processed",
+      "then": "the patient's record is updated to reflect a late cancellation count"
+     },
+     {
+      "given": "a patient has accumulated 3 late cancellations within a 6-month period",
+      "when": "I view the patient's record",
+      "then": "a 'Frequent Late Canceller' flag is prominently displayed on their record"
+     },
+     {
+      "given": "a patient cancels an appointment more than 24 hours before its scheduled time",
+      "when": "the cancellation is processed",
+      "then": "the patient's late cancellation count is not incremented"
+     }
+    ],
+    "requirement_ids": [
+     "R-016"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-016",
+    "epic_id": "E-04",
+    "title": "Verify UK Data Residency",
+    "as_a": "system administrator",
+    "i_want": "to verify that patient data is stored exclusively within the UK",
+    "so_that": "we comply with data sovereignty regulations",
+    "acceptance_criteria": [
+     {
+      "given": "the system is operational and patient data is stored",
+      "when": "I access the data residency compliance dashboard",
+      "then": "the dashboard displays 'Compliant: All data in UK regions'"
+     },
+     {
+      "given": "a data storage location outside the UK is detected (e.g., due to misconfiguration or error)",
+      "when": "I access the data residency compliance dashboard",
+      "then": "the dashboard displays 'Non-Compliant: Data found outside UK' and lists the affected locations"
+     }
+    ],
+    "requirement_ids": [
+     "R-017"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-017",
+    "epic_id": "E-04",
+    "title": "Audit Patient Record Views",
+    "as_a": "system administrator",
+    "i_want": "an audit trail of all patient record views including viewer identity and timestamp",
+    "so_that": "we can ensure data access compliance",
+    "acceptance_criteria": [
+     {
+      "given": "an authorized user views a patient record",
+      "when": "the patient record is displayed",
+      "then": "an audit log entry is created, recording the user's identity, the patient record accessed, and the exact timestamp of the view"
+     },
+     {
+      "given": "an authorized user performs an action that does not involve viewing a patient record (e.g., updates their own profile)",
+      "when": "the action is completed",
+      "then": "no audit log entry for patient record viewing is created"
+     },
+     {
+      "given": "an unauthorized user attempts to view a patient record",
+      "when": "the system blocks access to the patient record",
+      "then": "an audit log entry is created, recording the attempted access, the user's identity, the patient record, the timestamp, and the access denial"
+     }
+    ],
+    "requirement_ids": [
+     "R-018",
+     "R-019",
+     "R-020"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-018",
+    "epic_id": "E-04",
+    "title": "Retain Appointment and Attendance History",
+    "as_a": "system administrator",
+    "i_want": "appointment and attendance history to be retained for at least seven years",
+    "so_that": "we comply with medical record retention policies",
+    "acceptance_criteria": [
+     {
+      "given": "an appointment or attendance record is 6 years old",
+      "when": "I query the system for that record",
+      "then": "the system successfully retrieves and displays the record"
+     },
+     {
+      "given": "an appointment or attendance record is 7 years and 1 day old",
+      "when": "the data retention policy is executed",
+      "then": "the system moves the record to an accessible archive"
+     }
+    ],
+    "requirement_ids": [
+     "R-026",
+     "R-027"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "AC2.then says 'suggests alternative actions' — state what specific actions are suggested.",
+     "AC3.then says 'directs me to register or contact the clinic' — specify how the system directs the user (e.g., a link, a message with contact info)."
+    ],
+    "fix_instructions": "For AC2, specify what 'alternative actions' are suggested (e.g., 'suggests checking other dates or clinicians'). For AC3, specify how the system 'directs' (e.g., 'displays a link to registration or clinic contact details')."
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 3,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "AC2.then says 'prevents further automated processing' — this is vague and impacts estimability and testability. Specify what specific automated processes are prevented."
+    ],
+    "fix_instructions": "For AC2, specify what 'further automated processing' is prevented (e.g., 'prevents the patient from booking an appointment online until manual review is complete')."
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-013",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-014",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-015",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-016",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The scope of 'data residency compliance dashboard' implies significant underlying detection and infrastructure work, making the 'estimable' and 'small' scores borderline.",
+     "Consider breaking down the story into smaller, more manageable pieces."
+    ],
+    "fix_instructions": "Consider breaking down the story into separate parts, e.g., 'Implement UK data residency detection logic' and 'Display data residency compliance status'."
+   },
+   {
+    "story_id": "S-017",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-018",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "AC2.then says 'moves the record to an accessible archive' — 'accessible archive' is vague and impacts estimability and testability. Specify the nature of the archive and how it is accessed."
+    ],
+    "fix_instructions": "For AC2, specify what 'accessible archive' means (e.g., 'the system moves the record to a read-only database accessible via a specific reporting tool')."
+   }
+  ],
+  "duplicate_pairs": [
+   [
+    "S-008",
+    "S-009"
+   ],
+   [
+    "S-004",
+    "S-005"
+   ]
+  ],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "There are no explicit requirements for patient authentication methods, user authorization levels (e.g., for clinicians/reception), or data encryption (in transit/at rest) for sensitive patient data, which are critical for a healthcare system.",
+    "severity": "high",
+    "related_ids": [],
+    "suggested_question": "How will patients securely authenticate to the system? What are the authorization rules for different user types (patients, clinicians, reception)? What are our requirements for data encryption for patient information?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "No explicit target for system uptime or availability is stated, which is crucial for an online patient-facing service that aims to reduce A&E walk-ins caused by phone line congestion.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What is the expected uptime or availability target for the online appointment system?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "There are no requirements for accessibility standards (e.g., WCAG compliance) for the patient-facing interface, which is important for a public healthcare service.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "Are there any specific accessibility standards (e.g., WCAG) that the patient-facing system needs to comply with?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "The term 'flag' in R-016 is vague. It's unclear how patients will be flagged, where this flag will be visible, and what criteria define a 'late cancellation' or 'persistent late-canceller' for reception follow-up.",
+    "severity": "medium",
+    "related_ids": [
+     "R-016",
+     "S-015"
+    ],
+    "suggested_question": "How should patients be 'flagged' for late cancellations? What information should be displayed, where, and to whom? What criteria define a 'persistent' late-canceller for reception follow-up?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "R-022 mentions 'certain clinic types' for 'next available' booking without specifying which types these are. This impacts the scope and configuration of the booking functionality.",
+    "severity": "medium",
+    "related_ids": [
+     "R-022",
+     "S-003"
+    ],
+    "suggested_question": "Which specific clinic types should allow 'next available' booking, and which require 'specific clinician' booking?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "R-025 states the system is 'for existing patients only', while R-011 requires NHS number confirmation 'before the first appointment is confirmed'. This creates ambiguity about the definition of 'existing patient' and 'first appointment' in this context, and whether R-011 implies a scenario for new patients or a specific verification step for existing patients using the new system.",
+    "severity": "high",
+    "related_ids": [
+     "R-011",
+     "R-025",
+     "S-001",
+     "S-012"
+    ],
+    "suggested_question": "Could you clarify the definition of 'existing patients' in the context of R-025? Does R-011 apply to existing patients booking their first appointment through this new system, or does it imply that new patients might eventually be supported after NHS number verification?"
+   },
+   {
+    "kind": "missing_stakeholder",
+    "description": "Reception and administrative staff are directly impacted by the system (e.g., managing exceptions, follow-ups for late-cancellers, assisting patients with online bookings) but are not listed as key stakeholders.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "Should we include representatives from the reception or administrative staff as key stakeholders, given their direct interaction with patients and the system's operational impact?"
+   }
+  ],
+  "coverage_note": "The backlog demonstrates strong coverage for the core functional requirements, enabling patients to self-manage appointments online, providing real-time availability, and integrating with the existing EMIS system. Key compliance and data retention requirements, such as NHS Spine verification and UK data residency, are also well-addressed. The project has a clear focus on existing patients and includes mechanisms to reduce no-shows and identify late-cancellers, aligning well with the stated business goals."
+ },
+ "trace": {
+  "run_id": "760f21b383",
+  "started_at": "2026-09-12T18:09:55.717118Z",
+  "prompt_version": "v3",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 13464,
+    "prompt_tokens": 1145,
+    "completion_tokens": 2942,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 44093,
+    "prompt_tokens": 2252,
+    "completion_tokens": 9707,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 40435,
+    "prompt_tokens": 1934,
+    "completion_tokens": 9573,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 37613,
+    "prompt_tokens": 6787,
+    "completion_tokens": 8818,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 19366,
+    "prompt_tokens": 6001,
+    "completion_tokens": 4644,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 39855,
+    "prompt_tokens": 6816,
+    "completion_tokens": 9648,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 6665,
+    "prompt_tokens": 2990,
+    "completion_tokens": 1456,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 34066,
+    "prompt_tokens": 6757,
+    "completion_tokens": 8330,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v3",
+    "latency_ms": 25620,
+    "prompt_tokens": 2439,
+    "completion_tokens": 5419,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 9,
+  "guardrail_flags": [
+   "coverage: R-028 (must) has no story",
+   "coverage: R-029 (must) has no story"
+  ]
+ }
+}
