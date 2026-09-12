@@ -1,0 +1,185 @@
+{
+  "id": "fintech_kyc_onboarding",
+  "domain": "fintech",
+  "title": "KYC Onboarding — BrightPath Lending",
+  "notes": "Discovery call — KYC onboarding workflow for BrightPath Lending app — 22 Jan 2026\n\nSarah Chen (Head of Compliance): Right now onboarding is a mess of PDF uploads and manual review, and it takes an average of three days to approve an applicant. We need an automated KYC flow that verifies identity documents the moment someone applies.\n\nMarcus Webb (Product Manager): From the applicant's side, they should be able to upload a driver's license or passport, take a selfie, and get a decision in real time — ideally under 60 seconds for the straightforward cases.\n\nDerek Osei (Engineering Lead): For document and identity verification we're planning to use Persona, since we already have a contract with them. The system needs to call the Persona API and take their verification result as the source of truth for identity match.\n\nSarah Chen (Head of Compliance): We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval. That check is non-negotiable — if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved.\n\nJenna Fitzgerald (Risk Analyst): We also pull credit data from Experian for the underwriting decision. That's a separate call from Persona, but both results need to land in the same applicant record so underwriting can see everything in one place.\n\nMarcus Webb (Product Manager): Ideally we'd also support a manual fallback — if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright.\n\nSarah Chen (Head of Compliance): Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit. Last year's exam took our team almost three weeks because records were scattered across six different systems.\n\nDerek Osei (Engineering Lead): On the technical side, we're expecting up to 5,000 applications a day at peak, mostly evenings. The verification pipeline needs to sustain that without falling over — 99.9% uptime is the target we've committed to the board.\n\nJenna Fitzgerald (Risk Analyst): One thing to flag — re-verification for existing customers who want a second loan is out of scope for this phase. We'll handle that with the existing process for now and revisit later.\n\nMarcus Webb (Product Manager): There's also a hard deadline — legal wants this live before our state lending license renewal on March 31st, since the regulator specifically asked about our onboarding controls.\n\nSarah Chen (Head of Compliance): Address verification should also happen — we need to confirm the address on the ID matches what they entered in the application, since mismatches are one of our biggest fraud signals.\n\nDerek Osei (Engineering Lead): Honestly the current manual review queue has become a running joke internally, people call it 'the black hole' because applications just sit there for days.\n\nMarcus Webb (Product Manager): Budget for this phase is capped at $250,000, and that has to include the Persona and Experian integration costs.",
+  "expected_requirements": [
+    {
+      "key": "automated_identity_verification",
+      "statement": "The system shall automatically verify applicant identity documents (driver's license or passport) plus a selfie at the time of application.",
+      "must_mention": [
+        [
+          "driver's license",
+          "passport"
+        ],
+        [
+          "selfie"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "they should be able to upload a driver's license or passport, take a selfie, and get a decision in real time"
+    },
+    {
+      "key": "real_time_decision_60s",
+      "statement": "The system should ideally return a KYC decision within 60 seconds for straightforward applications.",
+      "must_mention": [
+        [
+          "60 seconds"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "should",
+      "evidence": "ideally under 60 seconds for the straightforward cases."
+    },
+    {
+      "key": "persona_integration",
+      "statement": "The system shall integrate with the Persona API for document and identity verification, treating Persona's result as the source of truth for identity match.",
+      "must_mention": [
+        [
+          "persona"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "The system needs to call the Persona API and take their verification result as the source of truth for identity match."
+    },
+    {
+      "key": "ofac_sanctions_screening",
+      "statement": "The system shall screen every applicant against OFAC and other sanctions lists before approval, in compliance with the Bank Secrecy Act.",
+      "must_mention": [
+        [
+          "ofac"
+        ],
+        [
+          "bank secrecy act"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval."
+    },
+    {
+      "key": "sanctions_hit_freeze_routing",
+      "statement": "The system shall freeze and route any application with a sanctions list hit to a compliance officer rather than auto-approving it.",
+      "must_mention": [
+        [
+          "ofac",
+          "sanctions"
+        ],
+        [
+          "frozen",
+          "freeze"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved."
+    },
+    {
+      "key": "experian_credit_integration",
+      "statement": "The system shall pull credit data from Experian and store it in the same applicant record as the Persona verification result.",
+      "must_mention": [
+        [
+          "experian"
+        ],
+        [
+          "same applicant record",
+          "applicant record"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "We also pull credit data from Experian for the underwriting decision. That's a separate call from Persona, but both results need to land in the same applicant record so underwriting can see everything in one place."
+    },
+    {
+      "key": "manual_reviewer_fallback",
+      "statement": "The system should ideally route applications with failed automated checks or low confidence scores to a human reviewer instead of auto-rejecting.",
+      "must_mention": [
+        [
+          "human reviewer"
+        ],
+        [
+          "low confidence",
+          "confidence score"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright."
+    },
+    {
+      "key": "kyc_record_retention_5years",
+      "statement": "The system shall retain every KYC decision and its supporting data for five years for regulatory audit purposes.",
+      "must_mention": [
+        [
+          "five years"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit."
+    },
+    {
+      "key": "peak_volume_uptime",
+      "statement": "The system shall sustain up to 5,000 applications per day at peak with 99.9% uptime.",
+      "must_mention": [
+        [
+          "5,000",
+          "5000"
+        ],
+        [
+          "99.9%"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "we're expecting up to 5,000 applications a day at peak, mostly evenings. The verification pipeline needs to sustain that without falling over — 99.9% uptime is the target we've committed to the board."
+    },
+    {
+      "key": "address_match_verification",
+      "statement": "The system shall verify that the address on the applicant's ID matches the address entered in the application.",
+      "must_mention": [
+        [
+          "address"
+        ],
+        [
+          "mismatch",
+          "matches"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "we need to confirm the address on the ID matches what they entered in the application, since mismatches are one of our biggest fraud signals."
+    }
+  ],
+  "expected_out_of_scope": [
+    "re-verification for existing customers who want a second loan is out of scope for this phase. We'll handle that with the existing process for now and revisit later."
+  ],
+  "expected_constraints": [
+    "legal wants this live before our state lending license renewal on March 31st, since the regulator specifically asked about our onboarding controls.",
+    "Budget for this phase is capped at $250,000, and that has to include the Persona and Experian integration costs."
+  ],
+  "distractors": [
+    "Last year's exam took our team almost three weeks because records were scattered across six different systems.",
+    "Honestly the current manual review queue has become a running joke internally, people call it 'the black hole' because applications just sit there for days."
+  ],
+  "stakeholders": [
+    {
+      "name": "Sarah Chen",
+      "role": "Head of Compliance"
+    },
+    {
+      "name": "Marcus Webb",
+      "role": "Product Manager"
+    },
+    {
+      "name": "Derek Osei",
+      "role": "Engineering Lead"
+    },
+    {
+      "name": "Jenna Fitzgerald",
+      "role": "Risk Analyst"
+    }
+  ]
+}

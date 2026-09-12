@@ -1,0 +1,21 @@
+Discovery call — Self-service returns portal — 4 Sep 2026
+
+Meera Nair (Head of Customer Operations): Right now every return comes through the support inbox. Agents spend about 40% of their day just creating return labels and answering "where is my refund". We need customers to be able to start a return themselves from their order history without contacting us.
+
+Meera Nair (Head of Customer Operations): The return window is 30 days from delivery. Anything outside that must be rejected automatically with a clear message, not sent to an agent.
+
+Rahul Desai (Finance Controller): Refunds cannot be issued until the warehouse has scanned the item back in. We had ₹18 lakh in refunds last quarter for items that never arrived. The system has to hold the refund until the warehouse confirms receipt.
+
+Rahul Desai (Finance Controller): We also need a daily report of refunds issued, pending, and rejected, broken down by reason code, so I can reconcile against the payment gateway.
+
+Priya Shah (Warehouse Lead): When the item arrives we scan the barcode on the return label. The scan should update the return status immediately and trigger the refund. Our scanners are Zebra handhelds that post to a REST endpoint — the current inventory system already does this.
+
+Meera Nair (Head of Customer Operations): Customers should get an email at each step: return approved with the label attached, item received, refund issued. Ideally SMS too, but email is the must.
+
+Ankit Verma (Engineering Manager): The order history lives in Shopify. Whatever we build has to read orders from the Shopify API — we are not migrating orders. Refunds go through Razorpay, same as today.
+
+Ankit Verma (Engineering Manager): The portal needs to handle our peak. Diwali week we did 12,000 orders a day; returns run about 8% of orders. Page loads should stay under 2 seconds at that volume.
+
+Meera Nair (Head of Customer Operations): We want this live before the Diwali sale, which means end of October. Exchanges are out of scope for this phase — refund only.
+
+Rahul Desai (Finance Controller): One more thing — partial returns. If someone ordered three items and returns one, the refund should be for that item only, including its share of shipping if we charged it.

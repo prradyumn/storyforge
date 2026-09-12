@@ -1,0 +1,171 @@
+{
+  "id": "saas_usage_billing",
+  "domain": "saas_billing",
+  "title": "Usage-Based Billing & Invoicing",
+  "notes": "Discovery call — Usage-based billing & invoicing platform — 25 Feb 2026\n\nLaura Bennett (VP Finance): Right now we bill customers on a flat monthly rate, but we're moving to usage-based pricing per API call, and finance is currently reconciling usage in spreadsheets pulled from our logs — it doesn't scale past our current 400 customers.\n\nChris Nakamura (Head of Product): Customers need real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end.\n\nOmar Haddad (Engineering Lead): Usage events come from our API gateway, Kong. We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer.\n\nLaura Bennett (VP Finance): Each customer has a contracted rate per thousand API calls, and some have tiered pricing — the first 100,000 calls at one rate, everything above at a lower rate. The system has to calculate tiered charges correctly, we cannot get this wrong, it directly hits revenue recognition.\n\nChris Nakamura (Head of Product): We also want usage alerts — ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves.\n\nGrace Lindqvist (Customer Success Lead): Invoices need to go out through Stripe, since that's our existing payment processor and customers already have cards on file there — we are not switching payment processors as part of this.\n\nLaura Bennett (VP Finance): Invoices must be generated and sent within 24 hours of the billing period closing. Last quarter we were three days late on 20 invoices because someone had to manually pull the numbers, and two customers escalated about it.\n\nOmar Haddad (Engineering Lead): For scale, our biggest customer alone generates about 40 million API calls a month. The metering pipeline needs to handle that volume without dropping events — we can't have billing disputes because we undercounted someone's usage.\n\nGrace Lindqvist (Customer Success Lead): Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human.\n\nLaura Bennett (VP Finance): We need seven years of invoice and usage data retained for tax and audit purposes, that's a hard finance requirement, not optional.\n\nChris Nakamura (Head of Product): Multi-currency billing is out of scope for this phase — we only invoice in USD right now, even though we have customers in Europe and Asia who ask about it.\n\nOmar Haddad (Engineering Lead): Honestly our current spreadsheet process has caused more Slack fire drills than I can count, finance pings engineering almost every billing cycle asking why a number doesn't match.\n\nLaura Bennett (VP Finance): This needs to be live before our fiscal year starts on July 1st, and the project budget is capped at $400,000 including the Kafka and Stripe integration work.",
+  "expected_requirements": [
+    {
+      "key": "realtime_usage_visibility",
+      "statement": "The system shall show customers real-time visibility of API calls consumed in the current billing period, ideally updated within a few minutes.",
+      "must_mention": [
+        [
+          "real-time",
+          "real time"
+        ],
+        [
+          "billing period"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Customers need real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end."
+    },
+    {
+      "key": "kafka_metering_integration",
+      "statement": "The system shall consume usage metering events from the existing Kafka topic fed by the Kong API gateway rather than building a separate metering layer.",
+      "must_mention": [
+        [
+          "kafka"
+        ],
+        [
+          "kong"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Usage events come from our API gateway, Kong. We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer."
+    },
+    {
+      "key": "tiered_pricing_calculation",
+      "statement": "The system shall correctly calculate tiered per-thousand-call charges, applying a lower rate above each customer's contracted threshold.",
+      "must_mention": [
+        [
+          "tiered"
+        ],
+        [
+          "100,000 calls",
+          "100000 calls"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "some have tiered pricing — the first 100,000 calls at one rate, everything above at a lower rate. The system has to calculate tiered charges correctly"
+    },
+    {
+      "key": "usage_cap_alerting_80pct",
+      "statement": "The system should ideally email customers when they hit 80% of a spending cap they have set.",
+      "must_mention": [
+        [
+          "80%"
+        ],
+        [
+          "spending cap"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves."
+    },
+    {
+      "key": "stripe_invoicing_integration",
+      "statement": "The system shall issue invoices through the existing Stripe payment processor rather than switching processors.",
+      "must_mention": [
+        [
+          "stripe"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Invoices need to go out through Stripe, since that's our existing payment processor and customers already have cards on file there — we are not switching payment processors as part of this."
+    },
+    {
+      "key": "invoice_generation_24h_sla",
+      "statement": "The system shall generate and send invoices within 24 hours of the billing period closing.",
+      "must_mention": [
+        [
+          "24 hours"
+        ],
+        [
+          "billing period closing"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "Invoices must be generated and sent within 24 hours of the billing period closing."
+    },
+    {
+      "key": "metering_pipeline_volume_40million",
+      "statement": "The system shall handle metering volume of at least 40 million API calls per month for a single customer without dropping events.",
+      "must_mention": [
+        [
+          "40 million"
+        ],
+        [
+          "without dropping"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "our biggest customer alone generates about 40 million API calls a month. The metering pipeline needs to handle that volume without dropping events"
+    },
+    {
+      "key": "automated_dunning_retry",
+      "statement": "The system should ideally automatically retry a failed card payment three times over a week before flagging the account to a human.",
+      "must_mention": [
+        [
+          "three times"
+        ],
+        [
+          "failed card",
+          "dunning"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human."
+    },
+    {
+      "key": "invoice_data_retention_7years",
+      "statement": "The system shall retain invoice and usage data for seven years for tax and audit purposes.",
+      "must_mention": [
+        [
+          "seven years"
+        ],
+        [
+          "tax and audit"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "We need seven years of invoice and usage data retained for tax and audit purposes, that's a hard finance requirement, not optional."
+    }
+  ],
+  "expected_out_of_scope": [
+    "Multi-currency billing is out of scope for this phase — we only invoice in USD right now, even though we have customers in Europe and Asia who ask about it."
+  ],
+  "expected_constraints": [
+    "This needs to be live before our fiscal year starts on July 1st, and the project budget is capped at $400,000 including the Kafka and Stripe integration work."
+  ],
+  "distractors": [
+    "Last quarter we were three days late on 20 invoices because someone had to manually pull the numbers, and two customers escalated about it.",
+    "Honestly our current spreadsheet process has caused more Slack fire drills than I can count, finance pings engineering almost every billing cycle asking why a number doesn't match."
+  ],
+  "stakeholders": [
+    {
+      "name": "Laura Bennett",
+      "role": "VP Finance"
+    },
+    {
+      "name": "Chris Nakamura",
+      "role": "Head of Product"
+    },
+    {
+      "name": "Omar Haddad",
+      "role": "Engineering Lead"
+    },
+    {
+      "name": "Grace Lindqvist",
+      "role": "Customer Success Lead"
+    }
+  ]
+}

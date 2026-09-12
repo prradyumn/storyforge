@@ -1,0 +1,3 @@
+# agent: stories
+
+Turn these requirements into epics and user stories. Each story should have the form "As a ..., I want ..., so that ..." with acceptance criteria written as Given/When/Then. Link each story to the requirement ids it covers. Ids: epics E-01..., stories S-001...

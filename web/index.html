@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>StoryForge — Requirements to Backlog</title>
+<style>
+:root{--bg:#f6f7f9;--card:#fff;--ink:#16181d;--muted:#5f6672;--line:#e3e6eb;--accent:#2f5bea;--accent-ink:#fff;--ok:#1a8f4d;--warn:#b7791f;--bad:#c0392b;--chip:#eef1f6;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#171a21;--ink:#e8eaf0;--muted:#9aa3b2;--line:#262b35;--accent:#6b8cff;--accent-ink:#0b0d12;--chip:#20252f}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+header{display:flex;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--card)}
+header h1{font-size:18px;margin:0;letter-spacing:.2px}header h1 span{color:var(--accent)}header .sub{color:var(--muted);font-size:13px}
+header .right{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}.dot.ok{background:var(--ok)}
+main{max-width:1200px;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:20px}
+@media (max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
+.card h2{font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 10px}
+textarea{width:100%;min-height:360px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:12px;font:13px/1.5 var(--mono);background:var(--bg);color:var(--ink)}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+select,button,input{font:inherit;border-radius:8px;border:1px solid var(--line);padding:8px 12px;background:var(--card);color:var(--ink)}
+button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;cursor:pointer}
+button.primary:disabled{opacity:.5;cursor:wait}button.ghost{cursor:pointer;background:transparent}
+.hint{color:var(--muted);font-size:13px}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
+.tabs button{border:none;background:transparent;padding:8px 12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;border-radius:0}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);font-weight:600;letter-spacing:.3px}
+.badge.ok{color:var(--ok)}.badge.warn{color:var(--warn)}.badge.bad{color:var(--bad)}.badge.prio{text-transform:uppercase}
+.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
+.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.kpi b{display:block;font-size:22px}.kpi span{font-size:12px;color:var(--muted)}
+table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+.story{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;background:var(--bg)}
+.story h4{margin:0 0 4px;font-size:15px}.story .sent{font-style:italic;color:var(--muted);margin:4px 0 8px}
+.ac{font-family:var(--mono);font-size:12.5px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;white-space:pre-wrap}
+.ac b{color:var(--accent)}
+.invest{display:inline-flex;gap:4px;margin-left:6px}.invest i{font:600 11px var(--mono);padding:1px 5px;border-radius:4px;background:var(--chip);font-style:normal}.invest i.low{color:var(--bad)}
+.epic{margin:18px 0 6px;font-size:16px}.epic small{color:var(--muted);font-weight:400}
+.quote{color:var(--muted);font-size:12.5px;border-left:2px solid var(--line);padding-left:8px;margin-top:4px}
+.trace{font:12.5px var(--mono)}.trace div{display:grid;grid-template-columns:110px 1fr 90px 80px;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line)}
+.bar{height:8px;background:var(--accent);border-radius:4px;opacity:.75;align-self:center}
+.flag{color:var(--warn);font-size:13px}
+.empty{color:var(--muted);text-align:center;padding:60px 20px}
+pre.log{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font:12px var(--mono);max-height:300px;overflow:auto;white-space:pre-wrap}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
+a{color:var(--accent)}
+footer{max-width:1200px;margin:0 auto;padding:10px 24px 30px;color:var(--muted);font-size:12.5px}
+</style>
+</head>
+<body>
+<header>
+  <h1><span>Story</span>Forge</h1>
+  <div class="sub">Stakeholder notes → requirements → INVEST-reviewed stories → Jira</div>
+  <div class="right" id="health"><span class="dot"></span>checking…</div>
+</header>
+<main>
+  <section class="card">
+    <h2>1 · Discovery notes</h2>
+    <div class="row" style="margin:0 0 8px">
+      <select id="examples"><option value="">Load an example…</option></select>
+      <button class="ghost" id="clear">Clear</button>
+    </div>
+    <textarea id="notes" placeholder="Paste meeting notes, an interview transcript, or a rough brief. Speaker labels like 'Meera (Head of Ops): …' help but aren't required."></textarea>
+    <div class="row">
+      <select id="backend" title="Which model answers">
+        <option value="">Live (Groq → Gemini)</option>
+        <option value="stub">Stub (offline heuristics)</option>
+      </select>
+      <select id="pv" title="Prompt version"></select>
+      <select id="rounds" title="Max review rounds"><option value="0">0 rounds</option><option value="1">1 round</option><option value="2" selected>2 rounds</option></select>
+      <button class="primary" id="run">Analyse →</button>
+    </div>
+    <p class="hint" id="status">Runs five agents: Intake → Requirements → Stories → INVEST Review (with a revise loop) → Gap analysis. Deterministic guardrails check traceability and Gherkin validity after every model call.</p>
+  </section>
+
+  <section class="card" id="results">
+    <div class="empty" id="empty">Results appear here.<br><span class="hint">Try an example on the left and hit Analyse.</span></div>
+    <div id="out" hidden>
+      <div class="kpis" id="kpis"></div>
+      <div class="tabs" id="tabs">
+        <button data-t="brief" class="on">Brief</button>
+        <button data-t="reqs">Requirements</button>
+        <button data-t="backlog">Backlog</button>
+        <button data-t="gaps">Gaps</button>
+        <button data-t="trace">Trace</button>
+        <button data-t="export">Export &amp; Jira</button>
+      </div>
+      <div id="panel"></div>
+    </div>
+  </section>
+</main>
+<footer>StoryForge · an agentic requirements workflow · <a id="ghlink" href="https://github.com/pradyumn-afk/storyforge" target="_blank" rel="noopener">source &amp; evals on GitHub</a> · <a href="/docs" target="_blank">API docs</a></footer>
+
+<script>
+const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let R=null, tab='brief', health=null;
+
+async function init(){
+  try{health=await (await fetch('/api/health')).json();
+    const live=health.backends.groq||health.backends.gemini;
+    $('#health').innerHTML=`<span class="dot ${live?'ok':''}"></span>${live?'live models ready':'stub only (no keys)'} · Jira ${health.jira_configured?'connected ('+esc(health.jira_project)+')':'dry-run only'}`;
+    if(!live){$('#backend').value='stub';$('#backend').options[0].disabled=true;}
+    $('#pv').innerHTML=health.prompt_versions.map(v=>`<option ${v===health.default_prompt_version?'selected':''}>${v}</option>`).join('');
+  }catch(e){$('#health').textContent='API unreachable';}
+  try{const ex=await (await fetch('/api/examples')).json();
+    ex.forEach((e,i)=>{const o=document.createElement('option');o.value=i;o.textContent=e.name;$('#examples').appendChild(o);});
+    $('#examples').onchange=()=>{if($('#examples').value!=='')$('#notes').value=ex[$('#examples').value].notes;};
+  }catch(e){}
+}
+$('#clear').onclick=()=>{$('#notes').value='';$('#examples').value='';};
+$('#tabs').onclick=e=>{if(e.target.dataset.t){tab=e.target.dataset.t;render();}};
+
+$('#run').onclick=async()=>{
+  const notes=$('#notes').value.trim();if(notes.length<40){$('#status').textContent='Give me at least a few sentences of notes.';return;}
+  $('#run').disabled=true;const t0=Date.now();
+  $('#status').innerHTML='<span class="spinner"></span>Running agents… Intake → Requirements → Stories → Review → Gaps. Live runs take 20–90 s.';
+  try{
+    const body={notes,prompt_version:$('#pv').value,max_review_rounds:+$('#rounds').value};if($('#backend').value)body.backend=$('#backend').value;
+    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    if(!r.ok){const e=await r.json().catch(()=>({detail:r.statusText}));throw new Error(e.detail||r.statusText);}
+    R=await r.json();tab='brief';render();
+    $('#status').textContent=`Done in ${((Date.now()-t0)/1000).toFixed(1)} s · ${R.trace.calls.length} model calls · ${R.trace.review_rounds} review round(s).`;
+  }catch(e){$('#status').innerHTML=`<span style="color:var(--bad)">${esc(e.message)}</span>`;}
+  $('#run').disabled=false;
+};
+
+function render(){
+  if(!R)return;$('#empty').hidden=true;$('#out').hidden=false;
+  document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
+  const passed=R.reviews.reviews.filter(x=>x.passed).length, tr=R.requirements.filter(x=>x.traceable).length;
+  $('#kpis').innerHTML=[
+    [R.requirements.length,'requirements'],[`${tr}/${R.requirements.length}`,'traceable to notes'],[R.backlog.stories.length,'stories'],
+    [`${passed}/${R.backlog.stories.length}`,'sprint-ready'],[R.trace.stories_revised,'revised by loop'],[R.gaps.gaps.length,'gaps found']
+  ].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+  $('#panel').innerHTML=({brief,reqs,backlog,gaps,trace,export:exportPanel})[tab]();
+  if(tab==='export')wireExport();
+}
+
+function brief(){const b=R.brief;return `
+  <h3 style="margin:4px 0 2px">${esc(b.title)}</h3><div class="hint">${esc(b.domain)}</div>
+  <h4>Business goals</h4><ul>${b.business_goals.map(g=>`<li>${esc(g)}</li>`).join('')}</ul>
+  <h4>Stakeholders</h4><table><tr><th>Name</th><th>Role</th><th>Concerns</th></tr>${b.stakeholders.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.role)}</td><td>${esc(s.concerns.join('; '))}</td></tr>`).join('')||'<tr><td colspan=3 class="hint">none identified</td></tr>'}</table>
+  <h4>Constraints</h4><ul>${b.constraints.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="hint">none stated</li>'}</ul>
+  <h4>Out of scope</h4><ul>${b.out_of_scope.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="hint">none stated</li>'}</ul>
+  <h4>Open questions</h4><ul>${b.open_questions.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="hint">none</li>'}</ul>`;}
+
+function reqs(){return `<table><tr><th>ID</th><th>Requirement</th><th>Type</th><th>Prio</th><th>Trace</th></tr>${R.requirements.map(r=>`
+  <tr><td><code>${r.id}</code></td><td>${esc(r.statement)}<div class="quote">“${esc(r.evidence)}”${r.stakeholder?` — ${esc(r.stakeholder)}`:''}</div>${r.assumptions.length?`<div class="hint">Assumes: ${esc(r.assumptions.join('; '))}</div>`:''}</td>
+  <td><span class="badge">${r.type.replace('_',' ')}</span></td><td><span class="badge prio">${r.priority}</span></td>
+  <td>${r.traceable?`<span class="badge ok" title="evidence found verbatim in notes">✓ ${r.trace_score}</span>`:`<span class="badge bad" title="evidence quote not found in notes">✗ ${r.trace_score}</span>`}</td></tr>`).join('')}</table>`;}
+
+function backlog(){const rv=Object.fromEntries(R.reviews.reviews.map(x=>[x.story_id,x]));let h='';
+  for(const e of R.backlog.epics){const ss=R.backlog.stories.filter(s=>s.epic_id===e.id);
+    h+=`<div class="epic"><b>${e.id}</b> · ${esc(e.title)} <small>— ${esc(e.goal)}</small></div>`;
+    h+=ss.map(s=>{const v=rv[s.id];const sc=v?v.scores:null;return `<div class="story">
+      <h4>${s.id} · ${esc(s.title)} <span class="badge prio">${s.priority}</span>${s.story_points?` <span class="badge">${s.story_points} pts</span>`:''} ${v?(v.passed?'<span class="badge ok">ready</span>':'<span class="badge warn">needs work</span>'):''}${s.review_round?`<span class="badge" title="rewritten by the revise loop">revised r${s.review_round}</span>`:''}
+      ${sc?`<span class="invest">${['independent','negotiable','valuable','estimable','small','testable'].map(k=>`<i class="${sc[k]<3?'low':''}" title="${k}">${k[0].toUpperCase()}${sc[k]}</i>`).join('')}</span>`:''}</h4>
+      <div class="sent">As a <b>${esc(s.as_a)}</b>, I want ${esc(s.i_want)}, so that ${esc(s.so_that)}.</div>
+      ${s.acceptance_criteria.map(a=>`<div class="ac"><b>Given</b> ${esc(a.given)}\n<b>When</b> ${esc(a.when)}\n<b>Then</b> ${esc(a.then)}</div>`).join('')}
+      <div class="hint">Covers ${s.requirement_ids.map(x=>`<code>${x}</code>`).join(' ')}${v&&v.issues.length?` · <span class="flag">${esc(v.issues.join(' · '))}</span>`:''}</div></div>`;}).join('');}
+  const orphans=R.backlog.stories.filter(s=>!R.backlog.epics.some(e=>e.id===s.epic_id));if(orphans.length)h+=`<div class="hint">${orphans.length} story(ies) reference an unknown epic.</div>`;
+  if(R.reviews.duplicate_pairs.length)h+=`<p class="flag">Possible duplicates: ${R.reviews.duplicate_pairs.map(p=>p.join('↔')).join(', ')}</p>`;
+  if(R.reviews.conflict_pairs.length)h+=`<p class="flag">Conflicts: ${R.reviews.conflict_pairs.map(p=>p.join('↔')).join(', ')}</p>`;
+  return h;}
+
+function gaps(){return `<p>${esc(R.gaps.coverage_note)}</p><table><tr><th>Sev</th><th>Kind</th><th>Gap</th><th>Ask the stakeholder</th></tr>${R.gaps.gaps.map(g=>`<tr><td><span class="badge ${g.severity==='high'?'bad':g.severity==='medium'?'warn':''}">${g.severity}</span></td><td>${esc(g.kind.replace('_',' '))}</td><td>${esc(g.description)}${g.related_ids.length?`<div class="hint">${g.related_ids.map(x=>`<code>${x}</code>`).join(' ')}</div>`:''}</td><td>${esc(g.suggested_question)}</td></tr>`).join('')||'<tr><td colspan=4 class="hint">No gaps flagged.</td></tr>'}</table>
+  <h4>Traceability matrix</h4><table><tr><th>Requirement</th><th>Stories</th></tr>${R.requirements.map(r=>{const st=R.backlog.stories.filter(s=>s.requirement_ids.includes(r.id)).map(s=>s.id);return `<tr><td><code>${r.id}</code> ${esc(r.statement)}</td><td>${st.length?st.map(x=>`<code>${x}</code>`).join(' '):'<span class="badge bad">uncovered</span>'}</td></tr>`;}).join('')}</table>`;}
+
+function trace(){const t=R.trace;const max=Math.max(...t.calls.map(c=>c.latency_ms),1);return `
+  <div class="hint">run <code>${t.run_id}</code> · backend <b>${esc(t.backend)}</b> · prompts <b>${esc(t.prompt_version)}</b> · ${t.calls.length} calls · ${(t.calls.reduce((a,c)=>a+c.latency_ms,0)/1000).toFixed(1)} s · ${t.calls.reduce((a,c)=>a+(c.prompt_tokens||0)+(c.completion_tokens||0),0).toLocaleString()} tokens</div>
+  <div class="trace" style="margin-top:10px">${t.calls.map(c=>`<div><span>${c.agent}${c.attempt>1?' (retry)':''}</span><span class="bar" style="width:${Math.max(2,100*c.latency_ms/max)}%;${c.ok?'':'background:var(--bad)'}"></span><span>${c.latency_ms} ms</span><span>${(c.prompt_tokens||0)+(c.completion_tokens||0)} tok</span></div>`).join('')}</div>
+  <h4>Guardrail flags (${t.guardrail_flags.length})</h4>${t.guardrail_flags.length?`<ul>${t.guardrail_flags.map(f=>`<li class="flag">${esc(f)}</li>`).join('')}</ul>`:'<p class="hint">Nothing flagged — every requirement traced and every story passed deterministic checks.</p>'}
+  <h4>How the loop went</h4><p class="hint">${t.review_rounds} review round(s); ${t.stories_revised} story rewrite(s) triggered by reviewer feedback + guardrails. Models used: ${[...new Set(t.calls.map(c=>c.provider+'/'+c.model))].map(esc).join(', ')}.</p>`;}
+
+function exportPanel(){return `
+  <h4>Documents</h4><div class="row"><button class="ghost" data-x="brd">Download BRD (.md)</button><button class="ghost" data-x="backlog">Download backlog (.md)</button><button class="ghost" data-x="csv">Jira CSV import</button><button class="ghost" data-x="json">Raw JSON</button></div>
+  <h4 style="margin-top:20px">Publish to Jira</h4>
+  <p class="hint">${health&&health.jira_configured?`Connected to project <b>${esc(health.jira_project)}</b>. Dry run shows the exact REST bodies; publish creates ${R.backlog.epics.length} epics and ${R.backlog.stories.length} stories (idempotent — re-publishing the same run skips existing issues).`:'No Jira credentials on this deployment — dry run only, which still shows the exact REST API payloads that would be sent.'}</p>
+  <div class="row"><button class="ghost" id="dry">Dry run (show payloads)</button>${health&&health.jira_configured?'<button class="primary" id="pub">Publish to Jira →</button>':''}</div>
+  <pre class="log" id="publog" hidden></pre>`;}
+
+function download(name,text,type='text/markdown'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();}
+function wireExport(){
+  document.querySelectorAll('[data-x]').forEach(b=>b.onclick=async()=>{const f=b.dataset.x;
+    if(f==='json')return download('storyforge-result.json',JSON.stringify(R,null,2),'application/json');
+    const r=await fetch('/api/export',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({result:R,format:f})});
+    download(f==='csv'?'jira-import.csv':f+'.md',await r.text(),f==='csv'?'text/csv':'text/markdown');});
+  const go=async dry=>{const log=$('#publog');log.hidden=false;log.textContent=dry?'Building payloads…':'Publishing…';
+    const r=await fetch('/api/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({result:R,dry_run:dry})});
+    const j=await r.json();if(!r.ok){log.textContent='Error: '+(j.detail||r.statusText);return;}
+    if(dry){log.textContent=`${j.requests.length} issues would be created in ${health?health.jira_project:'SF'}:\n\n`+j.requests.map(q=>`POST /rest/api/3/issue  ${q.issuetype.name.padEnd(5)} ${q.summary}`).join('\n')+`\n\n— first payload —\n`+JSON.stringify(j.requests[0],null,1).slice(0,1500);}
+    else{log.innerHTML=`created ${j.created.length}, skipped ${j.skipped.length}, errors ${j.errors.length}\n\n`+j.created.map(c=>`${c.kind.padEnd(5)} ${c.id} → <a href="${c.url}" target="_blank">${c.key}</a>`).join('\n')+(j.skipped.length?`\n\nalready existed: ${j.skipped.map(s=>s.key).join(', ')}`:'')+(j.errors.length?`\n\nerrors:\n${j.errors.map(esc).join('\n')}`:'');}};
+  $('#dry').onclick=()=>go(true);if($('#pub'))$('#pub').onclick=()=>go(false);
+}
+init();
+</script>
+</body>
+</html>

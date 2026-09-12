@@ -1,0 +1,189 @@
+{
+  "id": "healthcare_outpatient_scheduling",
+  "domain": "healthcare",
+  "title": "Outpatient Appointment Scheduling",
+  "notes": "Discovery workshop — Outpatient appointment scheduling — 3 Feb 2026\n\nDr. Fiona Marsh (Clinical Director): Across our nine clinics we still book appointments over the phone into a shared paper diary at each site, and double-bookings happen most weeks. Patients need to be able to book, reschedule, and cancel appointments online.\n\nTom Reilly (Operations Manager): Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites.\n\nBen Coulson (Patient Services Manager): We get a lot of no-shows, especially for first appointments. Ideally the system sends an SMS and email reminder 48 hours before the appointment, and again 2 hours before.\n\nDr. Fiona Marsh (Clinical Director): Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust.\n\nAisha Patel (IT Lead): Our practice management system is EMIS. Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots.\n\nTom Reilly (Operations Manager): Cancellations within 24 hours of the appointment should free the slot for another patient automatically, but we also want to flag those patients so reception can follow up — persistent late-cancellers are a real problem for us.\n\nDr. Fiona Marsh (Clinical Director): Under UK GDPR, patient data has to stay within the UK, and we need an audit trail of who viewed which patient record and when — that's something our last CQC inspection specifically asked about.\n\nBen Coulson (Patient Services Manager): We'd like patients to be able to request a specific clinician, though for some clinic types like physiotherapy, ideally the system should also let them just book \"next available\" instead.\n\nAisha Patel (IT Lead): On performance, we're targeting under 3 seconds to load the available slots for any given clinic, even during the Monday morning rush when everyone's trying to book at once.\n\nTom Reilly (Operations Manager): Referrals from GPs are out of scope for this project — those still come through the existing e-Referral Service process, we're only building patient self-service booking for existing patients.\n\nDr. Fiona Marsh (Clinical Director): We need at least seven years of appointment and attendance history retained, in line with NHS records retention guidance.\n\nBen Coulson (Patient Services Manager): Honestly the phone lines get so backed up on Monday mornings that patients just give up and walk into A&E instead, which isn't great for anyone.\n\nTom Reilly (Operations Manager): We've been told this needs to go live before the new financial year starts in April, and the board has capped the budget at £180,000 for this phase.",
+  "expected_requirements": [
+    {
+      "key": "online_booking_reschedule_cancel",
+      "statement": "The system shall allow patients to book, reschedule, and cancel appointments online.",
+      "must_mention": [
+        [
+          "book"
+        ],
+        [
+          "reschedule"
+        ],
+        [
+          "cancel"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Patients need to be able to book, reschedule, and cancel appointments online."
+    },
+    {
+      "key": "per_clinician_realtime_availability",
+      "statement": "The system shall show real-time appointment availability per clinician, not just per clinic, since consultants split time across sites.",
+      "must_mention": [
+        [
+          "per clinician"
+        ],
+        [
+          "real-time",
+          "real time"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites."
+    },
+    {
+      "key": "appointment_reminders_48h_2h",
+      "statement": "The system should ideally send SMS and email reminders 48 hours and again 2 hours before an appointment to reduce no-shows.",
+      "must_mention": [
+        [
+          "48 hours"
+        ],
+        [
+          "2 hours"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Ideally the system sends an SMS and email reminder 48 hours before the appointment, and again 2 hours before."
+    },
+    {
+      "key": "nhs_number_verification",
+      "statement": "The system shall verify the patient's NHS number via NHS Spine lookup before confirming the first appointment.",
+      "must_mention": [
+        [
+          "nhs spine"
+        ],
+        [
+          "nhs number"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust."
+    },
+    {
+      "key": "emis_bidirectional_sync",
+      "statement": "The system shall sync appointment data bidirectionally with the EMIS practice management system.",
+      "must_mention": [
+        [
+          "emis"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots."
+    },
+    {
+      "key": "late_cancellation_flagging",
+      "statement": "The system shall automatically free the slot for cancellations within 24 hours of the appointment and flag those patients for reception follow-up.",
+      "must_mention": [
+        [
+          "24 hours"
+        ],
+        [
+          "flag"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Cancellations within 24 hours of the appointment should free the slot for another patient automatically, but we also want to flag those patients so reception can follow up"
+    },
+    {
+      "key": "gdpr_uk_data_residency_audit_trail",
+      "statement": "The system shall keep patient data within the UK per UK GDPR and maintain an audit trail of who viewed each patient record and when.",
+      "must_mention": [
+        [
+          "uk gdpr",
+          "gdpr"
+        ],
+        [
+          "audit trail"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "Under UK GDPR, patient data has to stay within the UK, and we need an audit trail of who viewed which patient record and when"
+    },
+    {
+      "key": "next_available_booking_option",
+      "statement": "The system should ideally allow patients to book 'next available' clinician instead of a specific one, for clinic types like physiotherapy.",
+      "must_mention": [
+        [
+          "next available"
+        ],
+        [
+          "physiotherapy"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "though for some clinic types like physiotherapy, ideally the system should also let them just book \"next available\" instead."
+    },
+    {
+      "key": "slot_load_latency_3s",
+      "statement": "The system shall load available slots for a clinic in under 3 seconds, including during Monday morning peak demand.",
+      "must_mention": [
+        [
+          "3 seconds"
+        ],
+        [
+          "monday morning"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "we're targeting under 3 seconds to load the available slots for any given clinic, even during the Monday morning rush when everyone's trying to book at once."
+    },
+    {
+      "key": "appointment_history_retention_7years",
+      "statement": "The system shall retain appointment and attendance history for at least seven years per NHS records retention guidance.",
+      "must_mention": [
+        [
+          "seven years"
+        ],
+        [
+          "nhs records retention",
+          "retention guidance"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "We need at least seven years of appointment and attendance history retained, in line with NHS records retention guidance."
+    }
+  ],
+  "expected_out_of_scope": [
+    "Referrals from GPs are out of scope for this project — those still come through the existing e-Referral Service process, we're only building patient self-service booking for existing patients."
+  ],
+  "expected_constraints": [
+    "We've been told this needs to go live before the new financial year starts in April, and the board has capped the budget at £180,000 for this phase."
+  ],
+  "distractors": [
+    "Honestly the phone lines get so backed up on Monday mornings that patients just give up and walk into A&E instead, which isn't great for anyone.",
+    "Across our nine clinics we still book appointments over the phone into a shared paper diary at each site, and double-bookings happen most weeks."
+  ],
+  "stakeholders": [
+    {
+      "name": "Dr. Fiona Marsh",
+      "role": "Clinical Director"
+    },
+    {
+      "name": "Tom Reilly",
+      "role": "Operations Manager"
+    },
+    {
+      "name": "Aisha Patel",
+      "role": "IT Lead"
+    },
+    {
+      "name": "Ben Coulson",
+      "role": "Patient Services Manager"
+    }
+  ]
+}

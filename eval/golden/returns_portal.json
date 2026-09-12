@@ -1,0 +1,215 @@
+{
+  "id": "returns_portal",
+  "domain": "ecommerce",
+  "title": "Self-Service Returns Portal",
+  "notes": "Discovery call — Self-service returns portal — 4 Sep 2026\n\nMeera Nair (Head of Customer Operations): Right now every return comes through the support inbox. Agents spend about 40% of their day just creating return labels and answering \"where is my refund\". We need customers to be able to start a return themselves from their order history without contacting us.\n\nMeera Nair (Head of Customer Operations): The return window is 30 days from delivery. Anything outside that must be rejected automatically with a clear message, not sent to an agent.\n\nRahul Desai (Finance Controller): Refunds cannot be issued until the warehouse has scanned the item back in. We had ₹18 lakh in refunds last quarter for items that never arrived. The system has to hold the refund until the warehouse confirms receipt.\n\nRahul Desai (Finance Controller): We also need a daily report of refunds issued, pending, and rejected, broken down by reason code, so I can reconcile against the payment gateway.\n\nPriya Shah (Warehouse Lead): When the item arrives we scan the barcode on the return label. The scan should update the return status immediately and trigger the refund. Our scanners are Zebra handhelds that post to a REST endpoint — the current inventory system already does this.\n\nMeera Nair (Head of Customer Operations): Customers should get an email at each step: return approved with the label attached, item received, refund issued. Ideally SMS too, but email is the must.\n\nAnkit Verma (Engineering Manager): The order history lives in Shopify. Whatever we build has to read orders from the Shopify API — we are not migrating orders. Refunds go through Razorpay, same as today.\n\nAnkit Verma (Engineering Manager): The portal needs to handle our peak. Diwali week we did 12,000 orders a day; returns run about 8% of orders. Page loads should stay under 2 seconds at that volume.\n\nMeera Nair (Head of Customer Operations): We want this live before the Diwali sale, which means end of October. Exchanges are out of scope for this phase — refund only.\n\nRahul Desai (Finance Controller): One more thing — partial returns. If someone ordered three items and returns one, the refund should be for that item only, including its share of shipping if we charged it.",
+  "expected_requirements": [
+    {
+      "key": "self_service_return_initiation",
+      "statement": "The system shall allow customers to initiate a return from their order history without contacting support.",
+      "must_mention": [
+        [
+          "order history"
+        ],
+        [
+          "without contacting",
+          "self-service",
+          "start a return themselves"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "We need customers to be able to start a return themselves from their order history without contacting us."
+    },
+    {
+      "key": "return_window_30_days",
+      "statement": "The system shall automatically reject return requests submitted more than 30 days after delivery, with a clear rejection message.",
+      "must_mention": [
+        [
+          "30 days"
+        ],
+        [
+          "reject",
+          "rejected"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "The return window is 30 days from delivery. Anything outside that must be rejected automatically with a clear message, not sent to an agent."
+    },
+    {
+      "key": "hold_refund_until_warehouse_scan",
+      "statement": "The system shall withhold the refund until the warehouse scans the returned item back into inventory.",
+      "must_mention": [
+        [
+          "warehouse"
+        ],
+        [
+          "scan",
+          "scanned"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "The system has to hold the refund until the warehouse confirms receipt."
+    },
+    {
+      "key": "daily_refund_report",
+      "statement": "The system shall generate a daily report of refunds issued, pending, and rejected, broken down by reason code.",
+      "must_mention": [
+        [
+          "daily report"
+        ],
+        [
+          "reason code"
+        ]
+      ],
+      "type": "data",
+      "priority": "must",
+      "evidence": "We also need a daily report of refunds issued, pending, and rejected, broken down by reason code, so I can reconcile against the payment gateway."
+    },
+    {
+      "key": "barcode_scan_status_update",
+      "statement": "The system shall update the return status immediately when the warehouse scans the return label barcode, triggering the refund.",
+      "must_mention": [
+        [
+          "barcode"
+        ],
+        [
+          "immediately"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "When the item arrives we scan the barcode on the return label. The scan should update the return status immediately and trigger the refund."
+    },
+    {
+      "key": "zebra_scanner_integration",
+      "statement": "The system shall integrate with Zebra handheld scanners via a REST endpoint for warehouse scan events.",
+      "must_mention": [
+        [
+          "zebra"
+        ],
+        [
+          "rest endpoint",
+          "rest api"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Our scanners are Zebra handhelds that post to a REST endpoint — the current inventory system already does this."
+    },
+    {
+      "key": "email_notifications_at_each_step",
+      "statement": "The system shall send customers an email notification at each step: return approved (with label attached), item received, and refund issued.",
+      "must_mention": [
+        [
+          "email"
+        ],
+        [
+          "return approved",
+          "item received",
+          "refund issued"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Customers should get an email at each step: return approved with the label attached, item received, refund issued."
+    },
+    {
+      "key": "sms_notifications",
+      "statement": "The system should ideally also send SMS notifications at each return status step.",
+      "must_mention": [
+        [
+          "sms"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Ideally SMS too, but email is the must."
+    },
+    {
+      "key": "shopify_order_integration",
+      "statement": "The system shall read order history from the Shopify API rather than migrating order data.",
+      "must_mention": [
+        [
+          "shopify"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "The order history lives in Shopify. Whatever we build has to read orders from the Shopify API — we are not migrating orders."
+    },
+    {
+      "key": "razorpay_refund_integration",
+      "statement": "The system shall process refunds through Razorpay, the existing payment gateway.",
+      "must_mention": [
+        [
+          "razorpay"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Refunds go through Razorpay, same as today."
+    },
+    {
+      "key": "peak_load_latency",
+      "statement": "The system shall keep page loads under 2 seconds at peak volume of 12,000 orders a day with an 8% return rate.",
+      "must_mention": [
+        [
+          "2 seconds"
+        ],
+        [
+          "12,000",
+          "12000"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "Diwali week we did 12,000 orders a day; returns run about 8% of orders. Page loads should stay under 2 seconds at that volume."
+    },
+    {
+      "key": "partial_return_refund",
+      "statement": "The system shall calculate refunds for partial returns based only on the returned item, including its proportional share of shipping charged.",
+      "must_mention": [
+        [
+          "partial return"
+        ],
+        [
+          "shipping"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "One more thing — partial returns. If someone ordered three items and returns one, the refund should be for that item only, including its share of shipping if we charged it."
+    }
+  ],
+  "expected_out_of_scope": [
+    "Exchanges are out of scope for this phase — refund only."
+  ],
+  "expected_constraints": [
+    "We want this live before the Diwali sale, which means end of October."
+  ],
+  "distractors": [
+    "We had ₹18 lakh in refunds last quarter for items that never arrived.",
+    "Agents spend about 40% of their day just creating return labels and answering \"where is my refund\"."
+  ],
+  "stakeholders": [
+    {
+      "name": "Meera Nair",
+      "role": "Head of Customer Operations"
+    },
+    {
+      "name": "Rahul Desai",
+      "role": "Finance Controller"
+    },
+    {
+      "name": "Priya Shah",
+      "role": "Warehouse Lead"
+    },
+    {
+      "name": "Ankit Verma",
+      "role": "Engineering Manager"
+    }
+  ]
+}

@@ -1,0 +1,168 @@
+{
+  "id": "hospitality_housekeeping",
+  "domain": "hospitality",
+  "title": "Hotel Housekeeping Task Management",
+  "notes": "Discovery call — Housekeeping task management system — 4 Mar 2026\n\nCarlos Ibarra (General Manager): Across our three Singapore properties we have about 620 rooms combined, and housekeeping assignments are still handed out on a printed sheet each morning. We need room status and task assignment to move onto a mobile system the housekeepers can use directly.\n\nMei Ling Tan (Director of Rooms): When a guest checks out, the room needs to automatically appear as \"dirty\" and get assigned to a housekeeper based on their current workload, not just whoever's next on a list.\n\nAaliyah Rahman (Housekeeping Supervisor): Housekeepers need a simple app on a handheld device to mark a room as in-progress, then clean, then ready for inspection. It has to work without needing a strong signal — a lot of our stairwells and back corridors have terrible WiFi.\n\nMei Ling Tan (Director of Rooms): Rooms marked \"ready for inspection\" should notify a supervisor automatically, and the supervisor needs to approve it before the room shows as available for the front desk to sell again.\n\nJosef Novak (IT Systems Manager): Our property management system is Opera Cloud. Room status changes have to sync with Opera in both directions — if front desk marks a room out of order in Opera, housekeeping should see that immediately, and vice versa.\n\nCarlos Ibarra (General Manager): We get a lot of same-day requests — a guest wants late checkout, or an early check-in needs a room rushed. Ideally supervisors can flag a room as priority and it jumps to the top of a housekeeper's queue.\n\nMei Ling Tan (Director of Rooms): For VIP guests, there's a checklist that's different from standard rooms — turndown service, specific amenity placement — housekeepers should see that VIP checklist automatically when the room is tagged VIP in Opera.\n\nAaliyah Rahman (Housekeeping Supervisor): Lost and found is a constant headache — when a housekeeper finds an item, they should be able to log it with a photo right from the same app, tagged to the room number and date.\n\nJosef Novak (IT Systems Manager): On performance, room status changes need to reflect across all devices within 15 seconds — if two housekeepers are near the same room, we don't want them both walking in.\n\nCarlos Ibarra (General Manager): Minibar restocking and billing is out of scope for this project — that's handled by a separate F&B system already, we don't want to touch that.\n\nMei Ling Tan (Director of Rooms): I remember when we first opened this property, guests kept complaining that rooms weren't ready even after 3pm check-in, and it took forever to figure out which housekeeper had actually been assigned.\n\nJosef Novak (IT Systems Manager): We need at least one year of room status and inspection history retained, mainly so Rooms can pull data for quality audits.\n\nCarlos Ibarra (General Manager): We're aiming to launch this before the year-end peak season in December, and ownership has approved a budget of SGD 150,000 for the initial rollout across all three properties.",
+  "expected_requirements": [
+    {
+      "key": "auto_dirty_status_assignment",
+      "statement": "The system shall automatically mark a room as dirty upon guest checkout and assign it to a housekeeper based on current workload.",
+      "must_mention": [
+        [
+          "dirty"
+        ],
+        [
+          "workload"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "the room needs to automatically appear as \"dirty\" and get assigned to a housekeeper based on their current workload, not just whoever's next on a list."
+    },
+    {
+      "key": "mobile_status_progression_app",
+      "statement": "The system shall provide housekeepers a handheld app to progress a room through in-progress, clean, and ready-for-inspection states, functioning reliably on weak WiFi.",
+      "must_mention": [
+        [
+          "in-progress",
+          "in progress"
+        ],
+        [
+          "ready for inspection"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Housekeepers need a simple app on a handheld device to mark a room as in-progress, then clean, then ready for inspection."
+    },
+    {
+      "key": "supervisor_inspection_approval",
+      "statement": "The system shall notify a supervisor automatically when a room is marked ready for inspection and require supervisor approval before the room shows as available to sell.",
+      "must_mention": [
+        [
+          "ready for inspection"
+        ],
+        [
+          "supervisor"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Rooms marked \"ready for inspection\" should notify a supervisor automatically, and the supervisor needs to approve it before the room shows as available for the front desk to sell again."
+    },
+    {
+      "key": "opera_cloud_bidirectional_sync",
+      "statement": "The system shall sync room status bidirectionally with Opera Cloud, the property management system.",
+      "must_mention": [
+        [
+          "opera cloud",
+          "opera"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Room status changes have to sync with Opera in both directions — if front desk marks a room out of order in Opera, housekeeping should see that immediately, and vice versa."
+    },
+    {
+      "key": "priority_room_flagging",
+      "statement": "The system should ideally let supervisors flag a room as priority so it jumps to the top of a housekeeper's queue.",
+      "must_mention": [
+        [
+          "priority"
+        ],
+        [
+          "queue"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Ideally supervisors can flag a room as priority and it jumps to the top of a housekeeper's queue."
+    },
+    {
+      "key": "vip_checklist_automation",
+      "statement": "The system shall automatically surface the VIP checklist to housekeepers when a room is tagged VIP in Opera.",
+      "must_mention": [
+        [
+          "vip checklist"
+        ],
+        [
+          "opera"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "housekeepers should see that VIP checklist automatically when the room is tagged VIP in Opera."
+    },
+    {
+      "key": "lost_and_found_logging",
+      "statement": "The system shall let housekeepers log a lost and found item with a photo, tagged to the room number and date, from the same app.",
+      "must_mention": [
+        [
+          "lost and found"
+        ],
+        [
+          "photo"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "when a housekeeper finds an item, they should be able to log it with a photo right from the same app, tagged to the room number and date."
+    },
+    {
+      "key": "status_sync_latency_15s",
+      "statement": "The system shall reflect room status changes across all devices within 15 seconds.",
+      "must_mention": [
+        [
+          "15 seconds"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "room status changes need to reflect across all devices within 15 seconds"
+    },
+    {
+      "key": "inspection_history_retention_1year",
+      "statement": "The system shall retain at least one year of room status and inspection history for quality audits.",
+      "must_mention": [
+        [
+          "one year"
+        ],
+        [
+          "quality audit",
+          "quality audits"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "We need at least one year of room status and inspection history retained, mainly so Rooms can pull data for quality audits."
+    }
+  ],
+  "expected_out_of_scope": [
+    "Minibar restocking and billing is out of scope for this project — that's handled by a separate F&B system already, we don't want to touch that."
+  ],
+  "expected_constraints": [
+    "We're aiming to launch this before the year-end peak season in December, and ownership has approved a budget of SGD 150,000 for the initial rollout across all three properties."
+  ],
+  "distractors": [
+    "I remember when we first opened this property, guests kept complaining that rooms weren't ready even after 3pm check-in, and it took forever to figure out which housekeeper had actually been assigned.",
+    "We get a lot of same-day requests — a guest wants late checkout, or an early check-in needs a room rushed."
+  ],
+  "stakeholders": [
+    {
+      "name": "Carlos Ibarra",
+      "role": "General Manager"
+    },
+    {
+      "name": "Mei Ling Tan",
+      "role": "Director of Rooms"
+    },
+    {
+      "name": "Aaliyah Rahman",
+      "role": "Housekeeping Supervisor"
+    },
+    {
+      "name": "Josef Novak",
+      "role": "IT Systems Manager"
+    }
+  ]
+}

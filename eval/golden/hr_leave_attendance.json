@@ -1,0 +1,219 @@
+{
+  "id": "hr_leave_attendance",
+  "domain": "hr",
+  "title": "Leave & Attendance — Manufacturing Plant",
+  "notes": "Discovery call — Leave & attendance system for plant workforce — 15 Jan 2026\n\nSunita Rao (HR Head): We have about 400 workers across two shifts at the Pune plant, plus 60 staff in the office. Right now attendance is marked on paper registers at the shop floor and leave requests come in on WhatsApp. We need this to move onto one system.\n\nVikram Singh (Plant Manager): The shop floor already has biometric fingerprint scanners at each gate, three of them. Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware.\n\nSunita Rao (HR Head): Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours. If the supervisor doesn't respond, it should escalate to the HR desk automatically.\n\nDeepak Joshi (Payroll Lead): Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th. Late changes have caused us real problems — last March we had to redo payroll for 40 workers because someone changed an attendance record after the export.\n\nVikram Singh (Plant Manager): There are different leave types — casual, sick, earned, and for factory workers specifically, the Factories Act requires we track earned leave accrual at one day for every 20 days worked. That calculation has to be built in, it's a compliance thing, we can't get that wrong.\n\nSunita Rao (HR Head): Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after.\n\nAnjali Mehta (IT Manager): We already use Tally for accounting, but payroll is on a separate system called GreytHR. The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month.\n\nDeepak Joshi (Payroll Lead): Overtime is a big one for us. Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x.\n\nVikram Singh (Plant Manager): One thing that's explicitly out of scope right now — we are not doing shift scheduling or roster planning in this system. That's a separate initiative next year.\n\nSunita Rao (HR Head): We need at least two years of attendance history retained for labour audits — the last labour inspection asked for two years of records and we scrambled to pull it together from paper files.\n\nAnjali Mehta (IT Manager): From a technical side, the system needs to handle punch data for all 460 people syncing every few minutes without lag — let's say attendance status should update within 5 minutes of a punch.\n\nDeepak Joshi (Payroll Lead): Honestly the WhatsApp leave process has been chaos, people forward screenshots of screenshots and we lose track of who approved what.\n\nSunita Rao (HR Head): Budget-wise we've been told to keep this under 8 lakh rupees for the first year including any licensing, and it needs to be live before the next audit cycle in April.\n\nVikram Singh (Plant Manager): Contract workers are a separate category — they're managed by contractors, not us directly, so their attendance doesn't need to feed into our payroll system, just a simple log for compliance reporting.",
+  "expected_requirements": [
+    {
+      "key": "mobile_leave_application",
+      "statement": "The system shall allow workers to apply for leave via a mobile app.",
+      "must_mention": [
+        [
+          "mobile app"
+        ],
+        [
+          "apply for leave"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours."
+    },
+    {
+      "key": "supervisor_approval_24h_escalation",
+      "statement": "The system shall require shift supervisor approval or rejection of leave requests within 24 hours, escalating automatically to HR if there is no response.",
+      "must_mention": [
+        [
+          "24 hours"
+        ],
+        [
+          "escalate"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "their shift supervisor must approve or reject it within 24 hours. If the supervisor doesn't respond, it should escalate to the HR desk automatically."
+    },
+    {
+      "key": "biometric_scanner_integration",
+      "statement": "The system shall integrate with the existing biometric fingerprint scanners at the plant gates to pull punch-in and punch-out data automatically.",
+      "must_mention": [
+        [
+          "biometric",
+          "fingerprint"
+        ],
+        [
+          "punch-in",
+          "punch in"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "The shop floor already has biometric fingerprint scanners at each gate, three of them. Whatever we build needs to pull punch-in and punch-out data from those scanners automatically"
+    },
+    {
+      "key": "payroll_data_lock_by_25th",
+      "statement": "The system shall lock and export attendance and leave data by the 25th of each month ahead of the 28th payroll run.",
+      "must_mention": [
+        [
+          "25th"
+        ],
+        [
+          "payroll"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th."
+    },
+    {
+      "key": "earned_leave_accrual_compliance",
+      "statement": "The system shall calculate earned leave accrual at one day per 20 days worked in compliance with the Factories Act.",
+      "must_mention": [
+        [
+          "factories act"
+        ],
+        [
+          "one day for every 20 days",
+          "20 days worked"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "the Factories Act requires we track earned leave accrual at one day for every 20 days worked. That calculation has to be built in, it's a compliance thing, we can't get that wrong."
+    },
+    {
+      "key": "shift_wise_attendance_dashboard",
+      "statement": "The system should ideally provide supervisors a shift-wise attendance dashboard showing absentees before shift start.",
+      "must_mention": [
+        [
+          "shift-wise",
+          "shift wise"
+        ],
+        [
+          "dashboard"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after."
+    },
+    {
+      "key": "greythr_integration",
+      "statement": "The system shall export attendance and leave data into GreytHR before each payroll run.",
+      "must_mention": [
+        [
+          "greythr"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "The attendance and leave data needs to flow into GreytHR before the payroll run"
+    },
+    {
+      "key": "greythr_automated_export",
+      "statement": "The system should ideally automate the GreytHR export rather than requiring a manual file upload each month.",
+      "must_mention": [
+        [
+          "automated export"
+        ],
+        [
+          "manual file upload",
+          "manual upload"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "should",
+      "evidence": "ideally through an automated export, not a manual file upload every month."
+    },
+    {
+      "key": "overtime_flagging",
+      "statement": "The system shall flag overtime for manager approval when an employee punches out more than 30 minutes after shift end, at a 1.5x pay rate.",
+      "must_mention": [
+        [
+          "30 minutes"
+        ],
+        [
+          "1.5x"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x."
+    },
+    {
+      "key": "attendance_data_retention_2years",
+      "statement": "The system shall retain at least two years of attendance history for labour audit purposes.",
+      "must_mention": [
+        [
+          "two years"
+        ],
+        [
+          "labour audit",
+          "labor audit"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "We need at least two years of attendance history retained for labour audits"
+    },
+    {
+      "key": "punch_sync_latency",
+      "statement": "The system shall update attendance status within 5 minutes of a punch event across all employees.",
+      "must_mention": [
+        [
+          "5 minutes"
+        ],
+        [
+          "punch"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "attendance status should update within 5 minutes of a punch."
+    },
+    {
+      "key": "contract_worker_log_only",
+      "statement": "The system shall maintain a separate simple attendance log for contract workers for compliance reporting, without feeding into payroll.",
+      "must_mention": [
+        [
+          "contract workers"
+        ],
+        [
+          "compliance reporting"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Contract workers are a separate category — they're managed by contractors, not us directly, so their attendance doesn't need to feed into our payroll system, just a simple log for compliance reporting."
+    }
+  ],
+  "expected_out_of_scope": [
+    "we are not doing shift scheduling or roster planning in this system. That's a separate initiative next year."
+  ],
+  "expected_constraints": [
+    "Budget-wise we've been told to keep this under 8 lakh rupees for the first year including any licensing, and it needs to be live before the next audit cycle in April."
+  ],
+  "distractors": [
+    "Honestly the WhatsApp leave process has been chaos, people forward screenshots of screenshots and we lose track of who approved what.",
+    "last March we had to redo payroll for 40 workers because someone changed an attendance record after the export."
+  ],
+  "stakeholders": [
+    {
+      "name": "Sunita Rao",
+      "role": "HR Head"
+    },
+    {
+      "name": "Vikram Singh",
+      "role": "Plant Manager"
+    },
+    {
+      "name": "Deepak Joshi",
+      "role": "Payroll Lead"
+    },
+    {
+      "name": "Anjali Mehta",
+      "role": "IT Manager"
+    }
+  ]
+}

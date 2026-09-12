@@ -1,0 +1,199 @@
+{
+  "id": "logistics_driver_dispatch",
+  "domain": "logistics",
+  "title": "Driver Dispatch & Proof of Delivery",
+  "notes": "Discovery call — Driver dispatch & proof-of-delivery platform — 10 Feb 2026\n\nKaran Malhotra (Head of Operations): We run about 3,500 deliveries a day across Bangalore and Hyderabad with roughly 220 riders. Right now dispatch is done manually by hub coordinators looking at a spreadsheet — we need the system to auto-assign the nearest available rider to each order.\n\nNeha Iyer (Product Owner): The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away.\n\nRavi Kumar (Fleet Manager): Riders need a mobile app that shows their route for the day, and it must work with patchy network — a lot of our delivery zones have poor connectivity. The app should queue updates offline and sync when signal comes back.\n\nKaran Malhotra (Head of Operations): Proof of delivery is critical — every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete. We had a spike in \"item not received\" disputes last quarter and it cost us badly on chargebacks.\n\nNeha Iyer (Product Owner): Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location.\n\nSameer Qureshi (Engineering Lead): For live tracking, the customer-facing tracking link needs to update the rider's location at least every 30 seconds. Our maps and routing run on the Google Maps Platform, that's already contracted.\n\nRavi Kumar (Fleet Manager): Failed deliveries need a reason code — customer not available, wrong address, refused — and those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub.\n\nKaran Malhotra (Head of Operations): We also need this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time. We're not replacing Unicommerce.\n\nSameer Qureshi (Engineering Lead): On scale, during the festive peak we hit 9,000 deliveries in a single day. The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak.\n\nNeha Iyer (Product Owner): Route optimization across an entire hub's deliveries — like solving the best order to visit 40 stops — is out of scope for this phase. We're doing single-order assignment only for now, batch routing is a phase two thing.\n\nRavi Kumar (Fleet Manager): One more constraint — riders are contract workers with their own phones, mostly older Android devices, so the app has to run acceptably on low-end Android, we can't assume everyone has a flagship phone.\n\nKaran Malhotra (Head of Operations): Last month we had a rider go completely off-route for two hours and nobody noticed until the customer called to complain, that shouldn't be able to happen again.\n\nKaran Malhotra (Head of Operations): We need this live before the next big sale event, which is roughly ten weeks out, and the finance team has capped spend at 35 lakh for build plus first year of maps API costs.",
+  "expected_requirements": [
+    {
+      "key": "auto_dispatch_nearest_rider",
+      "statement": "The system shall automatically assign the nearest available rider to each incoming order.",
+      "must_mention": [
+        [
+          "auto-assign",
+          "auto assign"
+        ],
+        [
+          "nearest available rider",
+          "nearest"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "we need the system to auto-assign the nearest available rider to each order."
+    },
+    {
+      "key": "dispatch_considers_rider_load",
+      "statement": "The system shall factor current rider load alongside distance when auto-assigning deliveries.",
+      "must_mention": [
+        [
+          "rider load",
+          "pending drops"
+        ],
+        [
+          "distance"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away."
+    },
+    {
+      "key": "offline_capable_rider_app",
+      "statement": "The system shall provide a rider mobile app that queues updates offline and syncs automatically once network signal returns.",
+      "must_mention": [
+        [
+          "offline"
+        ],
+        [
+          "sync"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "The app should queue updates offline and sync when signal comes back."
+    },
+    {
+      "key": "pod_photo_signature_otp",
+      "statement": "The system shall require a photo plus either a signature or OTP from the customer as proof of delivery before marking an order complete.",
+      "must_mention": [
+        [
+          "photo"
+        ],
+        [
+          "signature",
+          "otp"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete."
+    },
+    {
+      "key": "auto_otp_proximity_trigger",
+      "statement": "The system should ideally auto-send the delivery OTP via SMS when the rider is within 500 meters of the drop location.",
+      "must_mention": [
+        [
+          "500 meters"
+        ],
+        [
+          "otp"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location."
+    },
+    {
+      "key": "live_tracking_30s_refresh",
+      "statement": "The system shall update the customer-facing live tracking link with the rider's location at least every 30 seconds.",
+      "must_mention": [
+        [
+          "30 seconds"
+        ],
+        [
+          "tracking"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "the customer-facing tracking link needs to update the rider's location at least every 30 seconds."
+    },
+    {
+      "key": "google_maps_integration",
+      "statement": "The system shall use the Google Maps Platform for maps and routing.",
+      "must_mention": [
+        [
+          "google maps"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "Our maps and routing run on the Google Maps Platform, that's already contracted."
+    },
+    {
+      "key": "failed_delivery_reattempt",
+      "statement": "The system shall capture a reason code for failed deliveries and automatically trigger a reattempt the next day, up to two attempts before returning the order to the hub.",
+      "must_mention": [
+        [
+          "reason code"
+        ],
+        [
+          "two attempts",
+          "up to two"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Failed deliveries need a reason code — customer not available, wrong address, refused — and those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub."
+    },
+    {
+      "key": "unicommerce_integration",
+      "statement": "The system shall integrate with the existing Unicommerce order management system so order status updates flow back there in real time.",
+      "must_mention": [
+        [
+          "unicommerce"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "We also need this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time."
+    },
+    {
+      "key": "dispatch_latency_peak_load",
+      "statement": "The system shall assign a rider within 10 seconds of order creation even at peak volume of 9,000 deliveries a day.",
+      "must_mention": [
+        [
+          "10 seconds"
+        ],
+        [
+          "9,000",
+          "9000"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak."
+    },
+    {
+      "key": "low_end_android_support",
+      "statement": "The system's rider app shall run acceptably on low-end Android devices since riders use their own, mostly older phones.",
+      "must_mention": [
+        [
+          "low-end android",
+          "low end android"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "the app has to run acceptably on low-end Android, we can't assume everyone has a flagship phone."
+    }
+  ],
+  "expected_out_of_scope": [
+    "Route optimization across an entire hub's deliveries — like solving the best order to visit 40 stops — is out of scope for this phase. We're doing single-order assignment only for now, batch routing is a phase two thing."
+  ],
+  "expected_constraints": [
+    "We need this live before the next big sale event, which is roughly ten weeks out, and the finance team has capped spend at 35 lakh for build plus first year of maps API costs."
+  ],
+  "distractors": [
+    "Last month we had a rider go completely off-route for two hours and nobody noticed until the customer called to complain, that shouldn't be able to happen again.",
+    "We had a spike in \"item not received\" disputes last quarter and it cost us badly on chargebacks."
+  ],
+  "stakeholders": [
+    {
+      "name": "Karan Malhotra",
+      "role": "Head of Operations"
+    },
+    {
+      "name": "Neha Iyer",
+      "role": "Product Owner"
+    },
+    {
+      "name": "Ravi Kumar",
+      "role": "Fleet Manager"
+    },
+    {
+      "name": "Sameer Qureshi",
+      "role": "Engineering Lead"
+    }
+  ]
+}

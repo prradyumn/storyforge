@@ -1,0 +1,187 @@
+{
+  "id": "edtech_teacher_dashboard",
+  "domain": "edtech",
+  "title": "Teacher Dashboard — State Assessment Programme",
+  "notes": "Discovery workshop — Teacher dashboard for state assessment programme — 18 Feb 2026\n\nAnita Deshmukh (Programme Director, State Education Dept): We're rolling this out to about 12,000 government primary school teachers across the state. Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle, in the language they teach in.\n\nRohan Bhatt (Master Trainer): A lot of these teachers have only basic smartphones and unreliable data connectivity, especially in the tribal blocks. The dashboard has to load in under 5 seconds on a 3G connection, or teachers just won't use it — we saw that with the last app we rolled out.\n\nKavita Suresh (Field Coordinator): Assessment data currently comes from bubble sheets that get scanned at the block level. The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed — we're not changing how the scanning happens.\n\nAnita Deshmukh (Programme Director, State Education Dept): Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency, like \"cannot read a simple paragraph\" versus \"reading fluently.\"\n\nRohan Bhatt (Master Trainer): Ideally the dashboard would also suggest a remedial activity for each weak competency, pulled from the existing worksheet library, so teachers don't have to search for material themselves.\n\nKavita Suresh (Field Coordinator): Block education officers need a rollup view — average scores across all schools in their block, so they can see which schools need support without visiting each one individually.\n\nAnita Deshmukh (Programme Director, State Education Dept): This has to work in three languages at minimum for this phase — Hindi, Marathi, and English. Other regional languages would be nice for later but that's not this year's scope.\n\nImran Sheikh (Tech Lead, Implementation Partner): For data volume — we're expecting about 3.5 million individual student assessment records per cycle, four cycles a year. The dashboard queries need to stay responsive even as that history builds up over multiple years.\n\nKavita Suresh (Field Coordinator): One thing that's out of scope — this dashboard is read-only for teachers. We are not building any feature for teachers to edit or override assessment scores; corrections go through the block office process that already exists.\n\nRohan Bhatt (Master Trainer): Data privacy is a real concern — individual student scores should only be visible to that student's own teacher and their block officer, not to other teachers in the school.\n\nAnita Deshmukh (Programme Director, State Education Dept): I remember our pilot last year where a teacher accidentally saw another section's data and it became a whole issue with parents, so that access control really matters to us.\n\nImran Sheikh (Tech Lead, Implementation Partner): We need at least three years of historical assessment data retained so the department can track cohort progress over a child's schooling.\n\nAnita Deshmukh (Programme Director, State Education Dept): Budget for this phase is fixed at 60 lakh rupees, already approved, and it has to be ready before the next assessment cycle starts in June — that date isn't moving, it's tied to the academic calendar.",
+  "expected_requirements": [
+    {
+      "key": "teacher_class_score_dashboard",
+      "statement": "The system shall let teachers view their own class's foundational literacy and numeracy scores after each assessment cycle in their teaching language.",
+      "must_mention": [
+        [
+          "own class"
+        ],
+        [
+          "foundational literacy",
+          "numeracy"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle, in the language they teach in."
+    },
+    {
+      "key": "low_bandwidth_load_time",
+      "statement": "The system shall load the dashboard in under 5 seconds on a 3G connection.",
+      "must_mention": [
+        [
+          "5 seconds"
+        ],
+        [
+          "3g"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "The dashboard has to load in under 5 seconds on a 3G connection, or teachers just won't use it"
+    },
+    {
+      "key": "omr_scanning_integration",
+      "statement": "The system shall pull processed scanned assessment results from the existing OMR scanning system.",
+      "must_mention": [
+        [
+          "omr"
+        ]
+      ],
+      "type": "integration",
+      "priority": "must",
+      "evidence": "The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed"
+    },
+    {
+      "key": "competency_level_breakdown",
+      "statement": "The system shall show a breakdown of student performance by specific learning competency, not just an overall score.",
+      "must_mention": [
+        [
+          "competency"
+        ],
+        [
+          "breakdown"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency"
+    },
+    {
+      "key": "remedial_activity_suggestion",
+      "statement": "The system should ideally suggest remedial activities from the existing worksheet library for each weak competency identified.",
+      "must_mention": [
+        [
+          "remedial activity",
+          "remedial"
+        ],
+        [
+          "worksheet library"
+        ]
+      ],
+      "type": "functional",
+      "priority": "should",
+      "evidence": "Ideally the dashboard would also suggest a remedial activity for each weak competency, pulled from the existing worksheet library"
+    },
+    {
+      "key": "block_officer_rollup_view",
+      "statement": "The system shall provide block education officers a rollup view of average scores across all schools in their block.",
+      "must_mention": [
+        [
+          "block education officer",
+          "block officer"
+        ],
+        [
+          "rollup",
+          "average scores across"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "Block education officers need a rollup view — average scores across all schools in their block, so they can see which schools need support without visiting each one individually."
+    },
+    {
+      "key": "multilingual_support_3_languages",
+      "statement": "The system shall support at least three languages for this phase: Hindi, Marathi, and English.",
+      "must_mention": [
+        [
+          "hindi"
+        ],
+        [
+          "marathi"
+        ]
+      ],
+      "type": "functional",
+      "priority": "must",
+      "evidence": "This has to work in three languages at minimum for this phase — Hindi, Marathi, and English."
+    },
+    {
+      "key": "assessment_volume_query_performance",
+      "statement": "The system shall keep dashboard queries responsive at a scale of about 3.5 million student assessment records per cycle across four cycles a year.",
+      "must_mention": [
+        [
+          "3.5 million"
+        ],
+        [
+          "four cycles"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "we're expecting about 3.5 million individual student assessment records per cycle, four cycles a year. The dashboard queries need to stay responsive even as that history builds up"
+    },
+    {
+      "key": "student_score_access_control",
+      "statement": "The system shall restrict visibility of an individual student's scores to that student's own teacher and their block officer only.",
+      "must_mention": [
+        [
+          "own teacher"
+        ],
+        [
+          "block officer"
+        ]
+      ],
+      "type": "compliance",
+      "priority": "must",
+      "evidence": "individual student scores should only be visible to that student's own teacher and their block officer, not to other teachers in the school."
+    },
+    {
+      "key": "assessment_history_retention_3years",
+      "statement": "The system shall retain at least three years of historical assessment data for cohort progress tracking.",
+      "must_mention": [
+        [
+          "three years"
+        ],
+        [
+          "cohort progress"
+        ]
+      ],
+      "type": "non_functional",
+      "priority": "must",
+      "evidence": "We need at least three years of historical assessment data retained so the department can track cohort progress over a child's schooling."
+    }
+  ],
+  "expected_out_of_scope": [
+    "this dashboard is read-only for teachers. We are not building any feature for teachers to edit or override assessment scores; corrections go through the block office process that already exists."
+  ],
+  "expected_constraints": [
+    "Budget for this phase is fixed at 60 lakh rupees, already approved, and it has to be ready before the next assessment cycle starts in June — that date isn't moving, it's tied to the academic calendar."
+  ],
+  "distractors": [
+    "A lot of these teachers have only basic smartphones and unreliable data connectivity, especially in the tribal blocks.",
+    "I remember our pilot last year where a teacher accidentally saw another section's data and it became a whole issue with parents, so that access control really matters to us."
+  ],
+  "stakeholders": [
+    {
+      "name": "Anita Deshmukh",
+      "role": "Programme Director, State Education Dept"
+    },
+    {
+      "name": "Rohan Bhatt",
+      "role": "Master Trainer"
+    },
+    {
+      "name": "Kavita Suresh",
+      "role": "Field Coordinator"
+    },
+    {
+      "name": "Imran Sheikh",
+      "role": "Tech Lead, Implementation Partner"
+    }
+  ]
+}
