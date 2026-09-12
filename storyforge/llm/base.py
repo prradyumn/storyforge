@@ -17,7 +17,9 @@ class LLMError(RuntimeError):
 
 
 class RateLimited(LLMError):
-    pass
+    def __init__(self, msg: str, retry_after: float | None = None):
+        super().__init__(msg)
+        self.retry_after = retry_after
 
 
 @dataclass

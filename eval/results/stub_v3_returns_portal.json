@@ -1,0 +1,757 @@
+{
+ "brief": {
+  "title": "Discovery call — Self-service returns portal — 4 Sep 2026",
+  "business_goals": [
+   "We need customers to be able to start a return themselves from their order history without contacting us.",
+   "Anything outside that must be rejected automatically with a clear message, not sent to an agent.",
+   "Refunds cannot be issued until the warehouse has scanned the item back in.",
+   "The system has to hold the refund until the warehouse confirms receipt."
+  ],
+  "stakeholders": [
+   {
+    "name": "Meera Nair",
+    "role": "Head of Customer Operations",
+    "concerns": []
+   },
+   {
+    "name": "Rahul Desai",
+    "role": "Finance Controller",
+    "concerns": []
+   },
+   {
+    "name": "Priya Shah",
+    "role": "Warehouse Lead",
+    "concerns": []
+   },
+   {
+    "name": "Ankit Verma",
+    "role": "Engineering Manager",
+    "concerns": []
+   }
+  ],
+  "constraints": [
+   "Diwali week we did 12,000 orders a day; returns run about 8% of orders."
+  ],
+  "out_of_scope": [],
+  "open_questions": [
+   "Which metric defines success for launch?"
+  ],
+  "domain": "general"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall customers to be able to start a return themselves from their order history without contacting us.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need customers to be able to start a return themselves from their order history without contacting us.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall Anything outside that must be rejected automatically with a clear message, not sent to an agent.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Anything outside that must be rejected automatically with a clear message, not sent to an agent.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall Refunds cannot be issued until the warehouse has scanned the item back in.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Refunds cannot be issued until the warehouse has scanned the item back in.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall The system has to hold the refund until the warehouse confirms receipt.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The system has to hold the refund until the warehouse confirms receipt.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall a daily report of refunds issued, pending, and rejected, broken down by reason code, so I can reconcile against the payment gateway.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We also need a daily report of refunds issued, pending, and rejected, broken down by reason code, so I can reconcile against the payment gateway.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall The scan should update the return status immediately and trigger the refund.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The scan should update the return status immediately and trigger the refund.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall get an email at each step: return approved with the label attached, item received, refund issued.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Customers should get an email at each step: return approved with the label attached, item received, refund issued.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall Ideally SMS too, but email is the must.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Ideally SMS too, but email is the must.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall Whatever we build has to read orders from the Shopify API — we are not migrating orders.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Whatever we build has to read orders from the Shopify API — we are not migrating orders.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall The portal needs to handle our peak.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The portal needs to handle our peak.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall Page loads should stay under 2 seconds at that volume.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Page loads should stay under 2 seconds at that volume.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall this live before the Diwali sale, which means end of October.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We want this live before the Diwali sale, which means end of October.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core capability",
+    "goal": "Deliver the requested capability",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Customers to be able to start a return themselves from their",
+    "as_a": "operations manager",
+    "i_want": "customers to be able to start a return themselves from their order history without contacting us",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I customers to be able to start a return themselves from their order history witho",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Anything outside that must be rejected automatically with a ",
+    "as_a": "operations manager",
+    "i_want": "Anything outside that must be rejected automatically with a clear message, not sent to an agent",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Anything outside that must be rejected automatically with a clear message, not s",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Refunds cannot be issued until the warehouse has scanned the",
+    "as_a": "operations manager",
+    "i_want": "Refunds cannot be issued until the warehouse has scanned the item back in",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Refunds cannot be issued until the warehouse has scanned the item back in",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "The system has to hold the refund until the warehouse confir",
+    "as_a": "operations manager",
+    "i_want": "The system has to hold the refund until the warehouse confirms receipt",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The system has to hold the refund until the warehouse confirms receipt",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "A daily report of refunds issued, pending, and rejected, bro",
+    "as_a": "operations manager",
+    "i_want": "a daily report of refunds issued, pending, and rejected, broken down by reason code, so I can reconcile against the payment gateway",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I a daily report of refunds issued, pending, and rejected, broken down by reason c",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "The scan should update the return status immediately and tri",
+    "as_a": "operations manager",
+    "i_want": "The scan should update the return status immediately and trigger the refund",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The scan should update the return status immediately and trigger the refund",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-01",
+    "title": "Get an email at each step: return approved with the label at",
+    "as_a": "operations manager",
+    "i_want": "get an email at each step: return approved with the label attached, item received, refund issued",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I get an email at each step: return approved with the label attached, item receive",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-01",
+    "title": "Ideally sms too, but email is the must",
+    "as_a": "operations manager",
+    "i_want": "Ideally SMS too, but email is the must",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Ideally SMS too, but email is the must",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-01",
+    "title": "Whatever we build has to read orders from the shopify api — ",
+    "as_a": "operations manager",
+    "i_want": "Whatever we build has to read orders from the Shopify API — we are not migrating orders",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Whatever we build has to read orders from the Shopify API — we are not migrating",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-01",
+    "title": "The portal needs to handle our peak",
+    "as_a": "operations manager",
+    "i_want": "The portal needs to handle our peak",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The portal needs to handle our peak",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-01",
+    "title": "Page loads should stay under 2 seconds at that volume",
+    "as_a": "operations manager",
+    "i_want": "Page loads should stay under 2 seconds at that volume",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Page loads should stay under 2 seconds at that volume",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-01",
+    "title": "This live before the diwali sale, which means end of october",
+    "as_a": "operations manager",
+    "i_want": "this live before the Diwali sale, which means end of October",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I this live before the Diwali sale, which means end of October",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "No non-functional requirements for performance or availability were stated.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What response time and uptime do you expect at launch?"
+   }
+  ],
+  "coverage_note": "Stub analysis: each stated need maps to one story; non-functional coverage is thin."
+ },
+ "trace": {
+  "run_id": "673b5ca820",
+  "started_at": "2026-09-12T16:55:32.672481Z",
+  "prompt_version": "v3",
+  "backend": "stub",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1134,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1699,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1446,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3055,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 4619,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3136,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1427,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 2,
+  "stories_revised": 12,
+  "guardrail_flags": []
+ }
+}

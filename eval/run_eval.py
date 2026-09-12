@@ -140,6 +140,7 @@ def score_case(case: dict, r: AnalysisResult) -> dict:
         "tokens": r.trace.total_tokens,
         "latency_s": round(r.trace.total_latency_ms / 1000, 1),
         "guardrail_flags": len(r.trace.guardrail_flags),
+        "model": "+".join(sorted({f"{c.provider}/{c.model}" for c in r.trace.calls if c.ok})),
     }
 
 
@@ -185,7 +186,10 @@ def main(argv=None):
     ap.add_argument("--only", nargs="*", help="case ids to run")
     ap.add_argument("--out", default=str(Path(__file__).parent / "results"))
     ap.add_argument("--save-outputs", action="store_true", help="also save each AnalysisResult json")
+    ap.add_argument("--resume", action="store_true", help="skip cases whose saved output already exists (implies --save-outputs)")
     a = ap.parse_args(argv)
+    if a.resume:
+        a.save_outputs = True
 
     cases = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(GOLDEN.glob("*.json"))]
     if a.only:
@@ -198,8 +202,13 @@ def main(argv=None):
         t0 = time.time()
         print(f"\n=== backend={a.backend} prompts={pv} rounds={a.rounds} ({len(cases)} cases) ===")
         for case in cases:
+            saved = out_dir / f"{a.backend}_{pv}_{case['id']}.json"
             try:
-                r = analyze(case["notes"], backend=a.backend, prompt_version=pv, max_review_rounds=a.rounds)
+                if a.resume and saved.exists():
+                    r = AnalysisResult.model_validate_json(saved.read_text(encoding="utf-8"))
+                    print(f"  ↺ {case['id']}: loaded saved output", flush=True)
+                else:
+                    r = analyze(case["notes"], backend=a.backend, prompt_version=pv, max_review_rounds=a.rounds)
             except Exception as e:  # noqa: BLE001 — record and continue
                 failures.append({"id": case["id"], "error": str(e)[:300]})
                 print(f"  ✖ {case['id']}: {str(e)[:120]}")
@@ -207,12 +216,18 @@ def main(argv=None):
             row = score_case(case, r)
             rows.append(row)
             if a.save_outputs:
-                (out_dir / f"{a.backend}_{pv}_{case['id']}.json").write_text(r.model_dump_json(indent=1), encoding="utf-8")
+                saved.write_text(r.model_dump_json(indent=1), encoding="utf-8")
             print(
                 f"  {case['id']:<34} recall {row['recall']:.2f}  prec {row['precision']:.2f}  trace {row['traceable']}/{row['produced']}  "
-                f"stories {row['stories_passed']}/{row['stories']} pass  leaks {row['distractor_leaks']}/{row['distractors']}  {row['latency_s']}s"
+                f"stories {row['stories_passed']}/{row['stories']} pass  leaks {row['distractor_leaks']}/{row['distractors']}  {row['latency_s']}s  [{row['model']}]"
             )
         agg = aggregate(rows) if rows else {}
+        prev_path = out_dir / f"{a.backend}_{pv}.json"
+        if a.resume and prev_path.exists():
+            prev = json.loads(prev_path.read_text(encoding="utf-8"))
+            seen = {r["id"] for r in rows}
+            rows = sorted(rows + [r for r in prev.get("cases", []) if r["id"] not in seen], key=lambda r: r["id"])
+            agg = aggregate(rows) if rows else {}
         report = {
             "backend": a.backend,
             "prompt_version": pv,
@@ -225,6 +240,7 @@ def main(argv=None):
         }
         path = out_dir / f"{a.backend}_{pv}.json"
         path.write_text(json.dumps(report, indent=1), encoding="utf-8")
+        report["models"] = sorted({row.get("model", "") for row in rows})
         print("  ---")
         for k, v in agg.items():
             print(f"  {k:<28} {v}")

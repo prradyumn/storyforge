@@ -1,0 +1,645 @@
+{
+ "brief": {
+  "title": "Discovery workshop — Outpatient appointment scheduling — 3 Feb 2026",
+  "business_goals": [
+   "Patients need to be able to book, reschedule, and cancel appointments online.",
+   "Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites.",
+   "Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots."
+  ],
+  "stakeholders": [
+   {
+    "name": "Dr. Fiona Marsh",
+    "role": "Clinical Director",
+    "concerns": []
+   },
+   {
+    "name": "Tom Reilly",
+    "role": "Operations Manager",
+    "concerns": []
+   },
+   {
+    "name": "Ben Coulson",
+    "role": "Patient Services Manager",
+    "concerns": []
+   },
+   {
+    "name": "Aisha Patel",
+    "role": "IT Lead",
+    "concerns": []
+   }
+  ],
+  "constraints": [
+   "Across our nine clinics we still book appointments over the phone into a shared paper diary at each site, and double-bookings happen most weeks.",
+   "Under UK GDPR, patient data has to stay within the UK, and we need an audit trail of who viewed which patient record and when — that's something our last CQC inspection specifically asked about.",
+   "We've been told this needs to go live before the new financial year starts in April, and the board has capped the budget at £180,000 for this phase."
+  ],
+  "out_of_scope": [],
+  "open_questions": [
+   "Which metric defines success for launch?"
+  ],
+  "domain": "general"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall Patients need to be able to book, reschedule, and cancel appointments online.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Patients need to be able to book, reschedule, and cancel appointments online.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall Cancellations within 24 hours of the appointment should free the slot for another patient automatically, but we also want to flag those patients so reception can follow up — persistent late-cancellers are a real problem for us.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Cancellations within 24 hours of the appointment should free the slot for another patient automatically, but we also want to flag those patients so reception can follow up — persistent late-cancellers are a real problem for us.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall Under UK GDPR, patient data has to stay within the UK, and we need an audit trail of who viewed which patient record and when — that's something our last CQC inspection specifically asked about.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Under UK GDPR, patient data has to stay within the UK, and we need an audit trail of who viewed which patient record and when — that's something our last CQC inspection specifically asked about.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall We'd like patients to be able to request a specific clinician, though for some clinic types like physiotherapy, ideally the system should also let them just book \"next available\" instead.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We'd like patients to be able to request a specific clinician, though for some clinic types like physiotherapy, ideally the system should also let them just book \"next available\" instead.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall at least seven years of appointment and attendance history retained, in line with NHS records retention guidance.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need at least seven years of appointment and attendance history retained, in line with NHS records retention guidance.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall We've been told this needs to go live before the new financial year starts in April, and the board has capped the budget at £180,000 for this phase.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We've been told this needs to go live before the new financial year starts in April, and the board has capped the budget at £180,000 for this phase.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core capability",
+    "goal": "Deliver the requested capability",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Patients need to be able to book, reschedule, and cancel app",
+    "as_a": "operations manager",
+    "i_want": "Patients need to be able to book, reschedule, and cancel appointments online",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Patients need to be able to book, reschedule, and cancel appointments online",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Online booking should show real-time availability per clinic",
+    "as_a": "operations manager",
+    "i_want": "Online booking should show real-time availability per clinician, not just per clinic — some of our consultants split time across two sites",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Online booking should show real-time availability per clinician, not just per cl",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Any patient record has to pull from our nhs spine lookup to ",
+    "as_a": "operations manager",
+    "i_want": "Any patient record has to pull from our NHS Spine lookup to confirm the NHS number before the first appointment is confirmed — we can't have a booking without a verified NHS number, that's a hard requirement from the trust",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Any patient record has to pull from our NHS Spine lookup to confirm the NHS numb",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Appointment data needs to sync with emis both ways — a booki",
+    "as_a": "operations manager",
+    "i_want": "Appointment data needs to sync with EMIS both ways — a booking made online should show in EMIS, and if a clinician blocks time in EMIS, it should disappear from the online slots",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Appointment data needs to sync with EMIS both ways — a booking made online shoul",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Cancellations within 24 hours of the appointment should free",
+    "as_a": "operations manager",
+    "i_want": "Cancellations within 24 hours of the appointment should free the slot for another patient automatically, but we also want to flag those patients so reception can follow up — persistent late-cancellers are a real problem for us",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Cancellations within 24 hours of the appointment should free the slot for anothe",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Under uk gdpr, patient data has to stay within the uk, and w",
+    "as_a": "operations manager",
+    "i_want": "Under UK GDPR, patient data has to stay within the UK, and we need an audit trail of who viewed which patient record and when — that's something our last CQC inspection specifically asked about",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Under UK GDPR, patient data has to stay within the UK, and we need an audit trai",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-01",
+    "title": "We'd like patients to be able to request a specific clinicia",
+    "as_a": "operations manager",
+    "i_want": "We'd like patients to be able to request a specific clinician, though for some clinic types like physiotherapy, ideally the system should also let them just book \"next available\" instead",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I We'd like patients to be able to request a specific clinician, though for some c",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-01",
+    "title": "At least seven years of appointment and attendance history r",
+    "as_a": "operations manager",
+    "i_want": "at least seven years of appointment and attendance history retained, in line with NHS records retention guidance",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I at least seven years of appointment and attendance history retained, in line wit",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-01",
+    "title": "We've been told this needs to go live before the new financi",
+    "as_a": "operations manager",
+    "i_want": "We've been told this needs to go live before the new financial year starts in April, and the board has capped the budget at £180,000 for this phase",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I We've been told this needs to go live before the new financial year starts in Ap",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story",
+     "i_want chains several capabilities with and/or"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "No non-functional requirements for performance or availability were stated.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What response time and uptime do you expect at launch?"
+   }
+  ],
+  "coverage_note": "Stub analysis: each stated need maps to one story; non-functional coverage is thin."
+ },
+ "trace": {
+  "run_id": "3c16c4fc08",
+  "started_at": "2026-09-12T16:55:32.171762Z",
+  "prompt_version": "v3",
+  "backend": "stub",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1298,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2038,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1614,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2927,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 4335,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2987,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2876,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2987,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1671,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 13,
+  "guardrail_flags": []
+ }
+}

@@ -13,7 +13,7 @@ from .base import LLMClient, LLMError, RateLimited, Usage
 
 
 class LLMRouter:
-    def __init__(self, clients: list[LLMClient], max_attempts_per_client: int = 2, backoff_s: float = 1.5):
+    def __init__(self, clients: list[LLMClient], max_attempts_per_client: int = 6, backoff_s: float = 3.0):
         if not clients:
             raise LLMError("no LLM clients configured")
         self.clients = clients
@@ -39,7 +39,10 @@ class LLMRouter:
                     return client.complete_json(system, user, **kwargs)
                 except RateLimited as e:
                     last = e
-                    time.sleep(self.backoff_s * attempt)
+                    wait = min((e.retry_after or self.backoff_s * attempt) + 0.5, 90)
+                    if os.environ.get("STORYFORGE_VERBOSE"):
+                        print(f"    [{client.name}] rate limited, waiting {wait:.1f}s (attempt {attempt})", flush=True)
+                    time.sleep(wait)
                 except (LLMError, OSError, ValueError) as e:
                     last = e
                     break  # non-retryable on this provider, try the next

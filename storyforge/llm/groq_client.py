@@ -6,13 +6,30 @@ dependency footprint to httpx and makes the request/response shape visible.
 from __future__ import annotations
 
 import os
+import re
 
 import httpx
 
 from .base import LLMError, RateLimited, Usage, parse_json_loosely
 
+_TRY_AGAIN = re.compile(r"try again in ([0-9.]+)(ms|s|m)", re.I)
+
+
+def _retry_after(r: httpx.Response) -> float | None:
+    """Groq sends Retry-After and also says 'Please try again in 7.66s' in the body."""
+    if r.headers.get("retry-after"):
+        try:
+            return float(r.headers["retry-after"])
+        except ValueError:
+            pass
+    m = _TRY_AGAIN.search(r.text)
+    if m:
+        v, unit = float(m.group(1)), m.group(2).lower()
+        return v / 1000 if unit == "ms" else v * 60 if unit == "m" else v
+    return None
+
 GROQ_URL = "https://api.groq.com/openai/v1/chat/completions"
-DEFAULT_MODEL = "llama-3.3-70b-versatile"
+DEFAULT_MODEL = "openai/gpt-oss-120b"
 
 
 class GroqClient:
@@ -35,13 +52,14 @@ class GroqClient:
                 {"role": "user", "content": user},
             ],
         }
-        r = self._http.post(
-            GROQ_URL,
-            json=body,
-            headers={"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"},
-        )
+        headers = {"Authorization": f"Bearer {self.api_key}", "Content-Type": "application/json"}
+        r = self._http.post(GROQ_URL, json=body, headers=headers)
+        if r.status_code == 400 and "response_format" in r.text:
+            # Some models (e.g. compound systems) reject JSON mode; fall back to prompt-only JSON.
+            body.pop("response_format", None)
+            r = self._http.post(GROQ_URL, json=body, headers=headers)
         if r.status_code == 429:
-            raise RateLimited(r.text[:300])
+            raise RateLimited(r.text[:300], retry_after=_retry_after(r))
         if r.status_code >= 400:
             raise LLMError(f"groq {r.status_code}: {r.text[:300]}")
         data = r.json()

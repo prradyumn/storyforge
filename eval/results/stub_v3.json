@@ -2,8 +2,8 @@
  "backend": "stub",
  "prompt_version": "v3",
  "rounds": 2,
- "ran_at": "2026-09-12T16:35:25Z",
- "wall_s": 1.0,
+ "ran_at": "2026-09-12T16:55:33Z",
+ "wall_s": 0.0,
  "aggregate": {
   "cases": 8,
   "requirement_recall": 0.735,
@@ -20,7 +20,7 @@
   "schema_repairs_total": 0,
   "stories_revised_total": 116,
   "mean_calls": 8.75,
-  "mean_tokens": 26550,
+  "mean_tokens": 25385.75,
   "mean_latency_s": 0.0,
   "total_requirements_produced": 90,
   "total_stories": 90
@@ -50,9 +50,10 @@
    "revised": 13,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 27648,
+   "tokens": 26445,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "fintech_kyc_onboarding",
@@ -78,9 +79,10 @@
    "revised": 16,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 28649,
+   "tokens": 27444,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "healthcare_outpatient_scheduling",
@@ -106,9 +108,10 @@
    "revised": 13,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 25737,
+   "tokens": 24533,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "hospitality_housekeeping",
@@ -134,9 +137,10 @@
    "revised": 16,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 28703,
+   "tokens": 27500,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "hr_leave_attendance",
@@ -162,9 +166,10 @@
    "revised": 17,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 28320,
+   "tokens": 27118,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "logistics_driver_dispatch",
@@ -190,9 +195,10 @@
    "revised": 16,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 28708,
+   "tokens": 27506,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "returns_portal",
@@ -218,9 +224,10 @@
    "revised": 12,
    "schema_repairs": 0,
    "calls": 7,
-   "tokens": 18807,
+   "tokens": 17916,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   },
   {
    "id": "saas_usage_billing",
@@ -246,9 +253,10 @@
    "revised": 13,
    "schema_repairs": 0,
    "calls": 9,
-   "tokens": 25828,
+   "tokens": 24624,
    "latency_s": 0.0,
-   "guardrail_flags": 0
+   "guardrail_flags": 0,
+   "model": "stub/stub-heuristics-v1"
   }
  ],
  "failures": []

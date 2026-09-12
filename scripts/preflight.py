@@ -37,7 +37,7 @@ def check(name: str, fn, hard: bool = True):
 
 
 def local_checks():
-    check("python >= 3.11", lambda: sys.version.split()[0] if sys.version_info >= (3, 11) else (_ for _ in ()).throw(RuntimeError(sys.version)))
+    check("python >= 3.10", lambda: sys.version.split()[0] if sys.version_info >= (3, 10) else (_ for _ in ()).throw(RuntimeError(sys.version)))
     for mod in ("fastapi", "pydantic", "httpx", "uvicorn", "dotenv"):
         check(f"import {mod}", lambda m=mod: importlib.import_module(m).__name__)
     check("package imports", lambda: importlib.import_module("storyforge.pipeline").__name__)

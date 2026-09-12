@@ -7,8 +7,8 @@ output ever reaches the backlog.
 """
 from __future__ import annotations
 
-from datetime import UTC, datetime
-from enum import StrEnum
+from datetime import datetime, timezone
+from enum import Enum
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
@@ -38,14 +38,14 @@ class IntakeBrief(BaseModel):
 # --------------------------------------------------------------------------- #
 # Requirements
 # --------------------------------------------------------------------------- #
-class Priority(StrEnum):
+class Priority(str, Enum):  # noqa: UP042 — keep 3.10 compatible
     MUST = "must"
     SHOULD = "should"
     COULD = "could"
     WONT = "wont"
 
 
-class RequirementType(StrEnum):
+class RequirementType(str, Enum):  # noqa: UP042
     FUNCTIONAL = "functional"
     NON_FUNCTIONAL = "non_functional"
     DATA = "data"
@@ -193,7 +193,7 @@ class LLMCall(BaseModel):
 
 class RunTrace(BaseModel):
     run_id: str
-    started_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
+    started_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     prompt_version: str
     backend: str
     calls: list[LLMCall] = Field(default_factory=list)

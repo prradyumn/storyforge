@@ -1,0 +1,790 @@
+{
+ "brief": {
+  "title": "Discovery call — Driver dispatch & proof-of-delivery platform — 10 Feb 2026",
+  "business_goals": [
+   "Right now dispatch is done manually by hub coordinators looking at a spreadsheet — we need the system to auto-assign the nearest available rider to each order.",
+   "The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away.",
+   "Riders need a mobile app that shows their route for the day, and it must work with patchy network — a lot of our delivery zones have poor connectivity.",
+   "The app should queue updates offline and sync when signal comes back."
+  ],
+  "stakeholders": [
+   {
+    "name": "Karan Malhotra",
+    "role": "Head of Operations",
+    "concerns": []
+   },
+   {
+    "name": "Neha Iyer",
+    "role": "Product Owner",
+    "concerns": []
+   },
+   {
+    "name": "Ravi Kumar",
+    "role": "Fleet Manager",
+    "concerns": []
+   },
+   {
+    "name": "Sameer Qureshi",
+    "role": "Engineering Lead",
+    "concerns": []
+   }
+  ],
+  "constraints": [
+   "Last month we had a rider go completely off-route for two hours and nobody noticed until the customer called to complain, that shouldn't be able to happen again.",
+   "We need this live before the next big sale event, which is roughly ten weeks out, and the finance team has capped spend at 35 lakh for build plus first year of maps API costs."
+  ],
+  "out_of_scope": [],
+  "open_questions": [
+   "Which metric defines success for launch?"
+  ],
+  "domain": "general"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall Right now dispatch is done manually by hub coordinators looking at a spreadsheet — we need the system to auto-assign the nearest available rider to each order.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Right now dispatch is done manually by hub coordinators looking at a spreadsheet — we need the system to auto-assign the nearest available rider to each order.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall Riders need a mobile app that shows their route for the day, and it must work with patchy network — a lot of our delivery zones have poor connectivity.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Riders need a mobile app that shows their route for the day, and it must work with patchy network — a lot of our delivery zones have poor connectivity.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall The app should queue updates offline and sync when signal comes back.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The app should queue updates offline and sync when signal comes back.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall Proof of delivery is critical — every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Proof of delivery is critical — every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall For live tracking, the customer-facing tracking link needs to update the rider's location at least every 30 seconds.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "For live tracking, the customer-facing tracking link needs to update the rider's location at least every 30 seconds.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall Failed deliveries need a reason code — customer not available, wrong address, refused — and those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Failed deliveries need a reason code — customer not available, wrong address, refused — and those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We also need this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall One more constraint — riders are contract workers with their own phones, mostly older Android devices, so the app has to run acceptably on low-end Android, we can't assume everyone has a flagship phone.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "One more constraint — riders are contract workers with their own phones, mostly older Android devices, so the app has to run acceptably on low-end Android, we can't assume everyone has a flagship phone.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall this live before the next big sale event, which is roughly ten weeks out, and the finance team has capped spend at 35 lakh for build plus first year of maps API costs.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need this live before the next big sale event, which is roughly ten weeks out, and the finance team has capped spend at 35 lakh for build plus first year of maps API costs.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core capability",
+    "goal": "Deliver the requested capability",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Right now dispatch is done manually by hub coordinators look",
+    "as_a": "operations manager",
+    "i_want": "Right now dispatch is done manually by hub coordinators looking at a spreadsheet — we need the system to auto-assign the nearest available rider to each order",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Right now dispatch is done manually by hub coordinators looking at a spreadsheet",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "The auto-assignment needs to consider both distance and curr",
+    "as_a": "operations manager",
+    "i_want": "The auto-assignment needs to consider both distance and current rider load — someone with three pending drops shouldn't get a fourth if there's a free rider two streets away",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The auto-assignment needs to consider both distance and current rider load — som",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Riders need a mobile app that shows their route for the day,",
+    "as_a": "operations manager",
+    "i_want": "Riders need a mobile app that shows their route for the day, and it must work with patchy network — a lot of our delivery zones have poor connectivity",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Riders need a mobile app that shows their route for the day, and it must work wi",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "The app should queue updates offline and sync when signal co",
+    "as_a": "operations manager",
+    "i_want": "The app should queue updates offline and sync when signal comes back",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The app should queue updates offline and sync when signal comes back",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Proof of delivery is critical — every delivery needs a photo",
+    "as_a": "operations manager",
+    "i_want": "Proof of delivery is critical — every delivery needs a photo and either a signature or an OTP entered by the customer before it's marked complete",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Proof of delivery is critical — every delivery needs a photo and either a signat",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Ideally the otp should be sent to the customer automatically",
+    "as_a": "operations manager",
+    "i_want": "Ideally the OTP should be sent to the customer automatically via SMS when the rider is within, say, 500 meters of the drop location",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Ideally the OTP should be sent to the customer automatically via SMS when the ri",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-01",
+    "title": "For live tracking, the customer-facing tracking link needs t",
+    "as_a": "operations manager",
+    "i_want": "For live tracking, the customer-facing tracking link needs to update the rider's location at least every 30 seconds",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I For live tracking, the customer-facing tracking link needs to update the rider's",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-01",
+    "title": "Failed deliveries need a reason code — customer not availabl",
+    "as_a": "operations manager",
+    "i_want": "Failed deliveries need a reason code — customer not available, wrong address, refused — and those should automatically trigger a reattempt the next day, up to two attempts before we return it to the hub",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Failed deliveries need a reason code — customer not available, wrong address, re",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-01",
+    "title": "This to integrate with our existing order management system,",
+    "as_a": "operations manager",
+    "i_want": "this to integrate with our existing order management system, Unicommerce, so that order status updates flow back there in real time",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I this to integrate with our existing order management system, Unicommerce, so tha",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-01",
+    "title": "The dispatch engine has to assign a rider within 10 seconds ",
+    "as_a": "operations manager",
+    "i_want": "The dispatch engine has to assign a rider within 10 seconds of an order coming in, even at that peak",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The dispatch engine has to assign a rider within 10 seconds of an order coming i",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-01",
+    "title": "One more constraint — riders are contract workers with their",
+    "as_a": "operations manager",
+    "i_want": "One more constraint — riders are contract workers with their own phones, mostly older Android devices, so the app has to run acceptably on low-end Android, we can't assume everyone has a flagship phone",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I One more constraint — riders are contract workers with their own phones, mostly ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-01",
+    "title": "This live before the next big sale event, which is roughly t",
+    "as_a": "operations manager",
+    "i_want": "this live before the next big sale event, which is roughly ten weeks out, and the finance team has capped spend at 35 lakh for build plus first year of maps API costs",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I this live before the next big sale event, which is roughly ten weeks out, and th",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want chains several capabilities with and/or"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "No non-functional requirements for performance or availability were stated.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What response time and uptime do you expect at launch?"
+   }
+  ],
+  "coverage_note": "Stub analysis: each stated need maps to one story; non-functional coverage is thin."
+ },
+ "trace": {
+  "run_id": "d0363d3c2c",
+  "started_at": "2026-09-12T16:55:32.538897Z",
+  "prompt_version": "v3",
+  "backend": "stub",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1337,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2023,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1711,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3520,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 5201,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3601,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2941,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3601,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1771,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 16,
+  "guardrail_flags": []
+ }
+}

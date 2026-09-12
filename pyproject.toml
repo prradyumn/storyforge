@@ -3,7 +3,7 @@ name = "storyforge"
 version = "0.1.0"
 description = "Requirements-to-Backlog agentic workflow: stakeholder notes in, INVEST-reviewed user stories out, pushed to Jira."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.10"
 license = {text = "MIT"}
 authors = [{name = "Pradyumn Awasthi"}]
 dependencies = ["fastapi>=0.115", "uvicorn[standard]>=0.30", "httpx>=0.27", "pydantic>=2.7", "python-dotenv>=1.0"]
@@ -13,7 +13,7 @@ storyforge = "storyforge.cli:main"
 
 [tool.ruff]
 line-length = 140
-target-version = "py311"
+target-version = "py310"
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

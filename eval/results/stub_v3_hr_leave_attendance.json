@@ -1,0 +1,793 @@
+{
+ "brief": {
+  "title": "Discovery call — Leave & attendance system for plant workforce — 15 Jan 2026",
+  "business_goals": [
+   "We need this to move onto one system.",
+   "Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware.",
+   "Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours.",
+   "If the supervisor doesn't respond, it should escalate to the HR desk automatically."
+  ],
+  "stakeholders": [
+   {
+    "name": "Sunita Rao",
+    "role": "HR Head",
+    "concerns": []
+   },
+   {
+    "name": "Vikram Singh",
+    "role": "Plant Manager",
+    "concerns": []
+   },
+   {
+    "name": "Deepak Joshi",
+    "role": "Payroll Lead",
+    "concerns": []
+   },
+   {
+    "name": "Anjali Mehta",
+    "role": "IT Manager",
+    "concerns": []
+   }
+  ],
+  "constraints": [
+   "Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th.",
+   "That calculation has to be built in, it's a compliance thing, we can't get that wrong.",
+   "The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month."
+  ],
+  "out_of_scope": [],
+  "open_questions": [
+   "Which metric defines success for launch?"
+  ],
+  "domain": "general"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall this to move onto one system.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need this to move onto one system.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall If the supervisor doesn't respond, it should escalate to the HR desk automatically.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "If the supervisor doesn't respond, it should escalate to the HR desk automatically.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall There are different leave types — casual, sick, earned, and for factory workers specifically, the Factories Act requires we track earned leave accrual at one day for every 20 days worked.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "There are different leave types — casual, sick, earned, and for factory workers specifically, the Factories Act requires we track earned leave accrual at one day for every 20 days worked.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall That calculation has to be built in, it's a compliance thing, we can't get that wrong.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "That calculation has to be built in, it's a compliance thing, we can't get that wrong.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall at least two years of attendance history retained for labour audits — the last labour inspection asked for two years of records and we scrambled to pull it together from paper files.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need at least two years of attendance history retained for labour audits — the last labour inspection asked for two years of records and we scrambled to pull it together from paper files.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall From a technical side, the system needs to handle punch data for all 460 people syncing every few minutes without lag — let's say attendance status should update within 5 minutes of a punch.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "From a technical side, the system needs to handle punch data for all 460 people syncing every few minutes without lag — let's say attendance status should update within 5 minutes of a punch.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core capability",
+    "goal": "Deliver the requested capability",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "This to move onto one system",
+    "as_a": "operations manager",
+    "i_want": "this to move onto one system",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I this to move onto one system",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Whatever we build needs to pull punch-in and punch-out data ",
+    "as_a": "operations manager",
+    "i_want": "Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Whatever we build needs to pull punch-in and punch-out data from those scanners ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Workers should be able to apply for leave from a mobile app,",
+    "as_a": "operations manager",
+    "i_want": "Workers should be able to apply for leave from a mobile app, and their shift supervisor must approve or reject it within 24 hours",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Workers should be able to apply for leave from a mobile app, and their shift sup",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "If the supervisor doesn't respond, it should escalate to the",
+    "as_a": "operations manager",
+    "i_want": "If the supervisor doesn't respond, it should escalate to the HR desk automatically",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I If the supervisor doesn't respond, it should escalate to the HR desk automatical",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Payroll is run on the 28th of every month, so leave and atte",
+    "as_a": "operations manager",
+    "i_want": "Payroll is run on the 28th of every month, so leave and attendance data has to be locked and exported by the 25th",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Payroll is run on the 28th of every month, so leave and attendance data has to b",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "There are different leave types — casual, sick, earned, and ",
+    "as_a": "operations manager",
+    "i_want": "There are different leave types — casual, sick, earned, and for factory workers specifically, the Factories Act requires we track earned leave accrual at one day for every 20 days worked",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I There are different leave types — casual, sick, earned, and for factory workers ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-01",
+    "title": "That calculation has to be built in, it's a compliance thing",
+    "as_a": "operations manager",
+    "i_want": "That calculation has to be built in, it's a compliance thing, we can't get that wrong",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I That calculation has to be built in, it's a compliance thing, we can't get that ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-01",
+    "title": "Ideally supervisors should also be able to see a shift-wise ",
+    "as_a": "operations manager",
+    "i_want": "Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Ideally supervisors should also be able to see a shift-wise attendance dashboard",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-01",
+    "title": "The attendance and leave data needs to flow into greythr bef",
+    "as_a": "operations manager",
+    "i_want": "The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The attendance and leave data needs to flow into GreytHR before the payroll run ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-01",
+    "title": "Anyone who punches out more than 30 minutes after their shif",
+    "as_a": "operations manager",
+    "i_want": "Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Anyone who punches out more than 30 minutes after their shift end should have th",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-01",
+    "title": "At least two years of attendance history retained for labour",
+    "as_a": "operations manager",
+    "i_want": "at least two years of attendance history retained for labour audits — the last labour inspection asked for two years of records and we scrambled to pull it together from paper files",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I at least two years of attendance history retained for labour audits — the last l",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-01",
+    "title": "From a technical side, the system needs to handle punch data",
+    "as_a": "operations manager",
+    "i_want": "From a technical side, the system needs to handle punch data for all 460 people syncing every few minutes without lag — let's say attendance status should update within 5 minutes of a punch",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I From a technical side, the system needs to handle punch data for all 460 people ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want chains several capabilities with and/or"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want chains several capabilities with and/or"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "No non-functional requirements for performance or availability were stated.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What response time and uptime do you expect at launch?"
+   }
+  ],
+  "coverage_note": "Stub analysis: each stated need maps to one story; non-functional coverage is thin."
+ },
+ "trace": {
+  "run_id": "8654a957f4",
+  "started_at": "2026-09-12T16:55:32.407719Z",
+  "prompt_version": "v3",
+  "backend": "stub",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1398,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2043,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1624,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3417,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 5066,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3498,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3098,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3498,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1676,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 17,
+  "guardrail_flags": []
+ }
+}

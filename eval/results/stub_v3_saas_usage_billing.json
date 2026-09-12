@@ -1,0 +1,691 @@
+{
+ "brief": {
+  "title": "Discovery call — Usage-based billing & invoicing platform — 25 Feb 2026",
+  "business_goals": [
+   "Customers need real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end.",
+   "We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer.",
+   "The system has to calculate tiered charges correctly, we cannot get this wrong, it directly hits revenue recognition.",
+   "We also want usage alerts — ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves."
+  ],
+  "stakeholders": [
+   {
+    "name": "Laura Bennett",
+    "role": "VP Finance",
+    "concerns": []
+   },
+   {
+    "name": "Chris Nakamura",
+    "role": "Head of Product",
+    "concerns": []
+   },
+   {
+    "name": "Omar Haddad",
+    "role": "Engineering Lead",
+    "concerns": []
+   },
+   {
+    "name": "Grace Lindqvist",
+    "role": "Customer Success Lead",
+    "concerns": []
+   }
+  ],
+  "constraints": [
+   "Customers need real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end.",
+   "For scale, our biggest customer alone generates about 40 million API calls a month.",
+   "Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human."
+  ],
+  "out_of_scope": [],
+  "open_questions": [
+   "Which metric defines success for launch?"
+  ],
+  "domain": "general"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Customers need real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall The system has to calculate tiered charges correctly, we cannot get this wrong, it directly hits revenue recognition.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "The system has to calculate tiered charges correctly, we cannot get this wrong, it directly hits revenue recognition.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall usage alerts — ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We also want usage alerts — ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall Invoices need to go out through Stripe, since that's our existing payment processor and customers already have cards on file there — we are not switching payment processors as part of this.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Invoices need to go out through Stripe, since that's our existing payment processor and customers already have cards on file there — we are not switching payment processors as part of this.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall Invoices must be generated and sent within 24 hours of the billing period closing.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Invoices must be generated and sent within 24 hours of the billing period closing.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall The metering pipeline needs to handle that volume without dropping events — we can't have billing disputes because we undercounted someone's usage.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "The metering pipeline needs to handle that volume without dropping events — we can't have billing disputes because we undercounted someone's usage.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall seven years of invoice and usage data retained for tax and audit purposes, that's a hard finance requirement, not optional.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need seven years of invoice and usage data retained for tax and audit purposes, that's a hard finance requirement, not optional.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall This needs to be live before our fiscal year starts on July 1st, and the project budget is capped at $400,000 including the Kafka and Stripe integration work.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "This needs to be live before our fiscal year starts on July 1st, and the project budget is capped at $400,000 including the Kafka and Stripe integration work.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core capability",
+    "goal": "Deliver the requested capability",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-010"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Real-time visibility into their own usage — api calls consum",
+    "as_a": "operations manager",
+    "i_want": "real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I real-time visibility into their own usage — API calls consumed so far this billi",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "We already emit metering events to a kafka topic — the billi",
+    "as_a": "operations manager",
+    "i_want": "We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I We already emit metering events to a Kafka topic — the billing system needs to c",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "The system has to calculate tiered charges correctly, we can",
+    "as_a": "operations manager",
+    "i_want": "The system has to calculate tiered charges correctly, we cannot get this wrong, it directly hits revenue recognition",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The system has to calculate tiered charges correctly, we cannot get this wrong, ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Usage alerts — ideally customers get notified by email when ",
+    "as_a": "operations manager",
+    "i_want": "usage alerts — ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I usage alerts — ideally customers get notified by email when they hit 80% of any ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Invoices need to go out through stripe, since that's our exi",
+    "as_a": "operations manager",
+    "i_want": "Invoices need to go out through Stripe, since that's our existing payment processor and customers already have cards on file there — we are not switching payment processors as part of this",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Invoices need to go out through Stripe, since that's our existing payment proces",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Invoices must be generated and sent within 24 hours of the b",
+    "as_a": "operations manager",
+    "i_want": "Invoices must be generated and sent within 24 hours of the billing period closing",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Invoices must be generated and sent within 24 hours of the billing period closin",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-01",
+    "title": "The metering pipeline needs to handle that volume without dr",
+    "as_a": "operations manager",
+    "i_want": "The metering pipeline needs to handle that volume without dropping events — we can't have billing disputes because we undercounted someone's usage",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The metering pipeline needs to handle that volume without dropping events — we c",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-01",
+    "title": "Dunning and failed-payment retry logic should ideally be aut",
+    "as_a": "operations manager",
+    "i_want": "Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Dunning and failed-payment retry logic should ideally be automatic — retry a fai",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-01",
+    "title": "Seven years of invoice and usage data retained for tax and a",
+    "as_a": "operations manager",
+    "i_want": "seven years of invoice and usage data retained for tax and audit purposes, that's a hard finance requirement, not optional",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I seven years of invoice and usage data retained for tax and audit purposes, that'",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-01",
+    "title": "This needs to be live before our fiscal year starts on july ",
+    "as_a": "operations manager",
+    "i_want": "This needs to be live before our fiscal year starts on July 1st, and the project budget is capped at $400,000 including the Kafka and Stripe integration work",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I This needs to be live before our fiscal year starts on July 1st, and the project",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want chains several capabilities with and/or"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want chains several capabilities with and/or"
+    ],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "No non-functional requirements for performance or availability were stated.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What response time and uptime do you expect at launch?"
+   }
+  ],
+  "coverage_note": "Stub analysis: each stated need maps to one story; non-functional coverage is thin."
+ },
+ "trace": {
+  "run_id": "815ad9cf38",
+  "started_at": "2026-09-12T16:55:32.728266Z",
+  "prompt_version": "v3",
+  "backend": "stub",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1310,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2018,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1593,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3033,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 4497,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3101,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2527,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3101,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1644,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 13,
+  "guardrail_flags": []
+ }
+}

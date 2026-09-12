@@ -43,7 +43,7 @@ class Agent(Generic[T]):
 
     # -- shared machinery ------------------------------------------------------
     def system_prompt(self) -> str:
-        schema = json.dumps(self.output_model.model_json_schema(), indent=None)
+        schema = json.dumps(_compact(self.output_model.model_json_schema()), indent=None, separators=(",", ":"))
         return load_prompt(self.name, self.prompt_version) + (
             "\n\n## Output format\nReturn ONLY a JSON object that validates against this JSON Schema. "
             "No prose, no markdown fences.\n" + schema
@@ -82,6 +82,15 @@ class Agent(Generic[T]):
                 self.trace.calls.append(call)
                 raise AgentError(f"{self.name}: {e}") from e
         raise AgentError(f"{self.name}: output failed schema validation twice: {last_error}")
+
+
+def _compact(node):
+    """Drop 'title' keys — Pydantic adds one per field and they cost tokens without adding meaning."""
+    if isinstance(node, dict):
+        return {k: _compact(v) for k, v in node.items() if k != "title"}
+    if isinstance(node, list):
+        return [_compact(v) for v in node]
+    return node
 
 
 def tag(name: str, content: str) -> str:

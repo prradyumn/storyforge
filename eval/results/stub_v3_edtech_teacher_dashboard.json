@@ -1,0 +1,736 @@
+{
+ "brief": {
+  "title": "Discovery workshop — Teacher dashboard for state assessment programme — 18 Feb 2",
+  "business_goals": [
+   "Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle, in the language they teach in.",
+   "The dashboard has to load in under 5 seconds on a 3G connection, or teachers just won't use it — we saw that with the last app we rolled out.",
+   "The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed — we're not changing how the scanning happens.",
+   "Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency, like \"cannot read a simple paragraph\" versus \"reading fluently.\""
+  ],
+  "stakeholders": [
+   {
+    "name": "Anita Deshmukh",
+    "role": "Programme Director, State Education Dept",
+    "concerns": []
+   },
+   {
+    "name": "Rohan Bhatt",
+    "role": "Master Trainer",
+    "concerns": []
+   },
+   {
+    "name": "Kavita Suresh",
+    "role": "Field Coordinator",
+    "concerns": []
+   },
+   {
+    "name": "Imran Sheikh",
+    "role": "Tech Lead, Implementation Partner",
+    "concerns": []
+   }
+  ],
+  "constraints": [
+   "Budget for this phase is fixed at 60 lakh rupees, already approved, and it has to be ready before the next assessment cycle starts in June — that date isn't moving, it's tied to the academic calendar."
+  ],
+  "out_of_scope": [],
+  "open_questions": [
+   "Which metric defines success for launch?"
+  ],
+  "domain": "general"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle, in the language they teach in.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle, in the language they teach in.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall The dashboard has to load in under 5 seconds on a 3G connection, or teachers just won't use it — we saw that with the last app we rolled out.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The dashboard has to load in under 5 seconds on a 3G connection, or teachers just won't use it — we saw that with the last app we rolled out.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed — we're not changing how the scanning happens.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed — we're not changing how the scanning happens.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency, like \"cannot read a simple paragraph\" versus \"reading fluently.\".",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency, like \"cannot read a simple paragraph\" versus \"reading fluently.\"",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall Ideally the dashboard would also suggest a remedial activity for each weak competency, pulled from the existing worksheet library, so teachers don't have to search for material themselves.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Ideally the dashboard would also suggest a remedial activity for each weak competency, pulled from the existing worksheet library, so teachers don't have to search for material themselves.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall Block education officers need a rollup view — average scores across all schools in their block, so they can see which schools need support without visiting each one individually.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Block education officers need a rollup view — average scores across all schools in their block, so they can see which schools need support without visiting each one individually.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall This has to work in three languages at minimum for this phase — Hindi, Marathi, and English.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "This has to work in three languages at minimum for this phase — Hindi, Marathi, and English.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall The dashboard queries need to stay responsive even as that history builds up over multiple years.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "The dashboard queries need to stay responsive even as that history builds up over multiple years.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall Data privacy is a real concern — individual student scores should only be visible to that student's own teacher and their block officer, not to other teachers in the school.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Data privacy is a real concern — individual student scores should only be visible to that student's own teacher and their block officer, not to other teachers in the school.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall at least three years of historical assessment data retained so the department can track cohort progress over a child's schooling.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need at least three years of historical assessment data retained so the department can track cohort progress over a child's schooling.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall Budget for this phase is fixed at 60 lakh rupees, already approved, and it has to be ready before the next assessment cycle starts in June — that date isn't moving, it's tied to the academic calendar.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Budget for this phase is fixed at 60 lakh rupees, already approved, and it has to be ready before the next assessment cycle starts in June — that date isn't moving, it's tied to the academic calendar.",
+   "stakeholder": "",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core capability",
+    "goal": "Deliver the requested capability",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-009",
+     "R-010",
+     "R-011"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Teachers need a dashboard where they can see their own class",
+    "as_a": "operations manager",
+    "i_want": "Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle, in the language they teach in",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Teachers need a dashboard where they can see their own class's foundational lite",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "The dashboard has to load in under 5 seconds on a 3g connect",
+    "as_a": "operations manager",
+    "i_want": "The dashboard has to load in under 5 seconds on a 3G connection, or teachers just won't use it — we saw that with the last app we rolled out",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The dashboard has to load in under 5 seconds on a 3G connection, or teachers jus",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "The dashboard needs to pull scanned assessment results from ",
+    "as_a": "operations manager",
+    "i_want": "The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed — we're not changing how the scanning happens",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The dashboard needs to pull scanned assessment results from the existing OMR sca",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Teachers should be able to see which specific learning outco",
+    "as_a": "operations manager",
+    "i_want": "Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency, like \"cannot read a simple paragraph\" versus \"reading fluently.\"",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Teachers should be able to see which specific learning outcomes their students a",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Ideally the dashboard would also suggest a remedial activity",
+    "as_a": "operations manager",
+    "i_want": "Ideally the dashboard would also suggest a remedial activity for each weak competency, pulled from the existing worksheet library, so teachers don't have to search for material themselves",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Ideally the dashboard would also suggest a remedial activity for each weak compe",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Block education officers need a rollup view — average scores",
+    "as_a": "operations manager",
+    "i_want": "Block education officers need a rollup view — average scores across all schools in their block, so they can see which schools need support without visiting each one individually",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Block education officers need a rollup view — average scores across all schools ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-01",
+    "title": "This has to work in three languages at minimum for this phas",
+    "as_a": "operations manager",
+    "i_want": "This has to work in three languages at minimum for this phase — Hindi, Marathi, and English",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I This has to work in three languages at minimum for this phase — Hindi, Marathi, ",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-01",
+    "title": "The dashboard queries need to stay responsive even as that h",
+    "as_a": "operations manager",
+    "i_want": "The dashboard queries need to stay responsive even as that history builds up over multiple years",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I The dashboard queries need to stay responsive even as that history builds up ove",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-01",
+    "title": "Data privacy is a real concern — individual student scores s",
+    "as_a": "operations manager",
+    "i_want": "Data privacy is a real concern — individual student scores should only be visible to that student's own teacher and their block officer, not to other teachers in the school",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Data privacy is a real concern — individual student scores should only be visibl",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-01",
+    "title": "At least three years of historical assessment data retained ",
+    "as_a": "operations manager",
+    "i_want": "at least three years of historical assessment data retained so the department can track cohort progress over a child's schooling",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I at least three years of historical assessment data retained so the department ca",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-01",
+    "title": "Budget for this phase is fixed at 60 lakh rupees, already ap",
+    "as_a": "operations manager",
+    "i_want": "Budget for this phase is fixed at 60 lakh rupees, already approved, and it has to be ready before the next assessment cycle starts in June — that date isn't moving, it's tied to the academic calendar",
+    "so_that": "the team spends less time on manual handling",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authenticated user",
+      "when": "I Budget for this phase is fixed at 60 lakh rupees, already approved, and it has t",
+      "then": "the return status is displayed as submitted and a confirmation email is sent"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 3
+    },
+    "passed": false,
+    "issues": [
+     "i_want is over 30 words — probably more than one story"
+    ],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "No non-functional requirements for performance or availability were stated.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What response time and uptime do you expect at launch?"
+   }
+  ],
+  "coverage_note": "Stub analysis: each stated need maps to one story; non-functional coverage is thin."
+ },
+ "trace": {
+  "run_id": "b50dfb058c",
+  "started_at": "2026-09-12T16:55:31.880585Z",
+  "prompt_version": "v3",
+  "backend": "stub",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 1,
+    "prompt_tokens": 1413,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2111,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 1,
+    "prompt_tokens": 1729,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3368,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 4953,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3442,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 2435,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 3442,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "stub-heuristics-v1",
+    "provider": "stub",
+    "prompt_version": "v3",
+    "latency_ms": 0,
+    "prompt_tokens": 1752,
+    "completion_tokens": 200,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 13,
+  "guardrail_flags": []
+ }
+}
