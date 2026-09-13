@@ -3,187 +3,372 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>StoryForge — Requirements to Backlog</title>
+<title>StoryForge · Requirements to Backlog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f7f9;--card:#fff;--ink:#16181d;--muted:#5f6672;--line:#e3e6eb;--accent:#2f5bea;--accent-ink:#fff;--ok:#1a8f4d;--warn:#b7791f;--bad:#c0392b;--chip:#eef1f6;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
-@media (prefers-color-scheme:dark){:root{--bg:#0f1115;--card:#171a21;--ink:#e8eaf0;--muted:#9aa3b2;--line:#262b35;--accent:#6b8cff;--accent-ink:#0b0d12;--chip:#20252f}}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-header{display:flex;align-items:center;gap:14px;padding:16px 24px;border-bottom:1px solid var(--line);background:var(--card)}
-header h1{font-size:18px;margin:0;letter-spacing:.2px}header h1 span{color:var(--accent)}header .sub{color:var(--muted);font-size:13px}
-header .right{margin-left:auto;display:flex;gap:10px;align-items:center;font-size:13px;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--muted);display:inline-block;margin-right:6px}.dot.ok{background:var(--ok)}
-main{max-width:1200px;margin:0 auto;padding:20px 24px;display:grid;grid-template-columns:minmax(300px,420px) 1fr;gap:20px}
-@media (max-width:900px){main{grid-template-columns:1fr}}
-.card{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:18px}
-.card h2{font-size:14px;text-transform:uppercase;letter-spacing:.6px;color:var(--muted);margin:0 0 10px}
-textarea{width:100%;min-height:360px;resize:vertical;border:1px solid var(--line);border-radius:8px;padding:12px;font:13px/1.5 var(--mono);background:var(--bg);color:var(--ink)}
-.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
-select,button,input{font:inherit;border-radius:8px;border:1px solid var(--line);padding:8px 12px;background:var(--card);color:var(--ink)}
-button.primary{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600;cursor:pointer}
-button.primary:disabled{opacity:.5;cursor:wait}button.ghost{cursor:pointer;background:transparent}
-.hint{color:var(--muted);font-size:13px}
-.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin-bottom:14px;flex-wrap:wrap}
-.tabs button{border:none;background:transparent;padding:8px 12px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;border-radius:0}
-.tabs button.on{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
-.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:999px;background:var(--chip);color:var(--muted);font-weight:600;letter-spacing:.3px}
-.badge.ok{color:var(--ok)}.badge.warn{color:var(--warn)}.badge.bad{color:var(--bad)}.badge.prio{text-transform:uppercase}
-.kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px;margin-bottom:14px}
-.kpi{background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px}.kpi b{display:block;font-size:22px}.kpi span{font-size:12px;color:var(--muted)}
-table{width:100%;border-collapse:collapse;font-size:13.5px}th,td{text-align:left;padding:8px 8px;border-bottom:1px solid var(--line);vertical-align:top}th{color:var(--muted);font-weight:600;font-size:12px;text-transform:uppercase;letter-spacing:.4px}
-.story{border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:10px 0;background:var(--bg)}
-.story h4{margin:0 0 4px;font-size:15px}.story .sent{font-style:italic;color:var(--muted);margin:4px 0 8px}
-.ac{font-family:var(--mono);font-size:12.5px;background:var(--card);border:1px solid var(--line);border-radius:8px;padding:8px 10px;margin:6px 0;white-space:pre-wrap}
-.ac b{color:var(--accent)}
-.invest{display:inline-flex;gap:4px;margin-left:6px}.invest i{font:600 11px var(--mono);padding:1px 5px;border-radius:4px;background:var(--chip);font-style:normal}.invest i.low{color:var(--bad)}
-.epic{margin:18px 0 6px;font-size:16px}.epic small{color:var(--muted);font-weight:400}
-.quote{color:var(--muted);font-size:12.5px;border-left:2px solid var(--line);padding-left:8px;margin-top:4px}
-.trace{font:12.5px var(--mono)}.trace div{display:grid;grid-template-columns:110px 1fr 90px 80px;gap:8px;padding:4px 0;border-bottom:1px dashed var(--line)}
-.bar{height:8px;background:var(--accent);border-radius:4px;opacity:.75;align-self:center}
-.flag{color:var(--warn);font-size:13px}
-.empty{color:var(--muted);text-align:center;padding:60px 20px}
-pre.log{background:var(--bg);border:1px solid var(--line);border-radius:8px;padding:10px;font:12px var(--mono);max-height:300px;overflow:auto;white-space:pre-wrap}
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--accent);border-radius:50%;animation:s .8s linear infinite;vertical-align:-2px;margin-right:6px}@keyframes s{to{transform:rotate(360deg)}}
-a{color:var(--accent)}
-footer{max-width:1200px;margin:0 auto;padding:10px 24px 30px;color:var(--muted);font-size:12.5px}
+:root{
+  --page:#f4f5f7;--surface:#ffffff;--inset:#f8f9fa;
+  --ink:#1b2530;--ink2:#3d4a5a;--muted:#6b7684;--faint:#98a2ae;
+  --line:#dde2e8;--line2:#ebeef2;
+  --brand:#0f5c73;--brand-ink:#ffffff;--brand-soft:#e6f0f4;
+  --bar:#16212d;--bar-ink:#e9edf2;--bar-muted:#9aa7b6;
+  --ok:#1a7f45;--ok-soft:#e5f4ea;--warn:#a15c07;--warn-soft:#fbf1dc;--bad:#b42323;--bad-soft:#fbe7e7;--info:#2d4f9e;--info-soft:#e7edf9;
+  --sans:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --r:4px;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--page);color:var(--ink);font:14px/1.5 var(--sans);-webkit-font-smoothing:antialiased}
+a{color:var(--brand);text-decoration:none}a:hover{text-decoration:underline}
+code{font:12.5px var(--mono);background:var(--inset);border:1px solid var(--line2);padding:0 4px;border-radius:3px}
+button,select,input{font:inherit;color:inherit}
+
+/* top bar */
+.bar{background:var(--bar);color:var(--bar-ink);height:52px;display:flex;align-items:center;padding:0 24px;gap:22px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:600;font-size:15px;letter-spacing:.1px;color:#fff}
+.brand svg{display:block}
+.brand small{font-weight:400;color:var(--bar-muted);font-size:12.5px;margin-left:6px;padding-left:12px;border-left:1px solid #2b3846}
+.bar .status{margin-left:auto;display:flex;gap:8px;align-items:center;font-size:12px;color:var(--bar-muted)}
+.pill{display:inline-flex;align-items:center;gap:6px;border:1px solid #2b3846;border-radius:999px;padding:3px 10px;color:var(--bar-ink);background:#1d2a38}
+.pill .d{width:7px;height:7px;border-radius:50%;background:#5b6b7c}.pill .d.ok{background:#3ccf7a}.pill .d.off{background:#e0a02a}
+.bar a.nav{color:var(--bar-muted);font-size:12.5px}.bar a.nav:hover{color:#fff;text-decoration:none}
+
+/* workspace */
+.wrap{max-width:1360px;margin:0 auto;padding:20px 24px 40px}
+.grid{display:grid;grid-template-columns:400px minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:980px){.grid{grid-template-columns:1fr}}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:var(--r)}
+.panel-h{display:flex;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);min-height:44px}
+.panel-h h2{font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--ink2);margin:0;white-space:nowrap}
+.panel-h .sp{margin-left:auto;display:flex;gap:6px;align-items:center;min-width:0}.panel-h .sp select{max-width:180px}
+.panel-b{padding:14px}
+
+select,input[type=text],input[type=password]{height:30px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:0 8px;font-size:13px;color:var(--ink)}
+select:focus,input:focus,textarea:focus{outline:2px solid var(--brand-soft);border-color:var(--brand)}
+.btn{height:30px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);padding:0 12px;font-size:13px;font-weight:500;cursor:pointer;color:var(--ink);white-space:nowrap}
+.btn:hover{background:var(--inset)}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+.btn.primary:hover{background:#0c4b5e}
+.btn:disabled{opacity:.55;cursor:default}
+.btn.sm{height:26px;font-size:12px;padding:0 9px}
+
+textarea{width:100%;min-height:340px;resize:vertical;border:0;border-top:1px solid var(--line2);border-bottom:1px solid var(--line2);padding:12px 14px;font:12.5px/1.55 var(--mono);color:var(--ink);background:var(--surface);display:block}
+textarea::placeholder{color:var(--faint)}
+.meta{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;font-size:12px;color:var(--muted)}
+.controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;padding:12px 14px 14px;border-top:1px solid var(--line2)}
+.controls label{display:block;font-size:11px;color:var(--muted);margin-bottom:3px;letter-spacing:.02em}
+.controls select{width:100%}
+.controls .run{grid-column:1/-1;display:flex;gap:10px;align-items:center;margin-top:4px}
+.controls .run .btn{min-width:130px}
+.note{font-size:12.5px;color:var(--muted)}
+.note.err{color:var(--bad)}
+
+/* pipeline */
+.pipe{list-style:none;margin:0;padding:6px 0}
+.pipe li{display:grid;grid-template-columns:22px minmax(0,1fr) auto;gap:10px;align-items:start;padding:8px 14px;border-top:1px solid var(--line2)}.pipe .s{max-width:170px;text-align:right}
+.pipe li:first-child{border-top:0}
+.pipe .n{width:22px;height:22px;border-radius:50%;border:1px solid var(--line);font:500 11px var(--mono);display:flex;align-items:center;justify-content:center;color:var(--muted);background:var(--surface)}
+.pipe li.run .n{border-color:var(--brand);color:var(--brand);background:var(--brand-soft)}
+.pipe li.done .n{border-color:var(--ok);color:#fff;background:var(--ok)}
+.pipe .t{font-weight:500;font-size:13px}.pipe .t small{font-weight:400;color:var(--muted);margin-left:6px;white-space:nowrap}
+.pipe .d{font-size:12px;color:var(--muted);margin-top:1px;min-height:16px}
+.pipe .s{font:12px var(--mono);color:var(--faint);padding-top:2px}
+.pipe li.run .s{color:var(--brand)}
+.spin{display:inline-block;width:10px;height:10px;border:1.5px solid var(--line);border-top-color:var(--brand);border-radius:50%;animation:sp .8s linear infinite;vertical-align:-1px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+
+/* results */
+.empty{padding:56px 32px;text-align:center;color:var(--muted)}
+.empty h3{color:var(--ink);font-size:16px;font-weight:600;margin:0 0 6px}
+.empty p{margin:0 auto;max-width:520px;font-size:13.5px}
+.flow{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:22px;font:12px var(--mono);color:var(--ink2)}
+.flow span{border:1px solid var(--line);border-radius:var(--r);padding:4px 9px;background:var(--inset)}
+.flow i{color:var(--faint);font-style:normal;align-self:center}
+
+.strip{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:1px solid var(--line)}
+@media (max-width:700px){.strip{grid-template-columns:repeat(3,1fr)}}
+.strip div{padding:12px 14px;border-right:1px solid var(--line2)}
+.strip div:last-child{border-right:0}
+.strip b{display:block;font-size:20px;font-weight:600;line-height:1.15;letter-spacing:-.01em}
+.strip b small{font-size:13px;color:var(--muted);font-weight:500}
+.strip span{font-size:11.5px;color:var(--muted);letter-spacing:.02em}
+
+.tabs{display:flex;gap:2px;padding:0 10px;border-bottom:1px solid var(--line);overflow-x:auto}
+.tabs button{border:0;background:transparent;padding:10px 12px;font-size:13px;color:var(--muted);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap}
+.tabs button:hover{color:var(--ink)}
+.tabs button.on{color:var(--ink);font-weight:600;border-bottom-color:var(--brand)}
+.tabs button em{font-style:normal;font:500 11px var(--mono);color:var(--faint);margin-left:5px}
+.content{padding:16px 18px 20px}
+.content h3{font-size:16px;font-weight:600;margin:0 0 2px}
+.content h4{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin:20px 0 8px;font-weight:600}
+.content h4:first-child{margin-top:0}
+.content ul{margin:0;padding-left:18px}.content li{margin:3px 0}
+
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{text-align:left;font-size:11px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;padding:7px 8px;border-bottom:1px solid var(--line);background:var(--inset)}
+td{padding:9px 8px;border-bottom:1px solid var(--line2);vertical-align:top}
+tr:hover td{background:#fbfcfd}
+td code,th code{white-space:nowrap}
+
+.tag{display:inline-block;font:500 11px/1 var(--mono);padding:4px 6px;border-radius:3px;border:1px solid var(--line);color:var(--ink2);background:var(--surface);white-space:nowrap;letter-spacing:.02em}
+.tag.ok{color:var(--ok);background:var(--ok-soft);border-color:transparent}
+.tag.warn{color:var(--warn);background:var(--warn-soft);border-color:transparent}
+.tag.bad{color:var(--bad);background:var(--bad-soft);border-color:transparent}
+.tag.info{color:var(--info);background:var(--info-soft);border-color:transparent}
+.tag.must{color:var(--bad);border-color:#efc4c4}.tag.should{color:var(--warn);border-color:#ead9b4}.tag.could{color:var(--info);border-color:#c8d4ee}.tag.wont{color:var(--muted)}
+.quote{color:var(--muted);font-size:12.5px;border-left:2px solid var(--line);padding-left:8px;margin-top:5px;line-height:1.45}
+.assume{font-size:12px;color:var(--faint);margin-top:3px}
+
+.epic{display:flex;align-items:baseline;gap:8px;margin:18px 0 8px;padding-bottom:6px;border-bottom:1px solid var(--line)}
+.epic:first-child{margin-top:0}
+.epic b{font:500 12px var(--mono);color:var(--brand)}.epic span{font-weight:600;font-size:14px}.epic small{color:var(--muted);font-size:12.5px}
+.story{border:1px solid var(--line);border-radius:var(--r);margin:8px 0;background:var(--surface)}
+.story-h{display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:9px 12px;border-bottom:1px solid var(--line2);background:var(--inset)}
+.story-h .id{font:500 12px var(--mono);color:var(--brand)}
+.story-h .title{font-weight:600;font-size:13.5px}
+.story-h .right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.story-b{padding:10px 12px}
+.sent{color:var(--ink2);font-size:13px;margin-bottom:8px}.sent b{font-weight:600;color:var(--ink)}
+.ac{font:12.5px/1.5 var(--mono);border-left:2px solid var(--brand-soft);padding:2px 0 2px 10px;margin:6px 0;white-space:pre-wrap;color:var(--ink2)}
+.ac b{color:var(--brand);font-weight:500}
+.invest{display:inline-flex;gap:3px}.invest i{font:500 11px var(--mono);padding:3px 5px;border-radius:3px;background:var(--surface);border:1px solid var(--line);font-style:normal;color:var(--ink2)}
+.invest i.low{color:var(--bad);border-color:#efc4c4;background:var(--bad-soft)}
+.covers{font-size:12px;color:var(--muted);margin-top:8px;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.issue{color:var(--warn);font-size:12.5px}
+
+.trace{font:12.5px var(--mono)}
+.trace .row{display:grid;grid-template-columns:150px 1fr 80px 90px;gap:10px;padding:6px 0;border-bottom:1px solid var(--line2);align-items:center}
+.trace .row span:last-child,.trace .row span:nth-child(3){text-align:right;color:var(--muted)}
+.trace .bar{height:6px;background:var(--brand);opacity:.8;border-radius:2px}
+.trace .bar.bad{background:var(--bad)}
+.summary{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:var(--muted);padding-bottom:10px}
+.summary b{color:var(--ink);font-weight:500}
+
+pre.log{background:var(--bar);color:#d7dee7;border-radius:var(--r);padding:12px 14px;font:12px/1.5 var(--mono);max-height:320px;overflow:auto;white-space:pre-wrap;margin:10px 0 0}
+pre.log a{color:#7fd0ff}
+.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+footer{max-width:1360px;margin:0 auto;padding:0 24px 30px;color:var(--faint);font-size:12px;display:flex;gap:14px;flex-wrap:wrap}
+footer a{color:var(--muted)}
 </style>
 </head>
 <body>
-<header>
-  <h1><span>Story</span>Forge</h1>
-  <div class="sub">Stakeholder notes → requirements → INVEST-reviewed stories → Jira</div>
-  <div class="right" id="health"><span class="dot"></span>checking…</div>
+<header class="bar">
+  <div class="brand">
+    <svg width="20" height="20" viewBox="0 0 20 20" aria-hidden="true"><rect x="1" y="1" width="18" height="18" rx="3" fill="#0f5c73"/><path d="M5 6h10M5 10h7M5 14h4" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/></svg>
+    StoryForge <small>Requirements-to-backlog workflow</small>
+  </div>
+  <div class="status" id="health"><span class="pill"><span class="d"></span>connecting</span></div>
+  <a class="nav" href="https://github.com/prradyumn/storyforge" target="_blank" rel="noopener">Source &amp; evals</a>
+  <a class="nav" href="/docs" target="_blank">API</a>
 </header>
-<main>
-  <section class="card">
-    <h2>1 · Discovery notes</h2>
-    <div class="row" style="margin:0 0 8px">
-      <select id="examples"><option value="">Load an example…</option></select>
-      <button class="ghost" id="clear">Clear</button>
-    </div>
-    <textarea id="notes" placeholder="Paste meeting notes, an interview transcript, or a rough brief. Speaker labels like 'Meera (Head of Ops): …' help but aren't required."></textarea>
-    <div class="row">
-      <select id="backend" title="Which model answers">
-        <option value="">Live (Gemini → Groq)</option>
-        <option value="stub">Stub (offline heuristics)</option>
-      </select>
-      <select id="pv" title="Prompt version"></select>
-      <select id="rounds" title="Max review rounds"><option value="0">0 rounds</option><option value="1">1 round</option><option value="2" selected>2 rounds</option></select>
-      <button class="primary" id="run">Analyse →</button>
-    </div>
-    <p class="hint" id="status">Runs five agents: Intake → Requirements → Stories → INVEST Review (with a revise loop) → Gap analysis. Deterministic guardrails check traceability and Gherkin validity after every model call.</p>
-  </section>
 
-  <section class="card" id="results">
-    <div class="empty" id="empty">Results appear here.<br><span class="hint">Try an example on the left and hit Analyse.</span></div>
+<div class="wrap">
+<div class="grid">
+  <aside>
+    <section class="panel">
+      <div class="panel-h">
+        <h2>Source notes</h2>
+        <div class="sp">
+          <select id="examples"><option value="">Load example…</option></select>
+          <button class="btn sm" id="clear">Clear</button>
+        </div>
+      </div>
+      <textarea id="notes" spellcheck="false" placeholder="Paste discovery notes, an interview transcript or a rough brief.
+
+Speaker labels help but are not required:
+  Meera Nair (Head of Ops): Right now every return comes through the support inbox…"></textarea>
+      <div class="meta"><span id="wc">0 words</span><span>Plain text · up to 40,000 characters</span></div>
+      <div class="controls">
+        <div><label for="backend">Model backend</label>
+          <select id="backend">
+            <option value="">Live · Gemini 2.5 Flash, Groq fallback</option>
+            <option value="stub">Offline stub · heuristics, no model</option>
+          </select></div>
+        <div><label for="pv">Prompt version</label><select id="pv"></select></div>
+        <div><label for="rounds">Review rounds</label>
+          <select id="rounds"><option value="0">0 · review only</option><option value="1">1</option><option value="2" selected>2 · default</option></select></div>
+        <div><label>&nbsp;</label><span class="note" id="cost">—</span></div>
+        <div class="run"><button class="btn primary" id="run">Run analysis</button><span class="note" id="status">Five agents, deterministic guardrails after every call.</span></div>
+      </div>
+    </section>
+
+    <section class="panel" style="margin-top:16px">
+      <div class="panel-h"><h2>Agent pipeline</h2><div class="sp note" id="elapsed"></div></div>
+      <ol class="pipe" id="pipe">
+        <li data-s="intake"><span class="n">1</span><div><div class="t">Intake</div><div class="d">Goals, stakeholders, constraints, out-of-scope</div></div><span class="s"></span></li>
+        <li data-s="requirements"><span class="n">2</span><div><div class="t">Requirements</div><div class="d">Atomic statements with verbatim evidence; traceability guardrail</div></div><span class="s"></span></li>
+        <li data-s="stories"><span class="n">3</span><div><div class="t">Stories</div><div class="d">Epics, user stories, Given / When / Then</div></div><span class="s"></span></li>
+        <li data-s="review"><span class="n">4</span><div><div class="t">INVEST review</div><div class="d">Scores, pass / fail; failing stories sent back to the writer</div></div><span class="s"></span></li>
+        <li data-s="gaps"><span class="n">5</span><div><div class="t">Gap analysis</div><div class="d">Uncovered goals, missing NFRs, questions to ask</div></div><span class="s"></span></li>
+      </ol>
+    </section>
+  </aside>
+
+  <section class="panel" id="results">
+    <div class="empty" id="empty">
+      <h3>No analysis yet</h3>
+      <p>Load an example or paste your own notes, then run. Each requirement is traced back to the sentence it came from; each story is reviewed against INVEST before it reaches the backlog.</p>
+      <div class="flow"><span>notes</span><i>→</i><span>brief</span><i>→</i><span>requirements</span><i>→</i><span>stories</span><i>→</i><span>review ⟲ revise</span><i>→</i><span>gaps</span><i>→</i><span>Jira</span></div>
+    </div>
     <div id="out" hidden>
-      <div class="kpis" id="kpis"></div>
+      <div class="strip" id="kpis"></div>
       <div class="tabs" id="tabs">
         <button data-t="brief" class="on">Brief</button>
-        <button data-t="reqs">Requirements</button>
-        <button data-t="backlog">Backlog</button>
-        <button data-t="gaps">Gaps</button>
-        <button data-t="trace">Trace</button>
+        <button data-t="reqs">Requirements<em id="c-reqs"></em></button>
+        <button data-t="backlog">Backlog<em id="c-stories"></em></button>
+        <button data-t="gaps">Gaps<em id="c-gaps"></em></button>
+        <button data-t="trace">Run trace</button>
         <button data-t="export">Export &amp; Jira</button>
       </div>
-      <div id="panel"></div>
+      <div class="content" id="panel"></div>
     </div>
   </section>
-</main>
-<footer>StoryForge · an agentic requirements workflow · <a id="ghlink" href="https://github.com/prradyumn/storyforge" target="_blank" rel="noopener">source &amp; evals on GitHub</a> · <a href="https://storyforge-lsnr.onrender.com" target="_blank" rel="noopener">hosted demo</a> · <a href="/docs" target="_blank">API docs</a></footer>
+</div>
+</div>
+<footer>
+  <span>StoryForge · MIT · Pradyumn Awasthi</span>
+  <a href="https://github.com/prradyumn/storyforge" target="_blank" rel="noopener">GitHub</a>
+  <a href="https://github.com/prradyumn/storyforge/blob/main/eval/DECISIONS.md" target="_blank" rel="noopener">Evaluation &amp; decisions</a>
+  <a href="https://storyforge-lsnr.onrender.com" target="_blank" rel="noopener">Hosted demo</a>
+  <a href="/docs" target="_blank">API reference</a>
+</footer>
 
 <script>
-const $=s=>document.querySelector(s);const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-let R=null, tab='brief', health=null;
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+let R=null, tab='brief', health=null, examples=[];
+
+const STAGES=['intake','requirements','stories','review','gaps'];
+function resetPipe(){document.querySelectorAll('#pipe li').forEach(li=>{li.className='';li.querySelector('.s').textContent='';});$('#elapsed').textContent='';}
+function stageLabel(e){
+  switch(e.stage){
+    case 'intake': return e.status==='done'?`${e.goals} goals · ${e.stakeholders} stakeholders`:null;
+    case 'requirements': return e.status==='done'?`${e.count} requirements · ${e.traceable}/${e.count} traced`:null;
+    case 'stories': return e.status==='done'?`${e.epics} epics · ${e.stories} stories`:null;
+    case 'review': return e.status==='done'?`round ${e.round}: ${e.passed} pass · ${e.failing} to fix`:`round ${e.round}`;
+    case 'revise': return e.status==='done'?`rewrote ${e.revised} after round ${e.round}`:`rewriting ${e.stories} stories`;
+    case 'gaps': return e.status==='done'?`${e.count} gaps`:null;
+  }return null;
+}
+function applyProgress(events){
+  const seen={};
+  for(const e of events){const key=e.stage==='revise'?'review':e.stage;seen[key]=seen[key]||{};
+    if(e.stage==='revise'){seen.review.detail=stageLabel(e);seen.review.state='run';}
+    else{seen[key].state=e.status==='done'?'done':'run';const l=stageLabel(e);if(l)seen[key].detail=l;}
+    seen[key].t=e.t;}
+  document.querySelectorAll('#pipe li').forEach(li=>{const s=seen[li.dataset.s];if(!s)return;
+    li.className=s.state;const sl=li.querySelector('.s');
+    sl.innerHTML=s.state==='run'?`<span class="spin"></span>${s.detail?esc(s.detail):'working'}`:esc(s.detail||'done');});
+}
 
 async function init(){
   try{health=await (await fetch('/api/health')).json();
     const live=health.backends.groq||health.backends.gemini;
-    $('#health').innerHTML=`<span class="dot ${live?'ok':''}"></span>${live?`live models ready · ${health.live_runs_remaining_today} live runs left today`:'stub only (no keys)'} · Jira ${health.jira_configured?'connected ('+esc(health.jira_project)+')':'dry-run only'}`;
+    $('#health').innerHTML=
+      `<span class="pill"><span class="d ${live?'ok':'off'}"></span>${live?'models online':'stub only'}</span>`+
+      (live?`<span class="pill">${health.live_runs_remaining_today} live runs left today</span>`:'')+
+      `<span class="pill"><span class="d ${health.jira_configured?'ok':''}"></span>Jira ${health.jira_configured?esc(health.jira_project):'dry-run'}</span>`;
     if(!live){$('#backend').value='stub';$('#backend').options[0].disabled=true;}
     $('#pv').innerHTML=health.prompt_versions.map(v=>`<option ${v===health.default_prompt_version?'selected':''}>${v}</option>`).join('');
-  }catch(e){$('#health').textContent='API unreachable';}
-  try{const ex=await (await fetch('/api/examples')).json();
-    ex.forEach((e,i)=>{const o=document.createElement('option');o.value=i;o.textContent=e.name;$('#examples').appendChild(o);});
-    $('#examples').onchange=()=>{if($('#examples').value!=='')$('#notes').value=ex[$('#examples').value].notes;};
+  }catch(e){$('#health').innerHTML='<span class="pill"><span class="d off"></span>API unreachable</span>';}
+  try{examples=await (await fetch('/api/examples')).json();
+    examples.forEach((e,i)=>{const o=document.createElement('option');o.value=i;o.textContent=e.name;$('#examples').appendChild(o);});
   }catch(e){}
+  updCost();
 }
-$('#clear').onclick=()=>{$('#notes').value='';$('#examples').value='';};
-$('#tabs').onclick=e=>{if(e.target.dataset.t){tab=e.target.dataset.t;render();}};
+const words=()=>($('#notes').value.trim().match(/\S+/g)||[]).length;
+function updCost(){const w=words();$('#wc').textContent=`${w.toLocaleString()} words`;
+  const stub=$('#backend').value==='stub';$('#cost').textContent=stub?'Instant · no model calls':`≈ ${Math.max(2,Math.round(w/180))}–${Math.max(4,Math.round(w/110))} min on the free tier`;}
+$('#notes').oninput=updCost;$('#backend').onchange=updCost;
+$('#examples').onchange=()=>{if($('#examples').value!==''){$('#notes').value=examples[$('#examples').value].notes;updCost();}};
+$('#clear').onclick=()=>{$('#notes').value='';$('#examples').value='';updCost();};
+$('#tabs').onclick=e=>{const b=e.target.closest('button');if(b&&b.dataset.t){tab=b.dataset.t;render();}};
 
 $('#run').onclick=async()=>{
-  const notes=$('#notes').value.trim();if(notes.length<40){$('#status').textContent='Give me at least a few sentences of notes.';return;}
-  $('#run').disabled=true;const t0=Date.now();const stub=$('#backend').value==='stub';
-  const stages=['Intake','Requirements','Stories','INVEST review','Revise loop','Gap analysis'];
-  const tick=()=>{const s=((Date.now()-t0)/1000)|0;const i=Math.min(stages.length-1,Math.floor(s/40));$('#status').innerHTML=`<span class="spinner"></span>Running agents… <b>${stages[i]}</b> · ${s}s elapsed${stub?'':' · live runs take 3–5 min on the free tier'}`;};
-  tick();const timer=setInterval(tick,1000);
+  const notes=$('#notes').value.trim();
+  if(notes.length<40){$('#status').className='note err';$('#status').textContent='Add at least a few sentences of notes.';return;}
+  $('#run').disabled=true;$('#status').className='note';resetPipe();
+  const t0=Date.now();const stub=$('#backend').value==='stub';
+  const timer=setInterval(()=>{$('#elapsed').textContent=`${((Date.now()-t0)/1000)|0} s`;},500);
+  $('#status').innerHTML=`<span class="spin"></span>Running${stub?'':' · live runs take a few minutes'}`;
   try{
     const body={notes,prompt_version:$('#pv').value,max_review_rounds:+$('#rounds').value};if($('#backend').value)body.backend=$('#backend').value;
     const r=await fetch('/api/analyze/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok){const e=await r.json().catch(()=>({detail:r.statusText}));throw new Error(e.detail||r.statusText);}
     const {job_id}=await r.json();
-    for(;;){await new Promise(res=>setTimeout(res,stub?400:3000));
+    for(;;){await new Promise(res=>setTimeout(res,stub?300:2500));
       const j=await (await fetch('/api/jobs/'+job_id)).json();
+      applyProgress(j.progress||[]);
       if(j.status==='done'){R=j.result;break;}
       if(j.status==='error')throw new Error(j.error||'analysis failed');}
     tab='brief';render();
-    $('#status').textContent=`Done in ${((Date.now()-t0)/1000).toFixed(1)} s · ${R.trace.calls.length} model calls · ${R.trace.review_rounds} review round(s).`;
-  }catch(e){$('#status').innerHTML=`<span style="color:var(--bad)">${esc(e.message)}</span>`;}
+    $('#status').textContent=`Done in ${((Date.now()-t0)/1000).toFixed(1)} s · ${R.trace.calls.length} model calls · ${R.trace.review_rounds} review round${R.trace.review_rounds===1?'':'s'}`;
+  }catch(e){$('#status').className='note err';$('#status').textContent=e.message;}
   clearInterval(timer);$('#run').disabled=false;
 };
 
 function render(){
   if(!R)return;$('#empty').hidden=true;$('#out').hidden=false;
   document.querySelectorAll('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.t===tab));
-  const passed=R.reviews.reviews.filter(x=>x.passed).length, tr=R.requirements.filter(x=>x.traceable).length;
+  const passed=R.reviews.reviews.filter(x=>x.passed).length, tr=R.requirements.filter(x=>x.traceable).length, n=R.requirements.length, ns=R.backlog.stories.length;
+  $('#c-reqs').textContent=n;$('#c-stories').textContent=ns;$('#c-gaps').textContent=R.gaps.gaps.length;
   $('#kpis').innerHTML=[
-    [R.requirements.length,'requirements'],[`${tr}/${R.requirements.length}`,'traceable to notes'],[R.backlog.stories.length,'stories'],
-    [`${passed}/${R.backlog.stories.length}`,'sprint-ready'],[R.trace.stories_revised,'revised by loop'],[R.gaps.gaps.length,'gaps found']
-  ].map(([b,s])=>`<div class="kpi"><b>${b}</b><span>${s}</span></div>`).join('');
+    [n,'Requirements'],[`${tr}<small>/${n}</small>`,'Traceable to notes'],[`${R.backlog.epics.length}<small> · ${ns}</small>`,'Epics · stories'],
+    [`${passed}<small>/${ns}</small>`,'Sprint-ready'],[R.trace.stories_revised,'Rewritten by the loop'],[R.gaps.gaps.length,'Gaps to take back']
+  ].map(([b,s])=>`<div><b>${b}</b><span>${s}</span></div>`).join('');
   $('#panel').innerHTML=({brief,reqs,backlog,gaps,trace,export:exportPanel})[tab]();
   if(tab==='export')wireExport();
 }
 
+const prio=p=>`<span class="tag ${p}">${p}</span>`;
 function brief(){const b=R.brief;return `
-  <h3 style="margin:4px 0 2px">${esc(b.title)}</h3><div class="hint">${esc(b.domain)}</div>
+  <h3>${esc(b.title)}</h3><div class="note">${esc(b.domain)}</div>
   <h4>Business goals</h4><ul>${b.business_goals.map(g=>`<li>${esc(g)}</li>`).join('')}</ul>
-  <h4>Stakeholders</h4><table><tr><th>Name</th><th>Role</th><th>Concerns</th></tr>${b.stakeholders.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.role)}</td><td>${esc(s.concerns.join('; '))}</td></tr>`).join('')||'<tr><td colspan=3 class="hint">none identified</td></tr>'}</table>
-  <h4>Constraints</h4><ul>${b.constraints.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="hint">none stated</li>'}</ul>
-  <h4>Out of scope</h4><ul>${b.out_of_scope.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="hint">none stated</li>'}</ul>
-  <h4>Open questions</h4><ul>${b.open_questions.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="hint">none</li>'}</ul>`;}
+  <h4>Stakeholders</h4><table><tr><th>Name</th><th>Role</th><th>Concerns</th></tr>${b.stakeholders.map(s=>`<tr><td>${esc(s.name)}</td><td>${esc(s.role)}</td><td>${esc(s.concerns.join('; '))}</td></tr>`).join('')||'<tr><td colspan=3 class="note">None identified</td></tr>'}</table>
+  <h4>Constraints</h4><ul>${b.constraints.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="note">None stated</li>'}</ul>
+  <h4>Out of scope</h4><ul>${b.out_of_scope.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="note">None stated</li>'}</ul>
+  <h4>Open questions</h4><ul>${b.open_questions.map(g=>`<li>${esc(g)}</li>`).join('')||'<li class="note">None</li>'}</ul>`;}
 
-function reqs(){return `<table><tr><th>ID</th><th>Requirement</th><th>Type</th><th>Prio</th><th>Trace</th></tr>${R.requirements.map(r=>`
-  <tr><td><code>${r.id}</code></td><td>${esc(r.statement)}<div class="quote">“${esc(r.evidence)}”${r.stakeholder?` — ${esc(r.stakeholder)}`:''}</div>${r.assumptions.length?`<div class="hint">Assumes: ${esc(r.assumptions.join('; '))}</div>`:''}</td>
-  <td><span class="badge">${r.type.replace('_',' ')}</span></td><td><span class="badge prio">${r.priority}</span></td>
-  <td>${r.traceable?`<span class="badge ok" title="evidence found verbatim in notes">✓ ${r.trace_score}</span>`:`<span class="badge bad" title="evidence quote not found in notes">✗ ${r.trace_score}</span>`}</td></tr>`).join('')}</table>`;}
+function reqs(){return `<table><tr><th style="width:64px">ID</th><th>Requirement and evidence</th><th>Type</th><th>Priority</th><th>Trace</th></tr>${R.requirements.map(r=>`
+  <tr><td><code>${r.id}</code></td><td>${esc(r.statement)}<div class="quote">“${esc(r.evidence)}”${r.stakeholder?` — ${esc(r.stakeholder)}`:''}</div>${r.assumptions.length?`<div class="assume">Assumes: ${esc(r.assumptions.join('; '))}</div>`:''}</td>
+  <td><span class="tag">${r.type.replace('_',' ')}</span></td><td>${prio(r.priority)}</td>
+  <td>${r.traceable?`<span class="tag ok" title="Evidence found verbatim in the notes">${r.trace_score}</span>`:`<span class="tag bad" title="Evidence quote not found in the notes">${r.trace_score}</span>`}</td></tr>`).join('')}</table>`;}
 
 function backlog(){const rv=Object.fromEntries(R.reviews.reviews.map(x=>[x.story_id,x]));let h='';
   for(const e of R.backlog.epics){const ss=R.backlog.stories.filter(s=>s.epic_id===e.id);
-    h+=`<div class="epic"><b>${e.id}</b> · ${esc(e.title)} <small>— ${esc(e.goal)}</small></div>`;
+    h+=`<div class="epic"><b>${e.id}</b><span>${esc(e.title)}</span><small>${esc(e.goal)}</small></div>`;
     h+=ss.map(s=>{const v=rv[s.id];const sc=v?v.scores:null;return `<div class="story">
-      <h4>${s.id} · ${esc(s.title)} <span class="badge prio">${s.priority}</span>${s.story_points?` <span class="badge">${s.story_points} pts</span>`:''} ${v?(v.passed?'<span class="badge ok">ready</span>':'<span class="badge warn">needs work</span>'):''}${s.review_round?`<span class="badge" title="rewritten by the revise loop">revised r${s.review_round}</span>`:''}
-      ${sc?`<span class="invest">${['independent','negotiable','valuable','estimable','small','testable'].map(k=>`<i class="${sc[k]<3?'low':''}" title="${k}">${k[0].toUpperCase()}${sc[k]}</i>`).join('')}</span>`:''}</h4>
+      <div class="story-h"><span class="id">${s.id}</span><span class="title">${esc(s.title)}</span>
+        <span class="right">${prio(s.priority)}${s.story_points?`<span class="tag">${s.story_points} pts</span>`:''}${s.review_round?`<span class="tag info" title="Rewritten by the revise loop">revised r${s.review_round}</span>`:''}${v?(v.passed?'<span class="tag ok">sprint-ready</span>':'<span class="tag warn">needs work</span>'):''}</span></div>
+      <div class="story-b">
       <div class="sent">As a <b>${esc(s.as_a)}</b>, I want ${esc(s.i_want)}, so that ${esc(s.so_that)}.</div>
-      ${s.acceptance_criteria.map(a=>`<div class="ac"><b>Given</b> ${esc(a.given)}\n<b>When</b> ${esc(a.when)}\n<b>Then</b> ${esc(a.then)}</div>`).join('')}
-      <div class="hint">Covers ${s.requirement_ids.map(x=>`<code>${x}</code>`).join(' ')}${v&&v.issues.length?` · <span class="flag">${esc(v.issues.join(' · '))}</span>`:''}</div></div>`;}).join('');}
-  const orphans=R.backlog.stories.filter(s=>!R.backlog.epics.some(e=>e.id===s.epic_id));if(orphans.length)h+=`<div class="hint">${orphans.length} story(ies) reference an unknown epic.</div>`;
-  if(R.reviews.duplicate_pairs.length)h+=`<p class="flag">Possible duplicates: ${R.reviews.duplicate_pairs.map(p=>p.join('↔')).join(', ')}</p>`;
-  if(R.reviews.conflict_pairs.length)h+=`<p class="flag">Conflicts: ${R.reviews.conflict_pairs.map(p=>p.join('↔')).join(', ')}</p>`;
+      ${s.acceptance_criteria.map(a=>`<div class="ac"><b>Given</b> ${esc(a.given)}\n<b>When</b>  ${esc(a.when)}\n<b>Then</b>  ${esc(a.then)}</div>`).join('')}
+      <div class="covers">${sc?`<span class="invest" title="INVEST scores, 1–5">${['independent','negotiable','valuable','estimable','small','testable'].map(k=>`<i class="${sc[k]<3?'low':''}" title="${k}: ${sc[k]}">${k[0].toUpperCase()}${sc[k]}</i>`).join('')}</span>`:''}
+        <span>covers ${s.requirement_ids.map(x=>`<code>${x}</code>`).join(' ')}</span>${v&&v.issues.length?`<span class="issue">${esc(v.issues.join(' · '))}</span>`:''}</div>
+      </div></div>`;}).join('');}
+  const orphans=R.backlog.stories.filter(s=>!R.backlog.epics.some(e=>e.id===s.epic_id));if(orphans.length)h+=`<p class="note">${orphans.length} story(ies) reference an unknown epic.</p>`;
+  if(R.reviews.duplicate_pairs.length)h+=`<p class="issue">Possible duplicates: ${R.reviews.duplicate_pairs.map(p=>p.join(' ↔ ')).join(', ')}</p>`;
+  if(R.reviews.conflict_pairs.length)h+=`<p class="issue">Conflicts: ${R.reviews.conflict_pairs.map(p=>p.join(' ↔ ')).join(', ')}</p>`;
   return h;}
 
-function gaps(){return `<p>${esc(R.gaps.coverage_note)}</p><table><tr><th>Sev</th><th>Kind</th><th>Gap</th><th>Ask the stakeholder</th></tr>${R.gaps.gaps.map(g=>`<tr><td><span class="badge ${g.severity==='high'?'bad':g.severity==='medium'?'warn':''}">${g.severity}</span></td><td>${esc(g.kind.replace('_',' '))}</td><td>${esc(g.description)}${g.related_ids.length?`<div class="hint">${g.related_ids.map(x=>`<code>${x}</code>`).join(' ')}</div>`:''}</td><td>${esc(g.suggested_question)}</td></tr>`).join('')||'<tr><td colspan=4 class="hint">No gaps flagged.</td></tr>'}</table>
-  <h4>Traceability matrix</h4><table><tr><th>Requirement</th><th>Stories</th></tr>${R.requirements.map(r=>{const st=R.backlog.stories.filter(s=>s.requirement_ids.includes(r.id)).map(s=>s.id);return `<tr><td><code>${r.id}</code> ${esc(r.statement)}</td><td>${st.length?st.map(x=>`<code>${x}</code>`).join(' '):'<span class="badge bad">uncovered</span>'}</td></tr>`;}).join('')}</table>`;}
+function gaps(){return `<p style="margin:0 0 12px;color:var(--ink2)">${esc(R.gaps.coverage_note)}</p>
+  <table><tr><th>Severity</th><th>Kind</th><th>Gap</th><th>Question for the stakeholder</th></tr>${R.gaps.gaps.map(g=>`<tr><td><span class="tag ${g.severity==='high'?'bad':g.severity==='medium'?'warn':''}">${g.severity}</span></td><td>${esc(g.kind.replace('_',' '))}</td><td>${esc(g.description)}${g.related_ids.length?`<div class="assume">${g.related_ids.map(x=>`<code>${x}</code>`).join(' ')}</div>`:''}</td><td>${esc(g.suggested_question)}</td></tr>`).join('')||'<tr><td colspan=4 class="note">No gaps flagged.</td></tr>'}</table>
+  <h4>Traceability matrix</h4><table><tr><th>Requirement</th><th style="width:30%">Stories</th></tr>${R.requirements.map(r=>{const st=R.backlog.stories.filter(s=>s.requirement_ids.includes(r.id)).map(s=>s.id);return `<tr><td><code>${r.id}</code> ${esc(r.statement)}</td><td>${st.length?st.map(x=>`<code>${x}</code>`).join(' '):'<span class="tag bad">uncovered</span>'}</td></tr>`;}).join('')}</table>`;}
 
-function trace(){const t=R.trace;const max=Math.max(...t.calls.map(c=>c.latency_ms),1);return `
-  <div class="hint">run <code>${t.run_id}</code> · backend <b>${esc(t.backend)}</b> · prompts <b>${esc(t.prompt_version)}</b> · ${t.calls.length} calls · ${(t.calls.reduce((a,c)=>a+c.latency_ms,0)/1000).toFixed(1)} s · ${t.calls.reduce((a,c)=>a+(c.prompt_tokens||0)+(c.completion_tokens||0),0).toLocaleString()} tokens</div>
-  <div class="trace" style="margin-top:10px">${t.calls.map(c=>`<div><span>${c.agent}${c.attempt>1?' (retry)':''}</span><span class="bar" style="width:${Math.max(2,100*c.latency_ms/max)}%;${c.ok?'':'background:var(--bad)'}"></span><span>${c.latency_ms} ms</span><span>${(c.prompt_tokens||0)+(c.completion_tokens||0)} tok</span></div>`).join('')}</div>
-  <h4>Guardrail flags (${t.guardrail_flags.length})</h4>${t.guardrail_flags.length?`<ul>${t.guardrail_flags.map(f=>`<li class="flag">${esc(f)}</li>`).join('')}</ul>`:'<p class="hint">Nothing flagged — every requirement traced and every story passed deterministic checks.</p>'}
-  <h4>How the loop went</h4><p class="hint">${t.review_rounds} review round(s); ${t.stories_revised} story rewrite(s) triggered by reviewer feedback + guardrails. Models used: ${[...new Set(t.calls.map(c=>c.provider+'/'+c.model))].map(esc).join(', ')}.</p>`;}
+function trace(){const t=R.trace;const max=Math.max(...t.calls.map(c=>c.latency_ms),1);const tok=t.calls.reduce((a,c)=>a+(c.prompt_tokens||0)+(c.completion_tokens||0),0);return `
+  <div class="summary"><span>run <b>${t.run_id}</b></span><span>backend <b>${esc(t.backend)}</b></span><span>prompts <b>${esc(t.prompt_version)}</b></span><span><b>${t.calls.length}</b> model calls</span><span><b>${(t.calls.reduce((a,c)=>a+c.latency_ms,0)/1000).toFixed(1)} s</b> model time</span><span><b>${tok.toLocaleString()}</b> tokens</span></div>
+  <div class="trace">${t.calls.map(c=>`<div class="row"><span>${c.agent}${c.attempt>1?' · retry':''}</span><span class="bar ${c.ok?'':'bad'}" style="width:${Math.max(1,100*c.latency_ms/max)}%"></span><span>${(c.latency_ms/1000).toFixed(1)} s</span><span>${((c.prompt_tokens||0)+(c.completion_tokens||0)).toLocaleString()} tok</span></div>`).join('')}</div>
+  <h4>Guardrail flags · ${t.guardrail_flags.length}</h4>${t.guardrail_flags.length?`<ul>${t.guardrail_flags.map(f=>`<li class="issue">${esc(f)}</li>`).join('')}</ul>`:'<p class="note">Nothing flagged: every requirement traced and every story passed the deterministic checks.</p>'}
+  <h4>Review loop</h4><p class="note">${t.review_rounds} review round${t.review_rounds===1?'':'s'}; ${t.stories_revised} story rewrite${t.stories_revised===1?'':'s'} triggered by reviewer feedback and guardrails. Models: ${[...new Set(t.calls.map(c=>c.provider+'/'+c.model))].map(esc).join(', ')}.</p>`;}
 
 function exportPanel(){return `
-  <h4>Documents</h4><div class="row"><button class="ghost" data-x="brd">Download BRD (.md)</button><button class="ghost" data-x="backlog">Download backlog (.md)</button><button class="ghost" data-x="csv">Jira CSV import</button><button class="ghost" data-x="json">Raw JSON</button></div>
-  <h4 style="margin-top:20px">Publish to Jira</h4>
-  <p class="hint">${health&&health.jira_configured?`Connected to project <b>${esc(health.jira_project)}</b>. Dry run shows the exact REST bodies; publish creates ${R.backlog.epics.length} epics and ${R.backlog.stories.length} stories (idempotent — re-publishing the same run skips existing issues).`:'No Jira credentials on this deployment — dry run only, which still shows the exact REST API payloads that would be sent.'}</p>
-  <div class="row"><button class="ghost" id="dry">Dry run (show payloads)</button>${health&&health.jira_configured?`${health.publish_requires_admin_key?'<input id="adminkey" type="password" placeholder="admin key" style="width:140px">':''}<button class="primary" id="pub">Publish to Jira →</button>`:''}</div>
+  <h4>Documents</h4><div class="actions"><button class="btn" data-x="brd">BRD (Markdown)</button><button class="btn" data-x="backlog">Backlog with traceability matrix</button><button class="btn" data-x="csv">Jira CSV import</button><button class="btn" data-x="json">Raw JSON</button></div>
+  <h4>Jira Cloud</h4>
+  <p class="note" style="margin:0 0 10px">${health&&health.jira_configured?`Connected to project <b>${esc(health.jira_project)}</b>. Dry run shows the exact REST API v3 bodies. Publish creates ${R.backlog.epics.length} epic${R.backlog.epics.length===1?'':'s'} and ${R.backlog.stories.length} stories with parent links; it is idempotent, so re-publishing the same run skips issues that already exist.`:'No Jira credentials on this deployment. Dry run still shows the exact REST payloads that would be sent.'}</p>
+  <div class="actions"><button class="btn" id="dry">Dry run</button>${health&&health.jira_configured?`${health.publish_requires_admin_key?'<input id="adminkey" type="password" placeholder="Admin key" style="width:150px">':''}<button class="btn primary" id="pub">Publish to Jira</button>`:''}</div>
   <pre class="log" id="publog" hidden></pre>`;}
 
 function download(name,text,type='text/markdown'){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([text],{type}));a.download=name;a.click();}

@@ -77,15 +77,20 @@ class Jobs:
         self._lock = threading.Lock()
 
     def start(self, fn) -> str:
+        """`fn(progress)` is called with a callback that appends stage events to the job."""
         import uuid
 
         job_id = uuid.uuid4().hex[:12]
         with self._lock:
-            self._jobs[job_id] = {"status": "running", "started": time.time(), "result": None, "error": None}
+            self._jobs[job_id] = {"status": "running", "started": time.time(), "result": None, "error": None, "progress": []}
+
+        def progress(event: dict):
+            with self._lock:
+                self._jobs[job_id]["progress"].append({**event, "t": round(time.time() - self._jobs[job_id]["started"], 1)})
 
         def run():
             try:
-                res = fn()
+                res = fn(progress)
                 with self._lock:
                     self._jobs[job_id].update(status="done", result=res, finished=time.time())
             except Exception as e:  # noqa: BLE001 — surfaced to the client as the job's error
@@ -186,7 +191,11 @@ def api_analyze_start(req: AnalyzeRequest):
             raise HTTPException(429, "This demo's daily budget of live model runs is used up — try the stub backend, or come back tomorrow (resets 00:00 UTC).")
     if len(req.notes.strip()) < 40:
         raise HTTPException(422, "notes are too short to analyse")
-    job_id = JOBS.start(lambda: analyze(req.notes, backend=req.backend, prompt_version=req.prompt_version, max_review_rounds=req.max_review_rounds))
+    job_id = JOBS.start(
+        lambda progress: analyze(
+            req.notes, backend=req.backend, prompt_version=req.prompt_version, max_review_rounds=req.max_review_rounds, on_progress=progress
+        )
+    )
     return {"job_id": job_id, "status": "running"}
 
 
@@ -195,7 +204,7 @@ def api_job(job_id: str):
     job = JOBS.get(job_id)
     if not job:
         raise HTTPException(404, "unknown or expired job")
-    out = {"job_id": job_id, "status": job["status"], "elapsed_s": round(time.time() - job["started"], 1)}
+    out = {"job_id": job_id, "status": job["status"], "elapsed_s": round(time.time() - job["started"], 1), "progress": job.get("progress", [])}
     if job["status"] == "done":
         out["result"] = job["result"]
     if job["status"] == "error":
