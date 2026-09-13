@@ -1,0 +1,14 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "framework": null,
+  "buildCommand": "",
+  "outputDirectory": "web",
+  "rewrites": [
+    { "source": "/api/:path*", "destination": "https://storyforge-lsnr.onrender.com/api/:path*" },
+    { "source": "/docs", "destination": "https://storyforge-lsnr.onrender.com/docs" },
+    { "source": "/openapi.json", "destination": "https://storyforge-lsnr.onrender.com/openapi.json" }
+  ],
+  "headers": [
+    { "source": "/(.*)", "headers": [ { "key": "X-Content-Type-Options", "value": "nosniff" } ] }
+  ]
+}

@@ -265,7 +265,8 @@ function applyProgress(events){
 }
 
 async function init(){
-  try{health=await (await fetch('/api/health')).json();
+  const wake=setTimeout(()=>{$('#health').innerHTML='<span class="pill"><span class="spin"></span>waking the backend · free tier, up to a minute</span>';},4000);
+  try{health=await (await fetch('/api/health')).json();clearTimeout(wake);
     const live=health.backends.groq||health.backends.gemini;
     $('#health').innerHTML=
       `<span class="pill"><span class="d ${live?'ok':'off'}"></span>${live?'models online':'stub only'}</span>`+
@@ -273,7 +274,7 @@ async function init(){
       `<span class="pill"><span class="d ${health.jira_configured?'ok':''}"></span>Jira ${health.jira_configured?esc(health.jira_project):'dry-run'}</span>`;
     if(!live){$('#backend').value='stub';$('#backend').options[0].disabled=true;}
     $('#pv').innerHTML=health.prompt_versions.map(v=>`<option ${v===health.default_prompt_version?'selected':''}>${v}</option>`).join('');
-  }catch(e){$('#health').innerHTML='<span class="pill"><span class="d off"></span>API unreachable</span>';}
+  }catch(e){clearTimeout(wake);$('#health').innerHTML='<span class="pill"><span class="d off"></span>API unreachable</span>';}
   try{examples=await (await fetch('/api/examples')).json();
     examples.forEach((e,i)=>{const o=document.createElement('option');o.value=i;o.textContent=e.name;$('#examples').appendChild(o);});
   }catch(e){}

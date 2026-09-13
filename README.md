@@ -103,6 +103,10 @@ requires a PRO plan for Docker Spaces.
 Public-demo guards: `STORYFORGE_DAILY_LIVE_LIMIT` caps live model runs per day (stub is unlimited) and
 `STORYFORGE_ADMIN_KEY` is required for live Jira publishing (dry run is open).
 
+`vercel.json` serves the same UI from Vercel's edge and rewrites `/api/*` and `/docs` to the Render
+backend — import the repo in Vercel and it deploys with no configuration. The Python service itself
+stays on Render because analyses run as multi-minute background jobs, which serverless functions cannot host.
+
 ### API
 
 ```
