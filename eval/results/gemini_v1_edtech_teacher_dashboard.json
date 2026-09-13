@@ -1,0 +1,956 @@
+{
+ "brief": {
+  "title": "Teacher Dashboard for State Assessment Programme",
+  "business_goals": [
+   "Enable 12,000 primary school teachers to view their class's foundational literacy and numeracy scores after each assessment cycle.",
+   "Provide teachers with a breakdown of student performance by specific learning outcomes/competencies.",
+   "Suggest remedial activities to teachers for weak competencies, leveraging an existing worksheet library.",
+   "Provide Block Education Officers with a rollup view of average scores across schools in their block.",
+   "Track cohort progress over multiple years by retaining historical assessment data."
+  ],
+  "stakeholders": [
+   {
+    "name": "Anita Deshmukh",
+    "role": "Programme Director, State Education Dept",
+    "concerns": [
+     "Successful rollout to 12,000 teachers across the state.",
+     "Dashboard availability in multiple languages (Hindi, Marathi, English).",
+     "Ensuring strict data access control to prevent unauthorized viewing of student data."
+    ]
+   },
+   {
+    "name": "Rohan Bhatt",
+    "role": "Master Trainer",
+    "concerns": [
+     "Dashboard performance on basic smartphones with unreliable data connectivity (load time under 5 seconds on 3G).",
+     "Integration of remedial activity suggestions from the existing worksheet library.",
+     "Maintaining data privacy for individual student scores."
+    ]
+   },
+   {
+    "name": "Kavita Suresh",
+    "role": "Field Coordinator",
+    "concerns": [
+     "Seamless integration with the existing OMR scanning system for assessment data.",
+     "Provision of aggregated data views for Block Education Officers.",
+     "Ensuring the dashboard remains read-only for teachers."
+    ]
+   },
+   {
+    "name": "Imran Sheikh",
+    "role": "Tech Lead, Implementation Partner",
+    "concerns": [
+     "Handling high data volume (3.5 million records/cycle) while maintaining query responsiveness.",
+     "Retaining at least three years of historical assessment data."
+    ]
+   },
+   {
+    "name": "Teachers",
+    "role": "End-users of the dashboard",
+    "concerns": [
+     "Access to class-specific foundational literacy and numeracy scores.",
+     "Breakdown of scores by specific learning outcomes/competencies.",
+     "Suggestions for remedial activities.",
+     "Dashboard usability on basic smartphones with limited connectivity.",
+     "Support for their teaching language."
+    ]
+   },
+   {
+    "name": "Block Education Officers",
+    "role": "Oversight and support for schools",
+    "concerns": [
+     "Access to average scores across all schools in their block to identify support needs."
+    ]
+   }
+  ],
+  "constraints": [
+   "Target audience: Approximately 12,000 government primary school teachers.",
+   "Device compatibility: Must function effectively on basic smartphones.",
+   "Connectivity: Must load in under 5 seconds on a 3G connection due to unreliable data.",
+   "Data source: Must pull scanned assessment results from the existing OMR scanning system.",
+   "Language support: Minimum three languages (Hindi, Marathi, English) for this phase.",
+   "Data volume: Expected 3.5 million individual student assessment records per cycle, four cycles a year.",
+   "Historical data retention: At least three years of historical assessment data must be retained.",
+   "Budget: Fixed at 60 lakh rupees for this phase.",
+   "Timeline: Must be ready before the next assessment cycle starts in June (fixed date).",
+   "Data privacy: Individual student scores visible only to that student's own teacher and their block officer."
+  ],
+  "out_of_scope": [
+   "Changing the existing OMR scanning process for assessment data.",
+   "Implementing other regional languages beyond Hindi, Marathi, and English in this phase.",
+   "Features for teachers to edit or override assessment scores."
+  ],
+  "open_questions": [],
+  "domain": "Education, Assessment"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall display foundational literacy and numeracy scores for a teacher's own class after each assessment cycle.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To enable teachers to view their class's scores, supporting the business goal of enabling teachers to view their class's foundational literacy and numeracy scores.",
+   "evidence": "Teachers need a dashboard where they can see their own class's foundational literacy and numeracy scores after each assessment cycle",
+   "stakeholder": "Teachers, Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall support display in the teacher's teaching language.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure usability for teachers in their preferred language, addressing teacher concerns about language support.",
+   "evidence": "in the language they teach in.",
+   "stakeholder": "Teachers, Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall load the dashboard within 5 seconds when accessed via a 3G connection.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure teachers use the dashboard given unreliable data connectivity and basic smartphones, as poor performance led to non-usage of a previous app.",
+   "evidence": "The dashboard has to load in under 5 seconds on a 3G connection",
+   "stakeholder": "Rohan Bhatt, Teachers",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall function effectively on basic smartphones.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure accessibility for the target user base, as many teachers use basic smartphones.",
+   "evidence": "A lot of these teachers have only basic smartphones",
+   "stakeholder": "Rohan Bhatt, Teachers",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall integrate with the existing OMR scanning system to retrieve processed assessment results.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "To obtain assessment data from the established source, as the existing OMR scanning process is out of scope for change.",
+   "evidence": "The dashboard needs to pull scanned assessment results from the existing OMR scanning system once they're processed — we're not changing how the scanning happens.",
+   "stakeholder": "Kavita Suresh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall provide a breakdown of student performance by specific learning outcomes or competencies.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To help teachers identify specific areas where students need support, supporting the business goal of providing a breakdown of student performance.",
+   "evidence": "Teachers should be able to see which specific learning outcomes their students are struggling with — not just an overall score, but a breakdown by competency",
+   "stakeholder": "Teachers, Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall suggest remedial activities for weak competencies, retrieved from an existing worksheet library.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To assist teachers in finding relevant remedial materials easily, supporting the business goal of suggesting remedial activities.",
+   "evidence": "Ideally the dashboard would also suggest a remedial activity for each weak competency, pulled from the existing worksheet library",
+   "stakeholder": "Teachers, Rohan Bhatt",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall provide Block Education Officers with a rollup view of average scores across all schools in their block.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To enable BEOs to identify schools needing support efficiently, supporting the business goal of providing BEOs with a rollup view.",
+   "evidence": "Block education officers need a rollup view — average scores across all schools in their block",
+   "stakeholder": "Block Education Officers, Kavita Suresh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall support Hindi, Marathi, and English languages.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To meet the minimum language requirements for the rollout phase.",
+   "evidence": "This has to work in three languages at minimum for this phase — Hindi, Marathi, and English.",
+   "stakeholder": "Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall maintain query responsiveness with a data volume of approximately 3.5 million individual student assessment records per cycle, across multiple years.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure usability and performance despite high data volume and historical data accumulation.",
+   "evidence": "The dashboard queries need to stay responsive even as that history builds up over multiple years.",
+   "stakeholder": "Imran Sheikh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall provide a read-only interface for teachers.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "To prevent unauthorized modification of assessment scores by teachers, as editing features are out of scope.",
+   "evidence": "this dashboard is read-only for teachers. We are not building any feature for teachers to edit or override assessment scores",
+   "stakeholder": "Kavita Suresh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall ensure that individual student scores are visible only to that student's own teacher and their assigned Block Education Officer.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "To maintain data privacy and prevent unauthorized access to student data, addressing a critical concern from stakeholders.",
+   "evidence": "individual student scores should only be visible to that student's own teacher and their block officer, not to other teachers in the school.",
+   "stakeholder": "Rohan Bhatt, Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall retain at least three years of historical assessment data.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "To enable tracking of cohort progress over multiple years, supporting the business goal of tracking cohort progress.",
+   "evidence": "We need at least three years of historical assessment data retained",
+   "stakeholder": "Imran Sheikh, State Education Dept",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system shall be deployed and operational before the next assessment cycle starts in June.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To align with the academic calendar and assessment schedule, as the date is fixed.",
+   "evidence": "it has to be ready before the next assessment cycle starts in June",
+   "stakeholder": "Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system development and deployment for this phase shall adhere to a fixed budget of 60 lakh rupees.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To adhere to financial constraints, as the budget is fixed and approved.",
+   "evidence": "Budget for this phase is fixed at 60 lakh rupees",
+   "stakeholder": "Anita Deshmukh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Teacher Performance Overview",
+    "goal": "Enable teachers to easily view and understand their class's assessment performance, ensuring data privacy and usability.",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-006",
+     "R-009",
+     "R-011",
+     "R-012"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Remedial Action Support",
+    "goal": "Provide teachers with actionable insights and resources for improving student performance based on identified weaknesses.",
+    "requirement_ids": [
+     "R-007"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "Block-Level Performance Monitoring",
+    "goal": "Enable Block Education Officers to monitor and analyze performance trends across schools within their block, maintaining data security.",
+    "requirement_ids": [
+     "R-008",
+     "R-012"
+    ]
+   },
+   {
+    "id": "E-04",
+    "title": "System Performance and Data Management",
+    "goal": "Ensure the system is performant, scalable, integrates with existing systems, and effectively manages historical assessment data.",
+    "requirement_ids": [
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-010",
+     "R-013"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "View Class Foundational Scores",
+    "as_a": "a teacher",
+    "i_want": "to view my class's foundational literacy and numeracy scores after each assessment cycle",
+    "so_that": "I can understand their overall performance and progress.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a logged-in teacher",
+      "when": "I navigate to my class dashboard",
+      "then": "the system should display the latest foundational literacy and numeracy scores for my class."
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "View Performance Breakdown by Competency",
+    "as_a": "a teacher",
+    "i_want": "to see a breakdown of student performance by specific learning outcomes or competencies",
+    "so_that": "I can identify areas of strength and weakness for my class and individual students.",
+    "acceptance_criteria": [
+     {
+      "given": "I am viewing my class's assessment scores",
+      "when": "I select an assessment cycle",
+      "then": "the system should display a detailed breakdown of student performance by individual learning outcomes/competencies."
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Support Hindi Language for Core Dashboard",
+    "as_a": "a teacher",
+    "i_want": "to view the class overview screen, including class scores, student list, and overall student scores, in Hindi",
+    "so_that": "I can easily understand and interact with the information presented in my preferred teaching language.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a logged-in teacher with Hindi as my language preference",
+      "when": "I access the class overview screen",
+      "then": "all text and labels on the class overview screen are displayed in Hindi."
+     }
+    ],
+    "requirement_ids": [
+     "R-002",
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on implementing Hindi language support for the primary dashboard elements (class overview screen). Marathi and English support are covered in S-012 and S-013 respectively.",
+    "review_round": 2
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Read-Only Teacher Interface",
+    "as_a": "a teacher",
+    "i_want": "to interact with a read-only interface",
+    "so_that": "I cannot accidentally modify assessment data and data integrity is maintained.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a logged-in teacher",
+      "when": "I view any assessment data or reports",
+      "then": "the system should not display any options to edit, delete, or input data."
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Class-Specific Student Score Visibility (Teacher)",
+    "as_a": "a teacher",
+    "i_want": "to view individual student scores only for students in my assigned class",
+    "so_that": "student privacy is maintained and I only access relevant data.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a logged-in teacher",
+      "when": "I access student performance data",
+      "then": "the system should only display data for students officially assigned to my class."
+     },
+     {
+      "given": "I am a logged-in teacher",
+      "when": "I attempt to search for students not in my class",
+      "then": "the system should return no results for those students."
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-02",
+    "title": "Display Suggested Remedial Activities",
+    "as_a": "a teacher",
+    "i_want": "the system to suggest remedial activities for identified weak competencies",
+    "so_that": "I can quickly identify resources to support students needing extra help.",
+    "acceptance_criteria": [
+     {
+      "given": "I am viewing a student's performance breakdown showing a weak competency",
+      "when": "I click on the weak competency",
+      "then": "the system displays a list of suggested remedial activities related to that competency."
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "should",
+    "story_points": null,
+    "notes": "This story focuses on the logic and display of suggestions based on weak competencies. Accessing the actual worksheets is covered in S-014. This story has a strong dependency on S-002 (identifying weak competencies) being completed or its data being mockable for development. Suggestions will be based on a simple lookup mechanism.",
+    "review_round": 2
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-03",
+    "title": "Block-Level Average Scores Rollup",
+    "as_a": "a Block Education Officer",
+    "i_want": "to view a rollup of average scores across all schools in my assigned block",
+    "so_that": "I can monitor overall performance, identify trends, and make informed decisions for my block.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a logged-in Block Education Officer",
+      "when": "I navigate to the block overview dashboard",
+      "then": "I should see average foundational literacy and numeracy scores for all schools within my block."
+     },
+     {
+      "given": "I am a logged-in Block Education Officer",
+      "when": "I select a specific school in my block",
+      "then": "the system should display its individual average scores."
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-03",
+    "title": "Block-Wide Student Score Visibility (BEO)",
+    "as_a": "a Block Education Officer",
+    "i_want": "to view individual student scores for any student within my assigned block",
+    "so_that": "I can monitor student progress at a granular level while ensuring appropriate data access.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a logged-in Block Education Officer",
+      "when": "I access student performance data",
+      "then": "I should only see data for students officially assigned to schools within my block."
+     },
+     {
+      "given": "I am a logged-in Block Education Officer",
+      "when": "I attempt to search for students not in my block",
+      "then": "the system should return no results for those students."
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-04",
+    "title": "Fast Dashboard Load on 3G",
+    "as_a": "a teacher",
+    "i_want": "the main class overview (average scores, student list) to load and display within 5 seconds on a 3G connection",
+    "so_that": "I can quickly get a summary of my class's performance without waiting for all detailed data.",
+    "acceptance_criteria": [
+     {
+      "given": "I am accessing the dashboard on a basic smartphone with a 3G connection",
+      "when": "I navigate to the class overview",
+      "then": "the class average scores and the list of students with their overall scores appear within 5 seconds."
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on optimizing the initial load and display of essential class overview data under 3G conditions, allowing for progressive loading of more detailed information. This addresses a specific aspect of the overall performance NFR.",
+    "review_round": 2
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-04",
+    "title": "OMR System Integration",
+    "as_a": "a system administrator",
+    "i_want": "the dashboard to integrate with the existing OMR scanning system",
+    "so_that": "processed assessment results are automatically retrieved and displayed without manual intervention.",
+    "acceptance_criteria": [
+     {
+      "given": "the OMR scanning system has processed new assessment results",
+      "when": "the integration process runs",
+      "then": "the dashboard database reflects the latest student scores and breakdowns."
+     },
+     {
+      "given": "the OMR scanning system provides data in a specified format",
+      "when": "the integration attempts to process it",
+      "then": "the system parses and stores the data successfully without errors."
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-04",
+    "title": "Retain Historical Assessment Data",
+    "as_a": "a State Education Department official",
+    "i_want": "the system to store and manage at least three years of historical assessment data",
+    "so_that": "we can track cohort progress over multiple years and perform long-term analysis.",
+    "acceptance_criteria": [
+     {
+      "given": "the system has completed three assessment cycles over three years",
+      "when": "I query for data from any of those three years",
+      "then": "the system should successfully retrieve and display the requested historical data."
+     }
+    ],
+    "requirement_ids": [
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on the capability to store and retrieve historical data. The performance aspect of querying this data is addressed in S-016.",
+    "review_round": 1
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "Strong dependency on S-001 or the data it uses to provide end-to-end value."
+    ],
+    "fix_instructions": "Acknowledge the dependency on S-001. If S-001 is not in the same sprint, ensure a clear strategy for mock data is in place for development and testing."
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The scope of 'class overview screen' elements to be translated is not precisely defined, which impacts estimability and smallness.",
+     "Implementing language support for the first time might involve setting up an internationalization (i18n) framework, which could be a larger, cross-cutting technical task not explicitly captured in this story."
+    ],
+    "fix_instructions": "Clarify the exact list of 'primary dashboard elements' on the 'class overview screen' that need translation. Consider if the initial setup of the i18n framework should be a separate technical story or spike, distinct from the translation of specific elements."
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 2,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 2,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "This is more of a non-functional requirement (NFR) or a system constraint (data integrity, security) rather than a user story delivering a distinct, incremental feature.",
+     "It is not truly independent as it applies to all teacher-facing features, making it a cross-cutting concern.",
+     "Ensuring read-only across *all* teacher interfaces could be a large effort, impacting the 'Small' criterion."
+    ],
+    "fix_instructions": "Rephrase this as a non-functional requirement or a technical task for implementing role-based access control (RBAC) for teachers. If kept as a story, it should be broken down by specific screens/features, e.g., 'Ensure Class Foundational Scores screen is read-only for teachers'."
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "Strong dependency on S-002 (View Performance Breakdown by Competency) for identifying weak competencies. While mockable, this dependency should be managed."
+    ],
+    "fix_instructions": "Acknowledge the dependency on S-002. Ensure that if S-002 is not completed in the same sprint, a clear strategy for mock data or a simplified input mechanism is available for development and testing."
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 2,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 2,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "This is a non-functional requirement (performance) rather than a user story. It describes a quality attribute of the system, not a distinct user-facing feature.",
+     "It is not independent; it applies to an existing feature (the main class overview).",
+     "Achieving a specific load time on a 3G connection can be a significant and complex effort, involving multiple layers (backend, network, frontend optimization), making it unlikely to be 'Small'."
+    ],
+    "fix_instructions": "Rephrase this as a non-functional requirement or a technical task/spike to investigate and implement performance optimizations for the class overview. If kept as a story, it needs to be broken down into smaller, more concrete, and estimable tasks (e.g., 'Optimize API for class overview to return data in X ms', 'Implement lazy loading for class overview student list')."
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC1.then has no observable outcome verb",
+     "AC2.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The scope of 'store and manage' is broad and potentially large, encompassing database schema design, data migration, storage solutions, and potentially archiving strategies.",
+     "This is a foundational capability rather than a direct user-facing feature that delivers immediate, incremental value in isolation."
+    ],
+    "fix_instructions": "Break this story down into smaller, more specific technical tasks. For example, 'Implement database schema to support historical assessment data' and 'Develop data ingestion process for historical assessment data'. Clarify what 'manage' entails (e.g., backup, retention policies)."
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "uncovered_goal",
+    "description": "The business goal of tracking cohort progress over multiple years (Brief Goal 5) is not explicitly covered by a functional requirement or backlog item for display/analysis. While data retention (R-013, S-011) is covered, the actual 'tracking' functionality is missing.",
+    "severity": "medium",
+    "related_ids": [
+     "Brief Goal 5",
+     "R-013",
+     "S-011"
+    ],
+    "suggested_question": "How should teachers/BEOs be able to 'track cohort progress' using the historical data? What specific views or functionalities are expected for this?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "Requirement R-004, which specifies that the system shall function effectively on basic smartphones (derived from stakeholder concerns and constraints), does not have a dedicated backlog item. S-009 covers 3G load time, but not the broader compatibility.",
+    "severity": "high",
+    "related_ids": [
+     "R-004",
+     "Brief Constraint 'Device compatibility'",
+     "Rohan Bhatt's concern",
+     "Teachers' concern"
+    ],
+    "suggested_question": "How will we ensure and test that the dashboard functions effectively on basic smartphones, as per R-004? Should there be a dedicated backlog item or acceptance criteria for this?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Requirement R-009 specifies support for Hindi, Marathi, and English languages. However, backlog item S-003 only explicitly mentions 'Support Hindi Language for Core Dashboard,' leaving Marathi and English unaddressed in the backlog.",
+    "severity": "medium",
+    "related_ids": [
+     "R-009",
+     "S-003",
+     "Brief Constraint 'Language support'",
+     "Anita Deshmukh's concern",
+     "Teachers' concern"
+    ],
+    "suggested_question": "S-003 only mentions Hindi. Are separate backlog items needed for Marathi and English language support, or is S-003 intended to cover all three languages specified in R-009?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "Requirement R-010, which mandates maintaining query responsiveness with high data volume (derived from data volume constraints and tech lead concerns), is not explicitly covered by a backlog item. S-011 covers data retention, but not responsiveness.",
+    "severity": "high",
+    "related_ids": [
+     "R-010",
+     "Brief Constraint 'Data volume'",
+     "Imran Sheikh's concern"
+    ],
+    "suggested_question": "How will we ensure and test the query responsiveness under high data volume as per R-010? Should there be a dedicated backlog item or performance testing criteria for this?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "The critical project constraint of adhering to a fixed budget of 60 lakh rupees (R-015) is not represented in the backlog. While not a functional user story, it's a key NFR for project success.",
+    "severity": "high",
+    "related_ids": [
+     "R-015",
+     "Brief Constraint 'Budget'"
+    ],
+    "suggested_question": "How will the fixed budget of 60 lakh rupees (R-015) be tracked and managed within the backlog and project planning? Should there be a high-level epic or a recurring task for budget monitoring?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "The critical project constraint of being deployed and operational before the next assessment cycle starts in June (R-014) is not represented in the backlog. This is a key NFR for project success.",
+    "severity": "high",
+    "related_ids": [
+     "R-014",
+     "Brief Constraint 'Timeline'"
+    ],
+    "suggested_question": "How will the fixed timeline for deployment by June (R-014) be tracked and managed within the backlog and project planning? Should there be a high-level epic or a recurring task for timeline monitoring?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for most core functional requirements related to displaying scores, breakdowns, and remedial activities for teachers, as well as aggregated views for BEOs. Key non-functional requirements like 3G load time, OMR integration, and data privacy are also addressed. However, there are notable gaps concerning the explicit tracking of cohort progress, comprehensive language support beyond Hindi, and specific backlog items for critical non-functional requirements such as general basic smartphone compatibility and query responsiveness under high data volume. Project-level constraints like budget and timeline are also missing from the backlog."
+ },
+ "trace": {
+  "run_id": "3f3aa39e7d",
+  "started_at": "2026-09-12T19:17:36.300897Z",
+  "prompt_version": "v1",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 12043,
+    "prompt_tokens": 1018,
+    "completion_tokens": 2570,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 28229,
+    "prompt_tokens": 1961,
+    "completion_tokens": 6919,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 25398,
+    "prompt_tokens": 1154,
+    "completion_tokens": 6387,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 31990,
+    "prompt_tokens": 3720,
+    "completion_tokens": 6943,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 31334,
+    "prompt_tokens": 6425,
+    "completion_tokens": 8056,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 24425,
+    "prompt_tokens": 3536,
+    "completion_tokens": 5498,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 23367,
+    "prompt_tokens": 3357,
+    "completion_tokens": 5542,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 37341,
+    "prompt_tokens": 3611,
+    "completion_tokens": 8430,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 22446,
+    "prompt_tokens": 1793,
+    "completion_tokens": 4713,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 15,
+  "guardrail_flags": [
+   "coverage: R-004 (must) has no story",
+   "coverage: R-010 (must) has no story",
+   "coverage: R-014 (must) has no story",
+   "coverage: R-015 (must) has no story"
+  ]
+ }
+}

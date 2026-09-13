@@ -1,0 +1,1065 @@
+{
+ "brief": {
+  "title": "Automated KYC Onboarding for BrightPath Lending",
+  "business_goals": [
+   "Automate the KYC workflow to instantly verify identity documents upon application.",
+   "Reduce applicant approval time to under 60 seconds for straightforward cases.",
+   "Integrate OFAC and other sanctions list checks, routing any hits to a compliance officer.",
+   "Consolidate Persona (identity) and Experian (credit) verification results into a single applicant record for underwriting.",
+   "Implement a manual fallback process for automated checks that fail or have low confidence scores.",
+   "Retain all KYC decisions and supporting data for five years to satisfy regulatory audit requirements.",
+   "Ensure the verification pipeline can sustain up to 5,000 applications per day at peak with 99.9% uptime.",
+   "Verify that the address on the applicant's ID matches the address entered in the application.",
+   "Eliminate the current manual review backlog and improve the efficiency of the onboarding process."
+  ],
+  "stakeholders": [
+   {
+    "name": "Sarah Chen",
+    "role": "Head of Compliance",
+    "concerns": [
+     "Automated KYC flow",
+     "Real-time identity document verification",
+     "OFAC and sanctions list checks (non-negotiable)",
+     "Routing hits to compliance officers",
+     "5-year retention of KYC decisions and data for audits",
+     "Address verification to match ID and application",
+     "Reducing manual review time (currently 3 days)"
+    ]
+   },
+   {
+    "name": "Marcus Webb",
+    "role": "Product Manager",
+    "concerns": [
+     "Applicant experience (upload ID, selfie, real-time decision)",
+     "Decision under 60 seconds for straightforward cases",
+     "Manual fallback for failed automated checks"
+    ]
+   },
+   {
+    "name": "Derek Osei",
+    "role": "Engineering Lead",
+    "concerns": [
+     "Integration with Persona API as source of truth for identity match",
+     "System scalability to handle 5,000 applications/day at peak",
+     "99.9% uptime for the verification pipeline",
+     "Improving the efficiency of the manual review queue"
+    ]
+   },
+   {
+    "name": "Jenna Fitzgerald",
+    "role": "Risk Analyst",
+    "concerns": [
+     "Pulling credit data from Experian for underwriting",
+     "Consolidating Persona and Experian results into a single applicant record"
+    ]
+   }
+  ],
+  "constraints": [
+   "Must use Persona for document and identity verification.",
+   "Persona API verification result is the source of truth for identity match.",
+   "Must integrate with Experian for credit data.",
+   "Compliance with Bank Secrecy Act (OFAC/sanctions checks).",
+   "KYC decisions and data must be retained for five years.",
+   "Hard deadline for launch: before March 31st (state lending license renewal).",
+   "Verification pipeline must sustain 5,000 applications/day at peak with 99.9% uptime.",
+   "Budget capped at $250,000, including Persona and Experian integration costs."
+  ],
+  "out_of_scope": [
+   "Re-verification for existing customers applying for a second loan."
+  ],
+  "open_questions": [],
+  "domain": "Lending, Fintech"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall automate the Know Your Customer (KYC) workflow to instantly verify identity documents upon application.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To reduce manual review time and instantly verify identity documents.",
+   "evidence": "We need an automated KYC flow that verifies identity documents the moment someone applies.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall approve straightforward applicant cases in under 60 seconds.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To improve applicant experience and efficiency.",
+   "evidence": "From the applicant's side, they should be able to upload a driver's license or passport, take a selfie, and get a decision in real time — ideally under 60 seconds for the straightforward cases.",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall integrate OFAC and other sanctions list checks.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Required under the Bank Secrecy Act.",
+   "evidence": "We're required under the Bank Secrecy Act to run every applicant against OFAC and other sanctions lists before approval.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall route applications with OFAC or sanctions list hits to a compliance officer and freeze them, preventing auto-approval.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Non-negotiable requirement, applications must be frozen and never auto-approved.",
+   "evidence": "if there's a hit, the application must be frozen and routed to a compliance officer, never auto-approved.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall consolidate Persona (identity) and Experian (credit) verification results into a single applicant record for underwriting.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "For underwriting to see all data in one place.",
+   "evidence": "both results need to land in the same applicant record so underwriting can see everything in one place.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall implement a manual fallback process for automated checks that fail or have low confidence scores, routing them to a human reviewer.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To avoid outright rejection and allow human review.",
+   "evidence": "Ideally we'd also support a manual fallback — if the automated check fails or the confidence score is low, it should route to a human reviewer instead of just rejecting the person outright.",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall retain all KYC decisions and supporting data for five years.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "To satisfy regulatory audit requirements.",
+   "evidence": "Every KYC decision, and the data that led to it, has to be retained for five years to satisfy our regulator during an audit.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The verification pipeline shall sustain up to 5,000 applications per day at peak.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To handle expected load without falling over.",
+   "evidence": "On the technical side, we're expecting up to 5,000 applications a day at peak, mostly evenings. The verification pipeline needs to sustain that without falling over",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The verification pipeline shall maintain 99.9% uptime.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Committed target to the board.",
+   "evidence": "99.9% uptime is the target we've committed to the board.",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall verify that the address on the applicant's ID matches the address entered in the application.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Mismatches are a significant fraud signal.",
+   "evidence": "Address verification should also happen — we need to confirm the address on the ID matches what they entered in the application, since mismatches are one of our biggest fraud signals.",
+   "stakeholder": "Sarah Chen",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall enable efficient processing of applications in the manual review queue.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To eliminate the current manual review backlog and improve efficiency.",
+   "evidence": "Honestly the current manual review queue has become a running joke internally, people call it 'the black hole' because applications just sit there for days.",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall integrate with Persona for document and identity verification.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Existing contract and Persona is the source of truth.",
+   "evidence": "For document and identity verification we're planning to use Persona, since we already have a contract with them.",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall consider the Persona API verification result as the source of truth for identity match.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "Explicit constraint.",
+   "evidence": "The system needs to call the Persona API and take their verification result as the source of truth for identity match.",
+   "stakeholder": "Derek Osei",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system shall integrate with Experian for pulling credit data.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Required for underwriting decisions.",
+   "evidence": "We also pull credit data from Experian for the underwriting decision.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall allow applicants to upload a driver's license or passport.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Essential for the automated KYC flow.",
+   "evidence": "From the applicant's side, they should be able to upload a driver's license or passport",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-016",
+   "statement": "The system shall allow applicants to take a selfie.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Essential for the automated KYC flow.",
+   "evidence": "take a selfie",
+   "stakeholder": "Marcus Webb",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-017",
+   "statement": "The system shall not support re-verification for existing customers applying for a second loan in this phase.",
+   "type": "functional",
+   "priority": "wont",
+   "rationale": "Explicitly out of scope for this phase.",
+   "evidence": "One thing to flag — re-verification for existing customers who want a second loan is out of scope for this phase. We'll handle that with the existing process for now and revisit later.",
+   "stakeholder": "Jenna Fitzgerald",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Automated Identity Verification",
+    "goal": "To automatically and instantly verify an applicant's identity using uploaded documents and biometrics.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-02",
+    "title": "Sanctions & Compliance Screening",
+    "goal": "To automatically screen applicants against sanctions lists and route potential matches to compliance.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-03",
+    "title": "Data Consolidation & Underwriting Record",
+    "goal": "To create a comprehensive applicant record by consolidating identity and credit verification results for underwriting.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-04",
+    "title": "Manual Review & Fallback",
+    "goal": "To provide an efficient manual process for applications that cannot be fully automated or require human intervention.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-05",
+    "title": "Performance & Reliability",
+    "goal": "To ensure the KYC pipeline is fast, scalable, and highly available.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-06",
+    "title": "Data Retention & Auditability",
+    "goal": "To securely store all KYC-related data for regulatory compliance and auditing purposes.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-07",
+    "title": "Scope Exclusion",
+    "goal": "To clearly define what functionality is explicitly out of scope for the current phase.",
+    "requirement_ids": []
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Applicant Document Upload",
+    "as_a": "an applicant",
+    "i_want": "to upload my identity documents",
+    "so_that": "my identity can be verified",
+    "acceptance_criteria": [
+     {
+      "given": "I am on the application form",
+      "when": "I am prompted to upload my ID",
+      "then": "I am able to select either a driver's license or a passport image from my device, and the system successfully accepts and processes it for upload."
+     }
+    ],
+    "requirement_ids": [
+     "R-015"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Applicant Selfie Capture",
+    "as_a": "an applicant",
+    "i_want": "to take a selfie",
+    "so_that": "my identity can be matched with my uploaded document",
+    "acceptance_criteria": [
+     {
+      "given": "I have uploaded my ID",
+      "when": "I am prompted to take a selfie",
+      "then": "the system successfully captures and processes my image for liveness and facial matching."
+     }
+    ],
+    "requirement_ids": [
+     "R-016"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Integrate with Persona for Identity Verification",
+    "as_a": "a compliance officer",
+    "i_want": "the system to integrate with Persona",
+    "so_that": "identity documents and biometrics can be automatically verified and I can trust the results",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant has submitted their ID and selfie",
+      "when": "the system sends the data to Persona",
+      "then": "Persona returns a verification result indicating identity match and document authenticity, and this result is recorded as the source of truth for identity verification."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-012",
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on the initial integration and receiving the primary verification result from Persona.",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Automated Address Matching",
+    "as_a": "a fraud analyst",
+    "i_want": "the system to verify that the address on the applicant's ID matches the application address",
+    "so_that": "I can identify potential fraud",
+    "acceptance_criteria": [
+     {
+      "given": "Persona has extracted the address from the applicant's ID",
+      "when": "the system compares it to the address entered in the application",
+      "then": "the system successfully flags any discrepancies for review or further action, making them visible to a fraud analyst."
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-02",
+    "title": "Integrate with Sanctions List Providers",
+    "as_a": "a compliance officer",
+    "i_want": "the system to integrate with OFAC and other sanctions list providers",
+    "so_that": "applicants can be screened for compliance risks and I can fulfill regulatory obligations",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant's identity data is available",
+      "when": "the system queries the sanctions list providers",
+      "then": "the system successfully queries the sanctions list providers and receives a result indicating whether the applicant is on any sanctions list."
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story assumes a single integration point that covers the necessary sanctions lists (e.g., OFAC). If multiple distinct providers require separate integration efforts, this story may need to be split.",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-02",
+    "title": "Route Sanctions Hits to Compliance",
+    "as_a": "a compliance officer",
+    "i_want": "applications with sanctions list hits to be automatically routed to me",
+    "so_that": "I can manually review potential risks and prevent auto-approval",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant has been identified on a sanctions list",
+      "when": "the system processes the application",
+      "then": "the application is flagged, frozen, and successfully placed in a compliance review queue, preventing automated approval."
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "Depends on S-005 (Integrate with Sanctions List Providers) to provide the sanctions screening results.",
+    "review_round": 2
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-03",
+    "title": "Integrate with Experian for Credit Data",
+    "as_a": "an underwriter",
+    "i_want": "the system to integrate with Experian",
+    "so_that": "I can pull applicant credit data and make informed lending decisions",
+    "acceptance_criteria": [
+     {
+      "given": "an applicant's identity has been verified",
+      "when": "the system requests credit data from Experian",
+      "then": "the system successfully receives the applicant's credit report and score."
+     }
+    ],
+    "requirement_ids": [
+     "R-014"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-03",
+    "title": "Consolidate Verification Results into Applicant Record",
+    "as_a": "an underwriter",
+    "i_want": "to view consolidated identity and credit verification results",
+    "so_that": "I can make an informed lending decision from a single applicant record",
+    "acceptance_criteria": [
+     {
+      "given": "both Persona and Experian verification results, and sanctions screening results are available",
+      "when": "I access an applicant's record",
+      "then": "all identity verification details, credit data, and sanctions screening results are successfully consolidated and stored within a single applicant record, accessible for underwriting."
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on the backend consolidation of verification results. Displaying these results in a user interface for underwriters may be addressed in subsequent stories or phases. It is highly dependent on S-003 (Persona integration), S-005 (Sanctions integration), and S-007 (Experian integration) to provide the data for consolidation.",
+    "review_round": 2
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-04",
+    "title": "Manual Fallback for Failed Automated Checks",
+    "as_a": "a human reviewer",
+    "i_want": "applications with failed or low-confidence automated checks to be routed to a manual queue",
+    "so_that": "I can review them and make a decision",
+    "acceptance_criteria": [
+     {
+      "given": "an automated KYC check fails or returns a low confidence score",
+      "when": "the system processes the application",
+      "then": "the application is automatically and successfully placed in a manual review queue for a human reviewer."
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "should",
+    "story_points": null,
+    "notes": "This story defines the system's routing mechanism for applications requiring manual intervention. It depends on automated KYC checks (e.g., S-003, S-004, S-005, S-007) to generate cases with failed or low confidence scores for manual review.",
+    "review_round": 2
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-04",
+    "title": "Efficient Manual Review Queue",
+    "as_a": "a human reviewer",
+    "i_want": "an efficient interface to process applications in the manual review queue",
+    "so_that": "I can quickly make decisions and clear the backlog",
+    "acceptance_criteria": [
+     {
+      "given": "I am assigned to the manual review queue",
+      "when": "I open an application for review",
+      "then": "I can successfully access available verification data, add notes, and approve or reject the application, which updates its status in the system."
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "should",
+    "story_points": null,
+    "notes": "This story focuses on the core functionality for a reviewer to process an application. The comprehensive display of all relevant verification data may evolve iteratively. It depends on S-006 (Route Sanctions Hits to Compliance) and S-009 (Manual Fallback for Failed Automated Checks) to populate the manual review queue.",
+    "review_round": 2
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-05",
+    "title": "Fast Approval for Straightforward Cases",
+    "as_a": "a business owner",
+    "i_want": "straightforward applicant cases to be approved quickly by the automated system",
+    "so_that": "we can provide a fast and efficient service to our customers, achieving approvals in under 60 seconds.",
+    "acceptance_criteria": [
+     {
+      "given": "an application that qualifies as straightforward",
+      "when": "the automated KYC workflow processes the application",
+      "then": "the system successfully completes all automated verification steps and provides an approval decision within 60 seconds for straightforward cases."
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This is a key non-functional requirement (NFR) related to performance. Its achievement will be an outcome of the overall system design, optimization, and performance testing across multiple functional stories, rather than a single functional story implementation.",
+    "review_round": 2
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-05",
+    "title": "Scalable Verification Pipeline",
+    "as_a": "an operations manager",
+    "i_want": "the verification pipeline to sustain high application volumes",
+    "so_that": "we can reliably process up to 5,000 applications per day at peak without performance degradation.",
+    "acceptance_criteria": [
+     {
+      "given": "the system is under peak load of 5,000 applications within a 24-hour period",
+      "when": "performance monitoring is active",
+      "then": "the system successfully processes all applications while maintaining average processing times within acceptable limits and avoiding bottlenecks."
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This is a key non-functional requirement (NFR) related to scalability. Its achievement will be an outcome of architectural design, infrastructure setup, and load testing, rather than a single functional story implementation.",
+    "review_round": 2
+   },
+   {
+    "id": "S-013",
+    "epic_id": "E-05",
+    "title": "High System Uptime",
+    "as_a": "an operations manager",
+    "i_want": "the verification pipeline to maintain high availability",
+    "so_that": "applicants can always submit their applications and get verified with minimal disruption.",
+    "acceptance_criteria": [
+     {
+      "given": "the system is deployed and operational",
+      "when": "uptime is measured over a defined monitoring period",
+      "then": "the verification pipeline successfully demonstrates 99.9% uptime."
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This is a key non-functional requirement (NFR) related to availability. Its achievement will be an outcome of architectural design, robust infrastructure, monitoring, and operational procedures, rather than a single functional story implementation.",
+    "review_round": 2
+   },
+   {
+    "id": "S-014",
+    "epic_id": "E-06",
+    "title": "Retain KYC Decisions and Data",
+    "as_a": "a compliance officer",
+    "i_want": "all KYC decisions and supporting data to be retained for five years",
+    "so_that": "we can satisfy regulatory audit requirements",
+    "acceptance_criteria": [
+     {
+      "given": "a KYC decision has been made for an applicant",
+      "when": "the system stores the decision and all associated data (e.g., ID images, selfie, verification results, audit trails)",
+      "then": "this data is successfully retained, accessible, and immutable for a minimum of five years."
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "Depends on other stories that generate KYC decisions and supporting data. The scope of 'all associated data' includes key artifacts like ID images, selfies, and verification results, along with audit trails.",
+    "review_round": 1
+   },
+   {
+    "id": "S-015",
+    "epic_id": "E-07",
+    "title": "No Re-verification for Existing Customers (Current Phase)",
+    "as_a": "a product manager",
+    "i_want": "to explicitly exclude re-verification for existing customers applying for a second loan in this phase",
+    "so_that": "we can focus on new customer onboarding",
+    "acceptance_criteria": [
+     {
+      "given": "an existing customer applies for a second loan",
+      "when": "the system identifies them as an existing customer",
+      "then": "the system successfully prevents the new KYC onboarding workflow from being triggered for re-verification."
+     }
+    ],
+    "requirement_ids": [
+     "R-017"
+    ],
+    "priority": "wont",
+    "story_points": null,
+    "notes": "",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC1.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC1.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "This story has an implicit dependency on S-001 and S-002 to provide the ID and selfie data for Persona to verify."
+    ],
+    "fix_instructions": "Acknowledge the dependency on S-001 and S-002 in the story notes or ensure these stories are prioritized to provide the necessary input data."
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "This story has an implicit dependency on S-003 (Integrate with Persona) to not only verify identity but also to extract the address from the ID. S-003's acceptance criteria do not explicitly cover address extraction."
+    ],
+    "fix_instructions": "Clarify if Persona integration (S-003) includes address extraction, or if that's a separate task. If it's part of S-003, update S-003's acceptance criteria to explicitly state Persona provides extracted address data."
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "This story is highly dependent on S-005 (Integrate with Sanctions List Providers) to provide the sanctions screening results that trigger the routing."
+    ],
+    "fix_instructions": "Acknowledge the strong dependency on S-005 in the story notes or ensure S-005 is prioritized to deliver the necessary output."
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 2,
+     "negotiable": 4,
+     "valuable": 3,
+     "estimable": 3,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "This story has very high dependencies on S-003, S-005, and S-007 to provide the data for consolidation, making it difficult to work on independently.",
+     "The 'as an underwriter' and 'so that I can make an informed lending decision' implies a user interface for viewing the consolidated data, but the notes explicitly state that displaying results in a UI may be addressed in subsequent stories. This creates a disconnect between the stated user value and the actual scope, making the value less direct for the stated user in this story.",
+     "The scope of 'consolidate' could be complex depending on the data models from multiple sources, potentially making the story not 'small' enough for a single sprint."
+    ],
+    "fix_instructions": "1. Clarify the scope: If this story is purely about backend data consolidation, rephrase the 'as a' and 'so that' to reflect a system or data perspective (e.g., 'As a data pipeline, I want to consolidate verification results so that the data is ready for future underwriting tools'). 2. If the underwriter *does* need to see the data, then the UI aspect needs to be included in this story or explicitly split into a separate, dependent story. 3. Re-evaluate if the consolidation logic is truly 'small' given the multiple data sources; consider breaking it down if complex."
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "This story depends on other automated KYC checks (e.g., S-003, S-004, S-005, S-007) to generate cases with failed or low confidence scores for manual review."
+    ],
+    "fix_instructions": "Acknowledge the dependency on other stories generating failed or low-confidence checks in the story notes."
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 2,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 3,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "This story is highly dependent on S-006 (Route Sanctions Hits to Compliance) and S-009 (Manual Fallback for Failed Automated Checks) to populate the manual review queue.",
+     "The scope of 'efficient interface' and 'access available verification data' is broad and could make the story too large for a single sprint. The acceptance criteria are also quite general.",
+     "Testability is impacted by the broad scope; specific data points and UI elements need to be defined."
+    ],
+    "fix_instructions": "1. Break down the story into smaller, more manageable pieces if the UI is complex (e.g., 'View basic applicant data in manual queue,' 'Approve/Reject application in manual queue,' 'Add notes to application in manual queue'). 2. Specify the minimum viable set of 'available verification data' for the initial iteration. 3. Acknowledge the dependencies on S-006 and S-009."
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 1,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 1,
+     "small": 1,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "This is a non-functional requirement (NFR) related to performance, not a user story. It describes a system characteristic (how fast it should be), not a functional piece of work that can be built independently.",
+     "It is not estimable as a single story, as its achievement is an outcome of the overall system design, optimization, and performance testing across multiple functional stories.",
+     "It is not small; it's a system-level characteristic."
+    ],
+    "fix_instructions": "Remove this from the user story backlog. Manage it as an explicit non-functional requirement or an epic goal. If a functional story is needed to *address* this NFR (e.g., 'Optimize data retrieval for KYC workflow'), then that functional story should be written."
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 1,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 1,
+     "small": 1,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "This is a non-functional requirement (NFR) related to scalability, not a user story. It describes a system characteristic (how much load it can handle), not a functional piece of work that can be built independently.",
+     "It is not estimable as a single story, as its achievement is an outcome of architectural design, infrastructure setup, and load testing.",
+     "It is not small; it's a system-level characteristic."
+    ],
+    "fix_instructions": "Remove this from the user story backlog. Manage it as an explicit non-functional requirement or an epic goal. If a functional story is needed to *address* this NFR (e.g., 'Implement message queue for asynchronous processing'), then that functional story should be written."
+   },
+   {
+    "story_id": "S-013",
+    "scores": {
+     "independent": 1,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 1,
+     "small": 1,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "This is a non-functional requirement (NFR) related to availability, not a user story. It describes a system characteristic (how much uptime it should have), not a functional piece of work that can be built independently.",
+     "It is not estimable as a single story, as its achievement is an outcome of architectural design, robust infrastructure, monitoring, and operational procedures.",
+     "It is not small; it's a system-level characteristic."
+    ],
+    "fix_instructions": "Remove this from the user story backlog. Manage it as an explicit non-functional requirement or an epic goal. If a functional story is needed to *address* this NFR (e.g., 'Implement redundant database failover'), then that functional story should be written."
+   },
+   {
+    "story_id": "S-014",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "This story depends on other stories to generate the KYC decisions and supporting data that need to be retained."
+    ],
+    "fix_instructions": "Acknowledge the dependency on other stories generating KYC data in the story notes."
+   },
+   {
+    "story_id": "S-015",
+    "scores": {
+     "independent": 5,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The 'as a product manager' role is unusual for a user story, as product managers typically define requirements, they don't usually 'use' the system in the way described. This is more of a system constraint or an exclusionary rule.",
+     "AC1.then has no observable outcome verb"
+    ],
+    "fix_instructions": "Rephrase as a system constraint or a technical story (e.g., 'As the system, I want to identify existing customers and bypass re-verification...') or 'As a business, we want the system to prevent re-verification for existing customers...'"
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "uncovered_goal",
+    "description": "The business goal to 'eliminate the current manual review backlog' is not explicitly addressed by a requirement or backlog item. R-011 and S-010 focus on improving the efficiency of processing new manual review cases, but not on clearing the existing backlog.",
+    "severity": "medium",
+    "related_ids": [
+     "Brief Goal 9",
+     "R-011",
+     "S-010"
+    ],
+    "suggested_question": "Is the goal to 'eliminate the current manual review backlog' referring to clearing the existing backlog before launch, or is it expected to be a natural outcome of the improved efficiency over time? Should we add a specific task or target for clearing the existing backlog?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "A critical project constraint regarding the launch deadline (before March 31st for license renewal) is not captured as a requirement or reflected in the backlog.",
+    "severity": "high",
+    "related_ids": [
+     "Brief Constraint 6"
+    ],
+    "suggested_question": "The brief mentions a hard deadline of March 31st for launch due to state lending license renewal. How will this deadline be tracked and managed within the project, and should it be formalized as a project milestone or non-functional requirement?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "A significant project constraint regarding the budget cap of $250,000 is not captured as a requirement or reflected in the backlog.",
+    "severity": "high",
+    "related_ids": [
+     "Brief Constraint 8"
+    ],
+    "suggested_question": "The brief specifies a budget cap of $250,000. How will this budget be tracked and managed throughout the project, and should we include budget considerations in our planning and reporting?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for most of the functional and non-functional requirements derived from the business goals and technical constraints. Key integrations, performance metrics, data retention, and core workflow automation are well-represented. However, there are notable omissions regarding project-level constraints such as the hard launch deadline and the budget cap, which are critical for project success and risk management. Additionally, while efficiency improvements for manual review are covered, the explicit goal of eliminating the *current* manual review backlog is not directly addressed."
+ },
+ "trace": {
+  "run_id": "0c289edc3b",
+  "started_at": "2026-09-12T19:21:33.100072Z",
+  "prompt_version": "v1",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 11205,
+    "prompt_tokens": 987,
+    "completion_tokens": 2534,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 50325,
+    "prompt_tokens": 1808,
+    "completion_tokens": 12496,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 28115,
+    "prompt_tokens": 1254,
+    "completion_tokens": 6489,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 34807,
+    "prompt_tokens": 4015,
+    "completion_tokens": 7841,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 27683,
+    "prompt_tokens": 7640,
+    "completion_tokens": 6746,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 35130,
+    "prompt_tokens": 4462,
+    "completion_tokens": 7795,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 34346,
+    "prompt_tokens": 5995,
+    "completion_tokens": 7828,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 34203,
+    "prompt_tokens": 4602,
+    "completion_tokens": 7811,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 15522,
+    "prompt_tokens": 1784,
+    "completion_tokens": 3641,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 25,
+  "guardrail_flags": []
+ }
+}

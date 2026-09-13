@@ -55,35 +55,69 @@ tight enough that "retry on 429" is not a strategy.
 ## 3. Results
 
 <!-- results-table:start -->
-Live matrix on `gemini-2.5-flash`, 2 review rounds, 8 transcripts. v3 is the
-shipped default. v2 and v1 are being run against the same set for the
-before/after comparison; v4 (see §2) is queued. Rows are added here as the
-JSON reports land in `eval/results/` — the README table is generated from the
-same files by `scripts/render_eval_table.py`.
+Full matrix on `gemini-2.5-flash`, 2 review rounds, 8 transcripts, same
+golden set and rubric for every row. v3 is the shipped default. v4 (see §2)
+is queued; its row is added when `eval/results/gemini_v4.json` lands. The
+README table is generated from the same files by
+`scripts/render_eval_table.py`.
 
-| Metric | stub baseline | v3 (Gemini) |
-|---|---|---|
-| Requirement recall | 74% | **82%** |
-| Requirement precision (strict) | 70% | 57% |
-| Traceability (evidence verbatim in notes) | 100% | **99.5%** (199 / 200) |
-| Distractor leakage | 6% | 25% (4 / 16) |
-| Priority accuracy (MoSCoW) | 57% | **82%** |
-| Type accuracy | 57% | 79% |
-| Must/should requirements with ≥ 1 story | 74% | 76% |
-| Stories sprint-ready after loop | 71% | **85%** (93 / 109) |
-| Gherkin-clean stories | 100% | 98% |
-| Generic "as a user" stories | 0% | **0%** |
-| Out-of-scope recall | 0% | 62% |
-| Schema repairs | 0 | **0** in 68 model calls |
-| Stories revised by the loop | — | 83 |
-| Mean latency / tokens per transcript | — | 245 s / 88.7K tokens |
+| Metric | stub baseline | v1 | v2 | v3 (shipped) |
+|---|---|---|---|---|
+| Requirement recall | 74% | 81% | **87%** | 82% |
+| Requirement precision (strict) | 70% | 59% | **63%** | 57% |
+| Requirements produced (83 labelled) | 90 | 168 | **155** | 200 |
+| Traceability (evidence verbatim in notes) | 100% | 74% | 99.4% | **99.5%** |
+| Evidence quotes below the 0.82 guardrail | 0 | 44 | 1 | 1 |
+| Distractor leakage (of 16) | 6% | 25% | **12%** | 25% |
+| Priority accuracy (MoSCoW) | 57% | **93%** | 83% | 82% |
+| Type accuracy | 57% | 82% | **86%** | 79% |
+| Must/should requirements with ≥ 1 story | 74% | 76% | **82%** | 76% |
+| Stories sprint-ready after loop | 71% | 35% | 77% | **85%** (93 / 109) |
+| Gherkin-clean stories | 100% | 75% | 95% | **98%** |
+| Generic "as a user" stories | 0% | 1% | **0%** | **0%** |
+| Out-of-scope recall | 0% | 50% | **62%** | **62%** |
+| Schema repairs | 0 | 0 | 3 | **0** in 68 calls |
+| Stories revised by the loop | 116 | 153 | 85 | 83 |
+| Mean latency / tokens per transcript | 0 s | 298 s / 95.6K | 254 s / 90.9K | 245 s / 88.7K |
 
-Reading it: the model beats the heuristic baseline on everything that
-requires understanding (recall, priority, type, story quality) and ties it on
-the one thing the baseline gets for free (a regex that copies sentences cannot
-mis-quote). The two places it is *worse* than the baseline — precision and
-distractor leakage — are the same phenomenon seen from two sides: the model
-infers. Section 4 shows exactly what that looked like; v4 is the response.
+Three things the matrix says, in order of how much they mattered:
+
+**v1 → v2 is the big jump, and it is almost entirely the evidence rule.**
+Asking for a *verbatim* quote took traceability from 74% to 99.4%. Under v1
+the model paraphrased freely — 44 of 168 evidence quotes fell below the
+guardrail threshold, and in the HR case only 4 of 21 requirements could be
+traced to the notes at all. The same version adds INVEST scoring rules and the
+"observable outcome" rule for Gherkin, which is why sprint-ready stories more
+than doubled (35% → 77%) and Gherkin validity went from 75% to 95%. v1 is what
+a one-paragraph prompt gets you: it *looks* fine and a third of it cannot be
+checked.
+
+**v2 → v3 traded requirements quality for story quality.** v3 changed what
+each agent *sees*: the story writer works from approved requirements instead
+of the raw notes, and the reviewer gets requirements + stories only. That is
+where the story-side gains come from — sprint-ready 77% → 85%, Gherkin 95% →
+98%, and the loop had less to fix (85 → 83 revisions with more stories
+passing first time). But v3 also rewrote the requirements prompt with more
+guidance (threshold-with-rule, duplicate and conflict detection), and the
+model responded by producing *more*: 200 requirements against 83 labelled,
+versus 155 under v2. More output meant more splitting (precision 63% → 57%),
+more inference (distractor leakage 12% → 25%, HR case 2 of 2 leaked) and
+slightly lower recall (87% → 82%, because split halves stop matching the
+rubric). Nothing hallucinated — traceability held at 99.5% — but a PO would
+have to merge a fifth of it in refinement.
+
+**Priority accuracy went the other way from everything else.** v1 scored 93%
+on MoSCoW with no MoSCoW definitions in the prompt; adding definitions (v2,
+v3) cost 10 points. The likely reason: the labelled priorities follow the
+stakeholders' *language* ("must", "we need", "would be nice"), and the
+definitions pushed the model to reason about business value instead of
+transcribing intent. That is arguably better BA practice and worse rubric
+performance; it is flagged rather than fixed.
+
+So v4 is a single-variable change to the requirements prompt only, keeping
+v3's context engineering (which the story metrics say is right) and
+targeting the v3 regression on the requirements side. Section 4 lists the
+specific failures it addresses.
 
 <!-- results-table:end -->
 

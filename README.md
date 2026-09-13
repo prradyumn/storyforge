@@ -11,7 +11,9 @@ the questions to take back to stakeholders. One click publishes to Jira Cloud.
 > The hard part is not generating stories. It is producing stories a delivery
 > team would accept — and being able to point at the sentence each one came from.
 
-<!-- demo: __DEMO_URL__ -->
+**Live demo:** <https://storyforge-lsnr.onrender.com> · **Source:** this repo · **Evals:** [`eval/DECISIONS.md`](eval/DECISIONS.md)
+
+> The demo runs on a free Render instance: it sleeps after 15 idle minutes, so the first load can take up to a minute. Pick an example, choose *Live (Gemini → Groq)* for a real model run (~2–4 min, capped at 40 runs/day) or *Stub* for an instant offline walkthrough. Jira publishing is dry-run for visitors; the live publish needs the admin key.
 
 ---
 
@@ -48,6 +50,8 @@ string matching), fixed before any prompt was tuned.
 | Backend · prompts | Req. recall | Req. precision | Traceable | Distractor leak | Priority acc. | Must/should covered | Stories sprint-ready | Generic 'user' role | Out-of-scope recall | Mean s / transcript |
 |---|---|---|---|---|---|---|---|---|---|---|
 | `stub` · v3 | 74% | 70% | 100% | 6% | 57% | 74% | 71% | 0% | 0% | 0 |
+| `gemini` · v1 | 81% | 59% | 74% | 25% | 93% | 76% | 35% | 1% | 50% | 298 |
+| `gemini` · v2 | 87% | 63% | 99.4% | 12% | 83% | 82% | 77% | 0% | 62% | 254 |
 | `gemini` · v3 | 82% | 57% | 99.5% | 25% | 82% | 76% | 85% | 0% | 62% | 245 |
 _8 transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline (it copies sentences verbatim, which the keyword rubric rewards on precision; read precision together with traceability)._
 <!-- eval-table:end -->
@@ -88,8 +92,9 @@ Publishing is idempotent (label + summary); re-running the same analysis skips i
 
 ### Deploy the demo (Render, free tier)
 
+The public demo at <https://storyforge-lsnr.onrender.com> is deployed from this repo exactly this way.
 `render.yaml` is a Render blueprint: **Dashboard → New → Blueprint → this repo**, paste the
-secrets it prompts for (`GEMINI_API_KEY`, `GROQ_API_KEY`, `JIRA_*`), deploy. Free instances sleep
+secrets it prompts for (`GEMINI_API_KEY`, `GROQ_API_KEY`, `JIRA_*`, `STORYFORGE_ADMIN_KEY`), deploy. Free instances sleep
 after 15 idle minutes, so the first request can take ~1 minute to wake. Analyses run as background
 jobs (`POST /api/analyze/start` → `GET /api/jobs/{id}`), so a slow model run never has to fit inside
 one HTTP request. `scripts/deploy_hf.sh` still targets Hugging Face Spaces, which as of Sep 2026
@@ -130,6 +135,7 @@ docs/
   PRD.md                the product spec for StoryForge itself
   ARCHITECTURE.md       why five agents, context engineering table, guardrail design
   UAT.md                14-step acceptance script
+  StoryForge_Overview.pdf  two-page overview: what it does, how, stack
 tests/                  45 tests, offline
 ```
 

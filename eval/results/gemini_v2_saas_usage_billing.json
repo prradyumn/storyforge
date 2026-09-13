@@ -1,0 +1,827 @@
+{
+ "brief": {
+  "title": "Usage-based billing & invoicing platform",
+  "business_goals": [
+   "Scale billing operations beyond 400 customers, moving from manual spreadsheets to an automated system.",
+   "Provide customers with real-time visibility into their own API usage, updated within minutes.",
+   "Ensure accurate calculation of tiered usage charges for correct revenue recognition.",
+   "Enable automated usage alerts for customers when they hit spending caps.",
+   "Ensure timely invoice generation and delivery within 24 hours of the billing period closing.",
+   "Process high volumes of usage events (e.g., 40 million API calls/month from a single customer) accurately without data loss to prevent billing disputes.",
+   "Automate dunning and failed payment retry logic."
+  ],
+  "stakeholders": [
+   {
+    "name": "Laura Bennett",
+    "role": "VP Finance",
+    "concerns": [
+     "Current spreadsheet reconciliation does not scale past 400 customers.",
+     "Accurate calculation of tiered charges is critical for revenue recognition.",
+     "Timely invoice generation (within 24 hours of period close) is essential.",
+     "Seven years of invoice and usage data retention is required for tax and audit.",
+     "Project must be live before July 1st fiscal year start.",
+     "Project budget is capped at $400,000."
+    ]
+   },
+   {
+    "name": "Chris Nakamura",
+    "role": "Head of Product",
+    "concerns": [
+     "Customers need real-time visibility into their API usage.",
+     "Customers need automated usage alerts when they hit spending caps.",
+     "Multi-currency billing is not a priority for this phase."
+    ]
+   },
+   {
+    "name": "Omar Haddad",
+    "role": "Engineering Lead",
+    "concerns": [
+     "The billing system must consume usage events from the existing Kafka topic (from Kong API gateway).",
+     "The metering pipeline must handle high volume (40M API calls/month from one customer) without dropping events to avoid billing disputes.",
+     "Current manual process causes frequent 'Slack fire drills' due to data discrepancies."
+    ]
+   },
+   {
+    "name": "Grace Lindqvist",
+    "role": "Customer Success Lead",
+    "concerns": [
+     "Invoices must be processed through Stripe, our existing payment processor.",
+     "Automated dunning and failed-payment retry logic is desired."
+    ]
+   }
+  ],
+  "constraints": [
+   "Project must be live before fiscal year starts on July 1st (2026).",
+   "Project budget is capped at $400,000, including Kafka and Stripe integration.",
+   "Usage events must be consumed from an existing Kafka topic fed by Kong API gateway.",
+   "Invoices must be processed through Stripe, our existing payment processor.",
+   "The system must retain seven years of invoice and usage data for tax and audit purposes.",
+   "The metering pipeline must handle high volumes (e.g., 40 million API calls/month from a single customer) without dropping events.",
+   "Tiered pricing calculations must be accurate for revenue recognition."
+  ],
+  "out_of_scope": [
+   "Switching payment processors (Stripe will remain).",
+   "Multi-currency billing for this phase (only USD invoicing)."
+  ],
+  "open_questions": [
+   "How will customer-specific contracted rates and tiered pricing rules be configured and managed within the new system?",
+   "What are the detailed requirements for the customer-facing real-time usage visibility interface or API?",
+   "What are the specific rules and configuration options for customer spending caps and associated alerts?",
+   "What are the full requirements for the automated dunning and failed payment retry logic, beyond the 'three times over a week' example?",
+   "What is the total expected volume of API calls across all customers per month/billing period?"
+  ],
+  "domain": "Billing"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall support usage-based pricing per API call.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Current spreadsheet reconciliation does not scale past 400 customers.",
+   "evidence": "Right now we bill customers on a flat monthly rate, but we're moving to usage-based pricing per API call, and finance is currently reconciling usage in spreadsheets pulled from our logs — it doesn't scale past our current 400 customers.",
+   "stakeholder": "Laura Bennett",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall provide customers with real-time visibility into their API usage.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Customers need to see their usage updated within a few minutes.",
+   "evidence": "Customers need real-time visibility into their own usage — API calls consumed so far this billing period, ideally updated within a few minutes, not just at month end.",
+   "stakeholder": "Chris Nakamura",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall consume usage events from the existing Kafka topic.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Avoid building a second metering layer.",
+   "evidence": "We already emit metering events to a Kafka topic — the billing system needs to consume from that topic rather than us building a second metering layer.",
+   "stakeholder": "Omar Haddad",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall calculate tiered usage charges correctly.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Incorrect calculations directly impact revenue recognition.",
+   "evidence": "The system has to calculate tiered charges correctly, we cannot get this wrong, it directly hits revenue recognition.",
+   "stakeholder": "Laura Bennett",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall send automated usage alerts to customers when they hit a configurable percentage of their spending cap.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "We also want usage alerts — ideally customers get notified by email when they hit 80% of any spending cap they've set for themselves.",
+   "stakeholder": "Chris Nakamura",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall process invoices through Stripe.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "Stripe is the existing payment processor with customer cards on file.",
+   "evidence": "Invoices need to go out through Stripe, since that's our existing payment processor and customers already have cards on file there — we are not switching payment processors as part of this.",
+   "stakeholder": "Grace Lindqvist",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall generate and send invoices within 24 hours of the billing period closing.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Avoid delays and customer escalations caused by manual processes.",
+   "evidence": "Invoices must be generated and sent within 24 hours of the billing period closing.",
+   "stakeholder": "Laura Bennett",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The metering pipeline shall handle high volumes of usage events (e.g., 40 million API calls/month from a single customer) without dropping events.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "Prevent billing disputes due to undercounted usage.",
+   "evidence": "For scale, our biggest customer alone generates about 40 million API calls a month. The metering pipeline needs to handle that volume without dropping events — we can't have billing disputes because we undercounted someone's usage.",
+   "stakeholder": "Omar Haddad",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall automate dunning and failed-payment retry logic.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Dunning and failed-payment retry logic should ideally be automatic — retry a failed card three times over a week before flagging the account to a human.",
+   "stakeholder": "Grace Lindqvist",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall retain seven years of invoice and usage data.",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "Required for tax and audit purposes.",
+   "evidence": "We need seven years of invoice and usage data retained for tax and audit purposes, that's a hard finance requirement, not optional.",
+   "stakeholder": "Laura Bennett",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall not support multi-currency billing for this phase.",
+   "type": "functional",
+   "priority": "wont",
+   "rationale": "",
+   "evidence": "Multi-currency billing is out of scope for this phase — we only invoice in USD right now, even though we have customers in Europe and Asia who ask about it.",
+   "stakeholder": "Chris Nakamura",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Customer Visibility & Control",
+    "goal": "Empower customers with real-time insights into their usage and control over spending.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-02",
+    "title": "Usage Metering & Pricing",
+    "goal": "Accurately capture and process high volumes of usage events to calculate correct charges.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-03",
+    "title": "Automated Billing & Payments",
+    "goal": "Streamline the invoicing and payment collection process for efficiency and revenue assurance.",
+    "requirement_ids": []
+   },
+   {
+    "id": "E-04",
+    "title": "Data Retention & Compliance",
+    "goal": "Ensure long-term storage of billing data for compliance and historical analysis.",
+    "requirement_ids": []
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Real-time API Usage Visibility",
+    "as_a": "Customer",
+    "i_want": "To view my current API usage",
+    "so_that": "I can monitor my consumption in real-time.",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged into the customer portal.",
+      "when": "I navigate to the \"Usage\" dashboard.",
+      "then": "My current API call count for the billing period is displayed, updated within minutes."
+     },
+     {
+      "given": "I am viewing my usage dashboard.",
+      "when": "My usage includes multiple API endpoints.",
+      "then": "The dashboard shows a breakdown of usage by API endpoint."
+     }
+    ],
+    "requirement_ids": [
+     "R-002"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Configure Usage Alert Thresholds",
+    "as_a": "Customer",
+    "i_want": "To set a spending cap percentage for usage alerts",
+    "so_that": "I am notified before exceeding my expected costs.",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged into the customer portal and have an active spending cap.",
+      "when": "I navigate to the \"Alerts\" settings.",
+      "then": "I can input a percentage value (e.g., 80%) for my usage alert threshold."
+     },
+     {
+      "given": "I have entered a valid percentage for an alert threshold.",
+      "when": "I save the alert settings.",
+      "then": "The configured alert threshold is stored and displayed as confirmed."
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "should",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Receive Automated Usage Alerts",
+    "as_a": "Customer",
+    "i_want": "To receive automated alerts when my usage approaches a spending cap",
+    "so_that": "I can take action to avoid unexpected charges.",
+    "acceptance_criteria": [
+     {
+      "given": "I have configured a usage alert threshold (e.g., 80% of my spending cap).",
+      "when": "My actual usage reaches or exceeds that threshold.",
+      "then": "An email notification is sent to my registered email address."
+     },
+     {
+      "given": "I have received an alert.",
+      "when": "I check the alert content.",
+      "then": "The alert content displays my current usage, the threshold reached, and my remaining cap."
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-02",
+    "title": "Ingest Basic Usage Events from Kafka",
+    "as_a": "System",
+    "i_want": "To consume usage events from the existing Kafka topic",
+    "so_that": "All API calls are accurately metered for billing purposes.",
+    "acceptance_criteria": [
+     {
+      "given": "New usage events are published to the Kafka topic.",
+      "when": "The metering pipeline is running.",
+      "then": "Usage events are consumed and stored in the metering database for processing."
+     },
+     {
+      "given": "A usage event is consumed.",
+      "when": "It is processed.",
+      "then": "The event's metadata (e.g., customer ID, API endpoint, timestamp) is extracted and stored in the metering database."
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "Original story S-004 was broken down due to size. This story focuses on basic ingestion, while S-009 addresses high-volume performance.",
+    "review_round": 1
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-02",
+    "title": "Calculate Tiered Usage Charges",
+    "as_a": "Billing System",
+    "i_want": "To calculate tiered usage charges based on API calls",
+    "so_that": "Customers are billed accurately according to their pricing plan.",
+    "acceptance_criteria": [
+     {
+      "given": "A customer has a tiered pricing plan (e.g., first 1M calls free, next 5M at $X/call, etc.).",
+      "when": "The billing period closes.",
+      "then": "The total charge for API usage based on the defined tiers is calculated and recorded."
+     },
+     {
+      "given": "Usage data for a customer is available.",
+      "when": "The system calculates charges.",
+      "then": "The calculated charge is recorded, reflecting the per-API-call pricing model."
+     },
+     {
+      "given": "A customer's usage crosses a tier boundary.",
+      "when": "Charges are calculated.",
+      "then": "The correct rate is applied to the usage within each tier."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-03",
+    "title": "Generate Usage-Based Invoices",
+    "as_a": "Billing System",
+    "i_want": "To generate and send invoices for usage-based charges",
+    "so_that": "Customers receive timely and accurate bills.",
+    "acceptance_criteria": [
+     {
+      "given": "A billing period has closed for a customer.",
+      "when": "The invoice generation process runs.",
+      "then": "An invoice is generated reflecting the calculated usage charges."
+     },
+     {
+      "given": "An invoice is generated.",
+      "when": "The system sends the invoice.",
+      "then": "The invoice is delivered to the customer within 24 hours of the billing period closing."
+     },
+     {
+      "given": "An invoice is generated.",
+      "when": "The customer views the invoice.",
+      "then": "The generated invoice displays itemized usage, rates, and total charges."
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-03",
+    "title": "Automate Invoice Processing via Stripe",
+    "as_a": "Billing System",
+    "i_want": "To process invoices through Stripe",
+    "so_that": "Payments are collected efficiently and securely.",
+    "acceptance_criteria": [
+     {
+      "given": "An invoice is generated and approved.",
+      "when": "The system initiates payment processing.",
+      "then": "The invoice details are sent to Stripe for payment collection."
+     },
+     {
+      "given": "Stripe processes a payment.",
+      "when": "The payment status is updated.",
+      "then": "The system receives and records the payment status (e.g., paid, failed) from Stripe."
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-03",
+    "title": "Implement Initial Dunning Notification for Failed Payments",
+    "as_a": "Billing System",
+    "i_want": "To send an initial notification when a payment fails",
+    "so_that": "Customers are promptly informed of payment issues.",
+    "acceptance_criteria": [
+     {
+      "given": "A payment attempt for an invoice fails.",
+      "when": "The system detects the failure.",
+      "then": "A dunning process is initiated, and an initial reminder email is sent to the customer."
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "Original story S-008 was broken down due to size. This story focuses on the initial dunning notification.",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-02",
+    "title": "Efficient Kafka Event Ingestion",
+    "as_a": "Billing System",
+    "i_want": "To efficiently consume high volumes of usage events from the Kafka topic",
+    "so_that": "The metering pipeline can keep up with incoming data without building a backlog.",
+    "acceptance_criteria": [
+     {
+      "given": "The Kafka topic receives 40 million API calls/month from a single customer.",
+      "when": "The Kafka consumer processes these events.",
+      "then": "The consumer lag for the metering pipeline topic remains below 1000 messages during peak load."
+     },
+     {
+      "given": "The Kafka topic receives 40 million API calls/month from a single customer.",
+      "when": "The Kafka consumer processes these events.",
+      "then": "No events are lost during the consumption phase due to consumer-side issues."
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "Revised from original S-009 to be smaller and more focused on Kafka ingestion performance, addressing reviewer feedback. Part of R-008.",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 3,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 3,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 3,
+     "testable": 4
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 3,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 3,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 3,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 3,
+     "negotiable": 4,
+     "valuable": 4,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 3,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "Estimable score is 3. The story points (3) seem low for the scope of ensuring high-volume ingestion performance (40M events/month) and specific lag/loss metrics, especially given S-004 (basic ingestion) was 5 points. This suggests potential underestimation or a lack of clarity on the effort involved in achieving the performance targets.",
+     "Small score is 3. While the story points are 3, the scope of achieving and verifying high-volume performance targets can be quite large and involve significant optimization and testing effort, potentially making it larger than a typical 'small' story."
+    ],
+    "fix_instructions": "Re-evaluate the story points for S-009, considering the complexity of achieving and verifying the high-volume performance targets. It might need to be larger or broken down further if the performance tuning is extensive. Clarify what specific optimizations are in scope for this story versus ongoing performance monitoring."
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "Requirement R-010 for seven years of invoice and usage data retention, critical for tax and audit, is not covered by any backlog item.",
+    "severity": "high",
+    "related_ids": [
+     "R-010"
+    ],
+    "suggested_question": "What are the specific technical and operational requirements for retaining seven years of invoice and usage data, and how will this be implemented and verified?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Goal 7 and R-009 specify \"Automate dunning and failed payment retry logic,\" but backlog item S-008 only covers \"Implement Initial Dunning Notification.\" The full scope of retry logic is unclear.",
+    "severity": "medium",
+    "related_ids": [
+     "Goal 7",
+     "R-009",
+     "S-008"
+    ],
+    "suggested_question": "Beyond initial notifications, what are the detailed requirements for automated failed payment retry logic, including frequency, duration, and success criteria?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "While R-001 and R-004 cover usage-based and tiered charge calculation, and S-005 implements this, there's no explicit requirement or backlog item detailing how customer-specific contracted rates and tiered pricing rules will be configured and managed within the system.",
+    "severity": "medium",
+    "related_ids": [
+     "R-001",
+     "R-004",
+     "S-005"
+    ],
+    "suggested_question": "How will customer-specific contracted rates and tiered pricing rules be configured, managed, and updated within the new system by business users?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "R-002 and S-001 cover real-time usage visibility, but detailed requirements for the customer-facing interface or API (e.g., data granularity, refresh rates, specific endpoints) are not specified.",
+    "severity": "medium",
+    "related_ids": [
+     "Goal 2",
+     "R-002",
+     "S-001"
+    ],
+    "suggested_question": "What are the specific user experience and technical requirements for the customer-facing real-time usage visibility interface or API, including data granularity, refresh rates, and authentication?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "R-005, S-002, and S-003 address automated usage alerts for spending caps, but the specific rules, thresholds, and configuration options for these caps and alerts are not detailed.",
+    "severity": "medium",
+    "related_ids": [
+     "Goal 4",
+     "R-005",
+     "S-002",
+     "S-003"
+    ],
+    "suggested_question": "What are the specific rules, thresholds, and configuration options required for customer spending caps and associated alerts, including who can configure them and how they are managed?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "While R-008 and S-009 address high volume for a single customer (40M API calls/month), there's no explicit requirement or backlog item defining the total expected volume of API calls across all customers or overall system peak load, which is critical for system sizing and performance.",
+    "severity": "high",
+    "related_ids": [
+     "Goal 6",
+     "R-008",
+     "S-009"
+    ],
+    "suggested_question": "What is the total expected volume of API calls across all customers per month/billing period, and what are the peak load expectations for the system to ensure overall scalability?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for the core functional requirements of usage-based billing, real-time visibility, and automated invoicing. Key business goals like scaling operations, accurate tiered charges, and timely invoice generation appear to be addressed. However, there are critical gaps in non-functional areas, particularly around long-term data retention for compliance and defining the overall system scalability for total customer volume. Additionally, several areas require further detail to resolve ambiguities regarding the configuration of pricing rules, the specifics of customer-facing interfaces, and the full scope of automated dunning and payment retry logic. Addressing these gaps is crucial for ensuring the system meets compliance needs, performs reliably at scale, and provides a complete, user-friendly solution."
+ },
+ "trace": {
+  "run_id": "6a72140766",
+  "started_at": "2026-09-12T19:14:14.774965Z",
+  "prompt_version": "v2",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 12526,
+    "prompt_tokens": 1019,
+    "completion_tokens": 2565,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 16595,
+    "prompt_tokens": 1986,
+    "completion_tokens": 4231,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 23973,
+    "prompt_tokens": 1091,
+    "completion_tokens": 5966,
+    "attempt": 1,
+    "ok": false,
+    "error": "schema: [{\"type\":\"missing\",\"loc\":[\"stories\",0,\"title\"],\"msg\":\"Field required\",\"input\":{\"id\":\"S-001\",\"epic_id\":\"E-01\",\"as_a\":\"Customer\",\"i_want\":\"To view my current API usage\",\"so_that\":\"I can monitor my consu"
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 23588,
+    "prompt_tokens": 1520,
+    "completion_tokens": 5936,
+    "attempt": 2,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 15132,
+    "prompt_tokens": 3353,
+    "completion_tokens": 3428,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 25734,
+    "prompt_tokens": 4062,
+    "completion_tokens": 6251,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 16017,
+    "prompt_tokens": 3187,
+    "completion_tokens": 3647,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 18619,
+    "prompt_tokens": 1876,
+    "completion_tokens": 3968,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 25605,
+    "prompt_tokens": 3263,
+    "completion_tokens": 6085,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 23114,
+    "prompt_tokens": 1650,
+    "completion_tokens": 5322,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 8,
+  "guardrail_flags": [
+   "stories: schema repair on attempt 1",
+   "coverage: R-010 (must) has no story"
+  ]
+ }
+}

@@ -1,0 +1,939 @@
+{
+ "brief": {
+  "title": "Housekeeping Task Management System",
+  "business_goals": [
+   "Transition housekeeping assignments from printed sheets to a mobile system for housekeepers.",
+   "Automate room status updates (e.g., 'dirty' upon guest checkout).",
+   "Assign tasks to housekeepers based on their current workload.",
+   "Enable housekeepers to update room status (in-progress, clean, ready for inspection) via a simple mobile app.",
+   "Automatically notify supervisors for room inspections and approval.",
+   "Ensure rooms are available for sale promptly after cleaning and inspection.",
+   "Prioritize urgent room requests (late checkout, early check-in) for housekeepers.",
+   "Provide specific checklists for VIP rooms automatically.",
+   "Enable housekeepers to log lost and found items with photos directly from the app.",
+   "Improve guest satisfaction by ensuring rooms are ready by check-in time.",
+   "Retain historical room status and inspection data for quality audits."
+  ],
+  "stakeholders": [
+   {
+    "name": "Carlos Ibarra",
+    "role": "General Manager",
+    "concerns": [
+     "Moving to a mobile system for housekeeping across three properties.",
+     "Handling same-day requests like late checkouts or early check-ins.",
+     "Project budget and timeline."
+    ]
+   },
+   {
+    "name": "Mei Ling Tan",
+    "role": "Director of Rooms",
+    "concerns": [
+     "Automated 'dirty' room status on checkout.",
+     "Workload-based task assignment.",
+     "Automatic supervisor notification for room inspections.",
+     "VIP guest specific checklists.",
+     "Historical data for quality audits.",
+     "Preventing rooms from not being ready by check-in time."
+    ]
+   },
+   {
+    "name": "Aaliyah Rahman",
+    "role": "Housekeeping Supervisor",
+    "concerns": [
+     "Simple app for housekeepers on handheld devices.",
+     "App functionality without strong WiFi signal (offline capability).",
+     "Logging lost and found items with photos via the app."
+    ]
+   },
+   {
+    "name": "Josef Novak",
+    "role": "IT Systems Manager",
+    "concerns": [
+     "Bi-directional integration with Opera Cloud PMS for room status.",
+     "Room status changes reflecting across all devices within 15 seconds.",
+     "Retention of at least one year of room status and inspection history."
+    ]
+   }
+  ],
+  "constraints": [
+   "Budget of SGD 150,000 for initial rollout across three properties.",
+   "Launch before the year-end peak season in December.",
+   "Must integrate bi-directionally with Opera Cloud Property Management System.",
+   "Room status changes must reflect across all devices within 15 seconds.",
+   "Mobile app must work without needing a strong WiFi signal (offline capability).",
+   "At least one year of room status and inspection history must be retained."
+  ],
+  "out_of_scope": [
+   "Minibar restocking and billing."
+  ],
+  "open_questions": [],
+  "domain": "Hospitality"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall provide a mobile system for housekeeping task assignment.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To transition housekeeping assignments from printed sheets to a mobile system.",
+   "evidence": "We need room status and task assignment to move onto a mobile system the housekeepers can use directly.",
+   "stakeholder": "Carlos Ibarra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall provide a mobile system for housekeepers to update room status.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To transition room status updates from printed sheets to a mobile system.",
+   "evidence": "We need room status and task assignment to move onto a mobile system the housekeepers can use directly.",
+   "stakeholder": "Carlos Ibarra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall automatically update a room's status to \"dirty\" upon guest checkout.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To automate room status updates and streamline the cleaning process.",
+   "evidence": "When a guest checks out, the room needs to automatically appear as \"dirty\".",
+   "stakeholder": "Mei Ling Tan",
+   "assumptions": [],
+   "traceable": false,
+   "trace_score": 0.791
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall assign tasks to housekeepers based on their current workload.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To ensure efficient and fair distribution of tasks among housekeepers.",
+   "evidence": "and get assigned to a housekeeper based on their current workload, not just whoever's next on a list.",
+   "stakeholder": "Mei Ling Tan",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall provide a simple mobile application for housekeepers on handheld devices.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To enable housekeepers to easily manage their tasks and update room statuses.",
+   "evidence": "Housekeepers need a simple app on a handheld device",
+   "stakeholder": "Aaliyah Rahman",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall enable housekeepers to mark a room as \"in-progress\", \"clean\", and \"ready for inspection\" via the mobile application.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To allow housekeepers to accurately reflect the current state of a room.",
+   "evidence": "to mark a room as in-progress, then clean, then ready for inspection.",
+   "stakeholder": "Aaliyah Rahman",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The mobile application shall function without requiring a strong WiFi signal.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure usability in areas with poor network coverage, such as stairwells and back corridors.",
+   "evidence": "It has to work without needing a strong signal — a lot of our stairwells and back corridors have terrible WiFi.",
+   "stakeholder": "Aaliyah Rahman",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall automatically notify a supervisor when a room is marked \"ready for inspection\".",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To streamline the inspection process and ensure timely room availability.",
+   "evidence": "Rooms marked \"ready for inspection\" should notify a supervisor automatically",
+   "stakeholder": "Mei Ling Tan",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall require supervisor approval before a room marked \"ready for inspection\" is shown as available for sale.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To ensure quality control and prevent rooms from being sold before they are fully ready.",
+   "evidence": "and the supervisor needs to approve it before the room shows as available for the front desk to sell again.",
+   "stakeholder": "Mei Ling Tan",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall integrate bi-directionally with Opera Cloud Property Management System for room status updates.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "To ensure consistent and real-time room status information between housekeeping and front desk operations.",
+   "evidence": "Room status changes have to sync with Opera in both directions — if front desk marks a room out of order in Opera, housekeeping should see that immediately, and vice versa.",
+   "stakeholder": "Josef Novak",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall allow supervisors to flag a room as priority, causing it to appear at the top of a housekeeper's task queue.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To enable efficient handling of urgent requests like late checkouts or early check-ins.",
+   "evidence": "Ideally supervisors can flag a room as priority and it jumps to the top of a housekeeper's queue.",
+   "stakeholder": "Carlos Ibarra",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall automatically display a specific VIP checklist to housekeepers when a room is tagged as VIP in Opera Cloud PMS.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To ensure VIP guests receive specific services and amenities as required.",
+   "evidence": "housekeepers should see that VIP checklist automatically when the room is tagged VIP in Opera.",
+   "stakeholder": "Mei Ling Tan",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall enable housekeepers to log lost and found items with a photo, room number, and date directly from the mobile application.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To streamline the lost and found process and improve item tracking.",
+   "evidence": "when a housekeeper finds an item, they should be able to log it with a photo right from the same app, tagged to the room number and date.",
+   "stakeholder": "Aaliyah Rahman",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "Room status changes shall reflect across all devices within 15 seconds.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To prevent multiple housekeepers from entering the same room and ensure real-time coordination.",
+   "evidence": "room status changes need to reflect across all devices within 15 seconds — if two housekeepers are near the same room, we don't want them both walking in.",
+   "stakeholder": "Josef Novak",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall retain at least one year of room status and inspection history.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "To support quality audits and historical data analysis.",
+   "evidence": "We need at least one year of room status and inspection history retained",
+   "stakeholder": "Josef Novak",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-016",
+   "statement": "The system shall provide access to historical room status and inspection data for quality audits.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To enable the Rooms department to perform quality audits.",
+   "evidence": "mainly so Rooms can pull data for quality audits.",
+   "stakeholder": "Josef Novak",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Housekeeper Mobile Experience",
+    "goal": "Provide housekeepers with an intuitive and reliable mobile application to manage tasks, update room statuses, and report lost items efficiently.",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-005",
+     "R-006",
+     "R-007",
+     "R-011",
+     "R-012",
+     "R-013"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Automated Housekeeping Workflow & Supervision",
+    "goal": "Automate room status transitions, task assignments, and supervisor notifications to streamline the cleaning and inspection process, ensuring rooms are ready for guests promptly.",
+    "requirement_ids": [
+     "R-003",
+     "R-004",
+     "R-008",
+     "R-009"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "System Integration & Data Management",
+    "goal": "Ensure seamless, real-time data exchange with the Property Management System and maintain comprehensive historical data for operational insights and quality assurance.",
+    "requirement_ids": [
+     "R-010",
+     "R-014",
+     "R-015",
+     "R-016"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "View Assigned Tasks on Mobile",
+    "as_a": "Housekeeper",
+    "i_want": "To view my assigned tasks on a mobile device",
+    "so_that": "I know which rooms I need to clean and in what order.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a housekeeper",
+      "when": "I log into the mobile application",
+      "then": "I see a list of rooms assigned to me for cleaning."
+     },
+     {
+      "given": "I am a housekeeper",
+      "when": "I view my assigned tasks",
+      "then": "The mobile application displays the room numbers and their current status."
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Update Room Status via Mobile App",
+    "as_a": "Housekeeper",
+    "i_want": "To update the status of a room (e.g., 'in-progress', 'clean', 'ready for inspection') using my mobile device",
+    "so_that": "The front desk and supervisors are immediately aware of the room's current state.",
+    "acceptance_criteria": [
+     {
+      "given": "I am viewing a room's details in the mobile application (e.g., from my assigned task list)",
+      "when": "I tap on the status update options",
+      "then": "I can select 'In-Progress', 'Clean', or 'Ready for Inspection', and the selected status is displayed."
+     }
+    ],
+    "requirement_ids": [
+     "R-002",
+     "R-006"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "R-014 (performance) is addressed as a separate non-functional requirement for system-wide latency.",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Save Room Status Updates Locally When Offline",
+    "as_a": "Housekeeper",
+    "i_want": "To save room status updates locally on my mobile device when there is no network connectivity",
+    "so_that": "I can continue my work without interruption and ensure updates are not lost.",
+    "acceptance_criteria": [
+     {
+      "given": "I am in an area with no network signal and I update a room status in the mobile application",
+      "when": "I attempt to submit the update",
+      "then": "The update is saved locally on my device and marked as pending synchronization."
+     },
+     {
+      "given": "I have locally saved room status updates that are pending synchronization",
+      "when": "I view my assigned tasks or a specific room's status",
+      "then": "The mobile application indicates that there are pending updates for that room or for my tasks."
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on the local saving and marking for synchronization aspect of offline functionality. The actual synchronization logic is addressed in S-016. This story depends on S-002 for the core update functionality.",
+    "review_round": 2
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Log Lost & Found Items with Photo",
+    "as_a": "Housekeeper",
+    "i_want": "To log lost and found items with a photo, room number, and date directly from the mobile application",
+    "so_that": "Lost items can be quickly documented and returned to guests.",
+    "acceptance_criteria": [
+     {
+      "given": "I find a lost item in a room",
+      "when": "I open the 'Lost & Found' feature in the mobile application",
+      "then": "I can take a photo, enter the room number, and the current date, and the system successfully logs the item with the provided details."
+     },
+     {
+      "given": "I have logged a lost and found item",
+      "when": "I review the entry",
+      "then": "The system displays the photo, room number, and date of discovery."
+     }
+    ],
+    "requirement_ids": [
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 2
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Prioritize Room Tasks for Housekeepers",
+    "as_a": "Housekeeping Supervisor",
+    "i_want": "To mark specific rooms as 'priority'",
+    "so_that": "Housekeepers prioritize urgent requests like early check-ins or late check-outs.",
+    "acceptance_criteria": [
+     {
+      "given": "I am a supervisor viewing the task list",
+      "when": "I mark a room as priority",
+      "then": "That room appears at the top of the assigned housekeeper's task queue on their mobile device."
+     },
+     {
+      "given": "A room is marked as priority",
+      "when": "A housekeeper views their task list",
+      "then": "The priority room is clearly distinguishable and listed before other tasks."
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Display VIP Checklists Automatically",
+    "as_a": "Housekeeper",
+    "i_want": "To automatically see a specific checklist for VIP rooms",
+    "so_that": "I can ensure all special requirements for VIP guests are met.",
+    "acceptance_criteria": [
+     {
+      "given": "A room is tagged as VIP in Opera Cloud PMS, and this tag has been successfully synchronized to the housekeeping system",
+      "when": "I am assigned to clean that room and view its details in the mobile application",
+      "then": "A specific VIP cleaning checklist is displayed instead of the standard checklist."
+     },
+     {
+      "given": "A room is not tagged as VIP",
+      "when": "I view its details in the mobile application",
+      "then": "The standard cleaning checklist is displayed."
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story depends on S-020 'Receive VIP Room Tags from Opera Cloud PMS' for the successful synchronization of VIP room tags.",
+    "review_round": 2
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-02",
+    "title": "Automatic 'Dirty' Status on Guest Checkout",
+    "as_a": "Hotel System",
+    "i_want": "To automatically mark a room as 'dirty' when a guest checks out",
+    "so_that": "Housekeeping is immediately aware that the room needs cleaning.",
+    "acceptance_criteria": [
+     {
+      "given": "A guest has checked out of a room in the Opera Cloud PMS",
+      "when": "The PMS sends a checkout notification to the housekeeping system (via S-019)",
+      "then": "The room's status in the housekeeping system is automatically updated to 'dirty'."
+     }
+    ],
+    "requirement_ids": [
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story depends on S-019 'Receive Guest Checkout Notifications from Opera Cloud PMS' for receiving guest checkout notifications. R-014 (performance) is addressed as a separate non-functional requirement for system-wide latency.",
+    "review_round": 2
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-02",
+    "title": "Workload-Based Task Assignment",
+    "as_a": "Housekeeping Supervisor",
+    "i_want": "The system to automatically assign rooms to housekeepers based on their current workload",
+    "so_that": "Tasks are distributed fairly and efficiently among the team.",
+    "acceptance_criteria": [
+     {
+      "given": "There are multiple dirty rooms requiring cleaning and multiple housekeepers available",
+      "when": "The system processes new task assignments",
+      "then": "Rooms are distributed to housekeepers to balance workload efficiently, aiming to minimize disparities in assigned tasks."
+     },
+     {
+      "given": "A new dirty room becomes available",
+      "when": "The system assigns it to a housekeeper",
+      "then": "The room is assigned to an available housekeeper, considering current workload to maintain balance across the team."
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story relies on rooms being marked 'dirty' (e.g., via S-007) to become available for assignment. This story implements an initial workload balancing algorithm. Future iterations may refine the algorithm to consider additional factors beyond just the number of assigned rooms.",
+    "review_round": 2
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-02",
+    "title": "Supervisor Notification for Room Inspection and Blocking Sale",
+    "as_a": "Housekeeping Supervisor",
+    "i_want": "To be automatically notified when a room is marked 'ready for inspection' and ensure it cannot be sold until I approve it",
+    "so_that": "I can promptly inspect rooms and prevent rooms from being assigned to new guests before quality is assured.",
+    "acceptance_criteria": [
+     {
+      "given": "A housekeeper marks a room 'ready for inspection' (via S-002)",
+      "when": "The status is updated in the system",
+      "then": "The assigned supervisor receives an immediate notification (e.g., in-app, SMS, email)."
+     },
+     {
+      "given": "A room is marked 'ready for inspection'",
+      "when": "The supervisor has not yet approved it",
+      "then": "The room's status in the PMS remains 'inspection required' or equivalent, preventing it from being shown as available for sale (via S-021)."
+     }
+    ],
+    "requirement_ids": [
+     "R-008",
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story focuses on the notification and blocking mechanism. The actual supervisor action to approve/reject a room and the subsequent update to the PMS would be addressed in a separate story. This story depends on S-002 'Update Room Status via Mobile App' for housekeepers to mark rooms 'ready for inspection', and on S-021 'Send 'Inspection Required' Status to PMS and Block Sale' for the integration to block sales in Opera Cloud PMS. R-014 (performance) is addressed as a separate non-functional requirement for system-wide latency.",
+    "review_round": 2
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-03",
+    "title": "Core Bi-directional Room Status Exchange with Opera Cloud PMS",
+    "as_a": "Hotel Operations Manager",
+    "i_want": "The housekeeping system to exchange core room status updates bi-directionally with Opera Cloud PMS",
+    "so_that": "General room availability and status are consistent across both systems.",
+    "acceptance_criteria": [
+     {
+      "given": "A room status is updated in the housekeeping system (e.g., 'clean', 'ready for inspection')",
+      "when": "The update is processed",
+      "then": "The corresponding room status in Opera Cloud PMS is updated."
+     },
+     {
+      "given": "A room status is updated in Opera Cloud PMS (e.g., 'dirty' upon checkout)",
+      "when": "The update is processed",
+      "then": "The corresponding room status in the housekeeping system is updated."
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "This story establishes the foundational bi-directional integration for core room status updates. Specific data points like guest checkout notifications (R-003) and VIP room tags (R-012) would be handled as separate, more granular integration stories built upon this foundation. R-014 (performance) is addressed as a separate non-functional requirement for system-wide latency.",
+    "review_round": 1
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-03",
+    "title": "Historical Room Status and Inspection Data Access",
+    "as_a": "Hotel Operations Manager / Auditor",
+    "i_want": "To access historical room status and inspection data for at least one year",
+    "so_that": "I can perform quality audits and analyze housekeeping performance over time.",
+    "acceptance_criteria": [
+     {
+      "given": "I am an authorized user with access to the system's reporting features",
+      "when": "I request historical data for a specific room or period",
+      "then": "I can view all status changes and inspection records for the past year."
+     },
+     {
+      "given": "I am an authorized user",
+      "when": "I attempt to retrieve historical data older than one year",
+      "then": "The system indicates that data beyond one year is not available for direct access."
+     }
+    ],
+    "requirement_ids": [
+     "R-015",
+     "R-016"
+    ],
+    "priority": "must",
+    "story_points": null,
+    "notes": "",
+    "review_round": 0
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 2,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "Explicit dependency on a missing story (S-016) for full synchronization functionality.",
+     "The story's estimability is slightly impacted by the undefined scope of S-016."
+    ],
+    "fix_instructions": "Define S-016 'Synchronize Offline Room Status Updates' to cover the synchronization logic. This story focuses on local saving, but the overall offline capability requires the sync story."
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC1.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 2,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "Explicit dependency on a missing story (S-020) for receiving VIP room tags from Opera Cloud PMS.",
+     "The story's estimability is slightly impacted by the undefined scope of S-020."
+    ],
+    "fix_instructions": "Define S-020 'Receive VIP Room Tags from Opera Cloud PMS' to ensure the VIP tag data is available for this story."
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 2,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "Explicit dependency on a missing story (S-019) for receiving guest checkout notifications from Opera Cloud PMS.",
+     "The story's estimability is slightly impacted by the undefined scope of S-019."
+    ],
+    "fix_instructions": "Define S-019 'Receive Guest Checkout Notifications from Opera Cloud PMS' to ensure the checkout event is available for this story."
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [
+     "Implicit dependency on rooms being marked 'dirty' (e.g., via S-007) to become available for assignment."
+    ],
+    "fix_instructions": "Ensure stories like S-007 (or S-019) are prioritized to provide the necessary input for this assignment logic."
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 1,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "Explicit dependency on a missing story (S-021) for sending 'Inspection Required' status to PMS and blocking sale.",
+     "Explicit dependency on S-002 for housekeepers to mark rooms 'ready for inspection'.",
+     "The story combines two distinct functionalities (supervisor notification and blocking sale via PMS integration) which could be split for better independence and estimability.",
+     "The story's estimability is significantly impacted by the undefined scope of S-021."
+    ],
+    "fix_instructions": "Define S-021 'Send 'Inspection Required' Status to PMS and Block Sale'. Consider splitting this story into 'Supervisor Notification for Room Inspection' and 'Block Room Sale Pending Supervisor Approval (via PMS Integration)' to improve independence and estimability."
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 3,
+     "testable": 4
+    },
+    "passed": false,
+    "issues": [
+     "The scope of 'Core Bi-directional Room Status Exchange' is too broad and vague, making it difficult to estimate accurately and complete within a single sprint.",
+     "The acceptance criteria are high-level and do not specify which 'core' statuses are included, leading to ambiguity.",
+     "This story is intended as a foundation, but its current definition overlaps with or is too broad for the more granular integration stories (S-019, S-020, S-021) mentioned in other stories' notes."
+    ],
+    "fix_instructions": "Break this story down into smaller, more specific integration stories. For example, create separate stories for: 'Send Housekeeping Status Updates to PMS', 'Receive PMS Status Updates (e.g., Vacant, Occupied) from PMS'. The specific integration points for guest checkout (R-003) and VIP tags (R-012) should be defined in their own stories (S-019, S-020, S-021) which would then build upon the foundational connection established by these smaller integration stories."
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "uncovered_goal",
+    "description": "The business goal 'Improve guest satisfaction by ensuring rooms are ready by check-in time' (Goal 10) and Mei Ling Tan's concern 'Preventing rooms from not being ready by check-in time' are not fully covered. While the system provides tools to facilitate readiness, there are no explicit requirements for the system to measure, report on, or actively ensure that rooms are indeed ready by check-in time, or to track the improvement in guest satisfaction related to this.",
+    "severity": "high",
+    "related_ids": [
+     "Goal 10",
+     "Mei Ling Tan's concerns"
+    ],
+    "suggested_question": "How will the system help us track and report on the percentage of rooms ready by check-in time? Are there specific dashboards, alerts, or reports needed to monitor this key performance indicator and ensure we are meeting the goal of improving guest satisfaction?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "While R-014 specifies a 15-second update for room status, there are no broader non-functional requirements for the overall system's performance (e.g., response times for other actions, concurrent user capacity) or reliability (e.g., uptime, error rates). These are crucial for a system aiming to 'improve guest satisfaction' and ensure efficient operations.",
+    "severity": "medium",
+    "related_ids": [
+     "Goal 10",
+     "Mei Ling Tan's concerns"
+    ],
+    "suggested_question": "What are the expected performance benchmarks (e.g., response times for task assignment, app load times) and reliability targets (e.g., system uptime, acceptable error rates) for the system to ensure efficient operations and support guest satisfaction?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "R-005 requires a 'simple mobile application' for housekeepers. The term 'simple' is subjective and lacks specific, measurable criteria or user experience guidelines to ensure it meets the needs of the housekeepers.",
+    "severity": "low",
+    "related_ids": [
+     "R-005",
+     "Aaliyah Rahman's concerns"
+    ],
+    "suggested_question": "What specific criteria or user experience principles define a 'simple' mobile application for housekeepers? Are there any usability benchmarks or design standards we should aim for?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for most explicit functional and non-functional requirements derived from the brief's business goals and constraints. Key areas like mobile task management, automated status updates, workload-based assignment, offline capability, VIP checklists, lost and found logging, and integration with Opera Cloud PMS are well-represented. However, there is a notable gap in how the system will directly measure and ensure the overarching business goal of improving guest satisfaction by guaranteeing room readiness by check-in time. Additionally, broader non-functional requirements for overall system performance and reliability, beyond specific update speeds, are not explicitly defined. The subjective nature of 'simple mobile app' also presents a minor ambiguity."
+ },
+ "trace": {
+  "run_id": "e9b8522284",
+  "started_at": "2026-09-12T19:31:23.867582Z",
+  "prompt_version": "v1",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 10163,
+    "prompt_tokens": 988,
+    "completion_tokens": 1917,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 24561,
+    "prompt_tokens": 1742,
+    "completion_tokens": 5779,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 28208,
+    "prompt_tokens": 1248,
+    "completion_tokens": 6965,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 47359,
+    "prompt_tokens": 3991,
+    "completion_tokens": 9421,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 27605,
+    "prompt_tokens": 5789,
+    "completion_tokens": 6400,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 32812,
+    "prompt_tokens": 4194,
+    "completion_tokens": 7711,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 35135,
+    "prompt_tokens": 5254,
+    "completion_tokens": 8371,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 36208,
+    "prompt_tokens": 4320,
+    "completion_tokens": 8146,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v1",
+    "latency_ms": 26341,
+    "prompt_tokens": 1666,
+    "completion_tokens": 5670,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 14,
+  "guardrail_flags": [
+   "R-003: evidence not found in notes (score 0.791)",
+   "coverage: R-014 (must) has no story"
+  ]
+ }
+}

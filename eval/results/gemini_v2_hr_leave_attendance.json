@@ -1,0 +1,1143 @@
+{
+ "brief": {
+  "title": "Leave & Attendance System for Plant Workforce",
+  "business_goals": [
+   "Move attendance and leave management onto one unified system",
+   "Automatically pull punch-in and punch-out data from existing biometric fingerprint scanners",
+   "Enable workers to apply for leave from a mobile app",
+   "Ensure shift supervisors approve or reject leave requests within 24 hours",
+   "Automatically escalate unapproved leave requests to HR after 24 hours",
+   "Lock and export leave and attendance data by the 25th of each month for payroll",
+   "Accurately track earned leave accrual for factory workers as per Factories Act (1 day for every 20 days worked)",
+   "Provide supervisors with a shift-wise attendance dashboard to identify absences proactively",
+   "Automate the flow of attendance and leave data into GreytHR for payroll processing",
+   "Flag overtime (punch-out > 30 mins after shift end) for manager approval",
+   "Retain at least two years of attendance history for labour audits",
+   "Ensure attendance status updates within 5 minutes of a punch",
+   "Maintain a simple attendance log for contract workers for compliance reporting"
+  ],
+  "stakeholders": [
+   {
+    "name": "Sunita Rao",
+    "role": "HR Head",
+    "concerns": [
+     "Unifying attendance and leave systems for 460 workers",
+     "Mobile app for leave applications and supervisor approval workflow",
+     "Automatic escalation of unapproved leave",
+     "Real-time attendance visibility for supervisors",
+     "Retention of 2 years of attendance history for audits",
+     "Budget constraints (under 8 lakh rupees for first year)",
+     "Go-live before April audit cycle"
+    ]
+   },
+   {
+    "name": "Vikram Singh",
+    "role": "Plant Manager",
+    "concerns": [
+     "Automated data pull from existing biometric scanners (not replacing hardware)",
+     "Compliance with Factories Act for earned leave accrual",
+     "Excluding shift scheduling from current scope",
+     "Separate logging for contract workers"
+    ]
+   },
+   {
+    "name": "Deepak Joshi",
+    "role": "Payroll Lead",
+    "concerns": [
+     "Ensuring leave and attendance data is locked and exported by the 25th",
+     "Preventing late changes to attendance records",
+     "Accurate flagging and approval of overtime",
+     "Eliminating chaos from current WhatsApp leave process"
+    ]
+   },
+   {
+    "name": "Anjali Mehta",
+    "role": "IT Manager",
+    "concerns": [
+     "Automated integration with GreytHR for payroll",
+     "System performance and scalability for 460 users (5-minute attendance status updates)",
+     "Technical requirements for biometric scanner integration"
+    ]
+   }
+  ],
+  "constraints": [
+   "Must integrate with existing biometric fingerprint scanners (hardware not to be replaced)",
+   "Leave and attendance data must be locked and exported by the 25th of each month",
+   "Must comply with Factories Act for earned leave accrual (1 day for every 20 days worked)",
+   "Must integrate with GreytHR for payroll processing (ideally automated export)",
+   "Must retain at least two years of attendance history for labour audits",
+   "Attendance status updates must occur within 5 minutes of a punch",
+   "Budget limit of 8 lakh rupees for the first year (including licensing)",
+   "System must be live before the next audit cycle in April"
+  ],
+  "out_of_scope": [
+   "Shift scheduling or roster planning"
+  ],
+  "open_questions": [
+   "What are the specific technical details (e.g., API, data format) for integrating with the existing biometric fingerprint scanners?",
+   "What are the exact integration capabilities and preferred method for automated export to GreytHR?",
+   "What is the precise date of the 'next audit cycle in April'?",
+   "What are the specific requirements for the 'simple log for compliance reporting' for contract workers?",
+   "Are there any other specific leave types beyond casual, sick, and earned leave that need to be configured?",
+   "How will manual attendance adjustments or exceptions be handled within the system?"
+  ],
+  "domain": "HR"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall unify attendance and leave management.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To move current paper registers and WhatsApp leave requests onto one system.",
+   "evidence": "We need this to move onto one system.",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall automatically pull punch-in and punch-out data from existing biometric fingerprint scanners.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "To leverage existing hardware and automate data collection.",
+   "evidence": "Whatever we build needs to pull punch-in and punch-out data from those scanners automatically — we are not replacing the hardware.",
+   "stakeholder": "Vikram Singh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall enable workers to apply for leave from a mobile application.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To streamline the leave application process and eliminate the current WhatsApp chaos.",
+   "evidence": "Workers should be able to apply for leave from a mobile app",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall enable shift supervisors to approve or reject leave requests.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To formalize the leave approval workflow.",
+   "evidence": "their shift supervisor must approve or reject it within 24 hours.",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall automatically escalate unapproved leave requests to HR if a supervisor does not respond within 24 hours.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To ensure timely processing of leave requests and prevent delays.",
+   "evidence": "If the supervisor doesn't respond, it should escalate to the HR desk automatically.",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall lock leave and attendance data by the 25th of each month.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To prevent late changes that cause payroll problems.",
+   "evidence": "leave and attendance data has to be locked and exported by the 25th.",
+   "stakeholder": "Deepak Joshi",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall export leave and attendance data by the 25th of each month.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To provide timely data for payroll processing.",
+   "evidence": "leave and attendance data has to be locked and exported by the 25th.",
+   "stakeholder": "Deepak Joshi",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall prevent changes to attendance records after data has been locked for payroll processing.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To avoid issues like redoing payroll due to late changes.",
+   "evidence": "Late changes have caused us real problems — last March we had to redo payroll for 40 workers because someone changed an attendance record after the export.",
+   "stakeholder": "Deepak Joshi",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall accurately track earned leave accrual for factory workers as per the Factories Act (1 day for every 20 days worked).",
+   "type": "compliance",
+   "priority": "must",
+   "rationale": "To ensure compliance with the Factories Act.",
+   "evidence": "the Factories Act requires we track earned leave accrual at one day for every 20 days worked. That calculation has to be built in, it's a compliance thing, we can't get that wrong.",
+   "stakeholder": "Vikram Singh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system should provide supervisors with a shift-wise attendance dashboard.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "To enable supervisors to proactively identify absences before a shift starts.",
+   "evidence": "Ideally supervisors should also be able to see a shift-wise attendance dashboard, so they know who's absent before the shift starts, not after.",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall integrate with GreytHR for payroll processing.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "To ensure attendance and leave data flows into the existing payroll system.",
+   "evidence": "The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month.",
+   "stakeholder": "Anjali Mehta",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-012",
+   "statement": "The system should automate the export of attendance and leave data to GreytHR.",
+   "type": "integration",
+   "priority": "should",
+   "rationale": "To avoid manual file uploads and streamline the payroll process.",
+   "evidence": "The attendance and leave data needs to flow into GreytHR before the payroll run — ideally through an automated export, not a manual file upload every month.",
+   "stakeholder": "Anjali Mehta",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall flag overtime (punch-out more than 30 minutes after shift end) for manager approval.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To accurately track and approve overtime for payroll at 1.5x rate.",
+   "evidence": "Anyone who punches out more than 30 minutes after their shift end should have that overtime flagged for manager approval, since we pay overtime at 1.5x.",
+   "stakeholder": "Deepak Joshi",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system will not include shift scheduling or roster planning functionality.",
+   "type": "functional",
+   "priority": "wont",
+   "rationale": "This functionality is explicitly out of scope for the current initiative.",
+   "evidence": "One thing that's explicitly out of scope right now — we are not doing shift scheduling or roster planning in this system.",
+   "stakeholder": "Vikram Singh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall retain at least two years of attendance history.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "To meet requirements for labour audits.",
+   "evidence": "We need at least two years of attendance history retained for labour audits — the last labour inspection asked for two years of records and we scrambled to pull it together from paper files.",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-016",
+   "statement": "The system shall update attendance status within 5 minutes of a punch.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To ensure system performance and real-time visibility for 460 users.",
+   "evidence": "From a technical side, the system needs to handle punch data for all 460 people syncing every few minutes without lag — let's say attendance status should update within 5 minutes of a punch.",
+   "stakeholder": "Anjali Mehta",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-017",
+   "statement": "The system implementation cost shall not exceed 8 lakh rupees for the first year, including licensing.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To adhere to budget constraints.",
+   "evidence": "Budget-wise we've been told to keep this under 8 lakh rupees for the first year including any licensing",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-018",
+   "statement": "The system shall be live before the next audit cycle in April.",
+   "type": "non_functional",
+   "priority": "must",
+   "rationale": "To meet critical project timeline and compliance deadlines.",
+   "evidence": "it needs to be live before the next audit cycle in April.",
+   "stakeholder": "Sunita Rao",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-019",
+   "statement": "The system shall maintain a simple attendance log for contract workers.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "To fulfill compliance reporting requirements for contract workers.",
+   "evidence": "just a simple log for compliance reporting.",
+   "stakeholder": "Vikram Singh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-020",
+   "statement": "The system shall not feed contract worker attendance data into the payroll system.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "Contract workers are managed by contractors, and their attendance is not relevant for internal payroll.",
+   "evidence": "their attendance doesn't need to feed into our payroll system",
+   "stakeholder": "Vikram Singh",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Core Attendance Tracking",
+    "goal": "To accurately and efficiently capture and manage worker attendance data from biometric sources, including overtime and historical records, for all worker types.",
+    "requirement_ids": [
+     "R-002",
+     "R-016",
+     "R-019",
+     "R-020",
+     "R-013",
+     "R-015"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Leave Management Workflow",
+    "goal": "To provide a seamless and automated process for workers to apply for leave and for supervisors to manage these requests, ensuring compliance and timely resolution.",
+    "requirement_ids": [
+     "R-001",
+     "R-003",
+     "R-004",
+     "R-005",
+     "R-009"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "Payroll Integration & Data Management",
+    "goal": "To ensure accurate and timely preparation of attendance and leave data for payroll processing, maintaining data integrity and compliance.",
+    "requirement_ids": [
+     "R-001",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-011",
+     "R-012"
+    ]
+   },
+   {
+    "id": "E-04",
+    "title": "Supervisor Insights & Reporting",
+    "goal": "To empower shift supervisors with real-time attendance visibility to proactively manage their teams.",
+    "requirement_ids": [
+     "R-010"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Automatic Biometric Punch Data Capture",
+    "as_a": "System",
+    "i_want": "to automatically pull punch-in and punch-out data from biometric scanners",
+    "so_that": "worker attendance records are accurately captured without manual intervention and updated promptly",
+    "acceptance_criteria": [
+     {
+      "given": "biometric scanners record a punch",
+      "when": "a worker punches in/out",
+      "then": "the system retrieves the punch data within 5 minutes"
+     },
+     {
+      "given": "the system retrieves punch data",
+      "when": "a worker's ID is recognized",
+      "then": "the punch time and worker ID are stored in the attendance log"
+     }
+    ],
+    "requirement_ids": [
+     "R-002",
+     "R-016"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Overtime Flagging for Manager Approval",
+    "as_a": "Shift Supervisor",
+    "i_want": "the system to flag overtime for my approval",
+    "so_that": "I can review and authorize extra hours worked by my team",
+    "acceptance_criteria": [
+     {
+      "given": "a worker punches out more than 30 minutes after their scheduled shift end",
+      "when": "the attendance record is processed",
+      "then": "the attendance record displays 'Overtime Pending Approval' for the excess time"
+     },
+     {
+      "given": "an overtime flag is present",
+      "when": "I view the attendance records",
+      "then": "I can see the flagged overtime and approve or reject it"
+     }
+    ],
+    "requirement_ids": [
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Contract Worker Attendance Log",
+    "as_a": "HR Administrator",
+    "i_want": "the system to maintain a simple attendance log for contract workers",
+    "so_that": "we can ensure compliance reporting without impacting payroll",
+    "acceptance_criteria": [
+     {
+      "given": "a contract worker punches in/out",
+      "when": "their attendance is recorded",
+      "then": "their punch data is stored in a separate contract worker attendance log"
+     },
+     {
+      "given": "contract worker attendance data is recorded",
+      "when": "the system processes payroll exports",
+      "then": "contract worker attendance data is excluded from the payroll feed"
+     }
+    ],
+    "requirement_ids": [
+     "R-019",
+     "R-020"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Attendance History Retention",
+    "as_a": "HR Administrator",
+    "i_want": "the system to retain at least two years of attendance history",
+    "so_that": "we can comply with labour audit requirements",
+    "acceptance_criteria": [
+     {
+      "given": "attendance data is stored",
+      "when": "a labour audit is conducted",
+      "then": "the system can provide attendance records for any worker for the past 24 months"
+     },
+     {
+      "given": "attendance data older than 24 months exists",
+      "when": "the system performs data retention tasks",
+      "then": "data older than 24 months is archived or purged according to policy"
+     }
+    ],
+    "requirement_ids": [
+     "R-015"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-02",
+    "title": "Mobile Leave Application for Workers",
+    "as_a": "Plant Worker",
+    "i_want": "to apply for leave using a mobile application",
+    "so_that": "I can easily submit my leave requests from anywhere and manage my time off",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged into the mobile app",
+      "when": "I select \"Apply for Leave\" and fill in the required details (type, dates, reason)",
+      "then": "my leave request is submitted for approval"
+     },
+     {
+      "given": "I have submitted a leave request",
+      "when": "I view my leave history in the app",
+      "then": "my pending leave request is displayed with its current status"
+     }
+    ],
+    "requirement_ids": [
+     "R-001",
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-02",
+    "title": "Supervisor Leave Request Approval/Rejection",
+    "as_a": "Shift Supervisor",
+    "i_want": "to approve or reject leave requests submitted by my team",
+    "so_that": "I can manage my team's availability and ensure operational continuity",
+    "acceptance_criteria": [
+     {
+      "given": "a worker submits a leave request",
+      "when": "I access the pending leave requests",
+      "then": "I can see the details of the request and choose to \"Approve\" or \"Reject\""
+     },
+     {
+      "given": "I approve a leave request",
+      "when": "the system processes my decision",
+      "then": "the worker is notified of the approval and their leave balance is updated"
+     },
+     {
+      "given": "I reject a leave request",
+      "when": "the system processes my decision",
+      "then": "the worker is notified of the rejection with the reason provided"
+     }
+    ],
+    "requirement_ids": [
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-02",
+    "title": "Automatic Leave Request Escalation to HR",
+    "as_a": "HR Administrator",
+    "i_want": "unapproved leave requests to automatically escalate to HR after 24 hours",
+    "so_that": "no leave request is left unaddressed and workers receive timely responses",
+    "acceptance_criteria": [
+     {
+      "given": "a leave request is submitted to a supervisor",
+      "when": "24 hours pass without a supervisor's decision",
+      "then": "the leave request's status is updated to 'Escalated to HR' and assigned to the HR Administrator role"
+     },
+     {
+      "given": "a leave request is escalated to HR",
+      "when": "an HR Administrator views pending leave requests",
+      "then": "the escalated request is clearly visible for HR action"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-02",
+    "title": "Calculate Earned Leave Accrual",
+    "as_a": "HR Administrator",
+    "i_want": "the system to accurately calculate earned leave accrual for factory workers",
+    "so_that": "we comply with the Factories Act and workers receive their rightful leave entitlements",
+    "acceptance_criteria": [
+     {
+      "given": "a factory worker completes 20 days of work as defined by system rules",
+      "when": "the system calculates leave accrual",
+      "then": "their earned leave balance increases by 1 day"
+     },
+     {
+      "given": "a worker's attendance record is updated for a working day",
+      "when": "the system recalculates accrual",
+      "then": "the worker's earned leave balance is updated to reflect the latest working days"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "This story focuses on the calculation logic. Display of the balance is covered in S-021.",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-03",
+    "title": "Monthly Data Lock for Payroll",
+    "as_a": "Payroll Administrator",
+    "i_want": "to lock leave and attendance data by the 25th of each month",
+    "so_that": "payroll processing can begin with final, unchangeable data",
+    "acceptance_criteria": [
+     {
+      "given": "it is the 25th of the month",
+      "when": "I initiate the data lock process",
+      "then": "all attendance and leave records for the preceding period are marked as locked"
+     },
+     {
+      "given": "data is locked for a specific period",
+      "when": "a user attempts to modify an attendance or leave record within that period",
+      "then": "the system prevents the modification and displays an error message"
+     }
+    ],
+    "requirement_ids": [
+     "R-006",
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-03",
+    "title": "Monthly Data Export for Payroll",
+    "as_a": "Payroll Administrator",
+    "i_want": "to export leave and attendance data by the 25th of each month",
+    "so_that": "I can transfer it to the payroll system for timely salary processing",
+    "acceptance_criteria": [
+     {
+      "given": "attendance and leave data is locked for the month",
+      "when": "I initiate the data export",
+      "then": "a file containing all relevant data for the payroll period is generated"
+     },
+     {
+      "given": "the export file is generated",
+      "when": "I review its contents",
+      "then": "it contains accurate attendance days, leave days, and overtime hours for each employee"
+     }
+    ],
+    "requirement_ids": [
+     "R-007"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-03",
+    "title": "Establish GreytHR Integration Connectivity",
+    "as_a": "Payroll Administrator",
+    "i_want": "the system to establish secure connectivity with GreytHR",
+    "so_that": "attendance and leave data can be reliably exchanged for payroll processing",
+    "acceptance_criteria": [
+     {
+      "given": "GreytHR API credentials are configured in the system",
+      "when": "the system attempts to connect to GreytHR",
+      "then": "a successful connection status is reported in the system's integration log"
+     },
+     {
+      "given": "the system is configured for GreytHR integration",
+      "when": "a test data transfer is initiated",
+      "then": "the system logs a successful authentication and authorization event with GreytHR"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "This story covers the foundational connectivity. Data transfer for specific types (attendance, leave) is covered in separate stories.",
+    "review_round": 2
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-04",
+    "title": "Shift-wise Attendance Dashboard for Supervisors",
+    "as_a": "Shift Supervisor",
+    "i_want": "a shift-wise attendance dashboard",
+    "so_that": "I can quickly identify absences and manage my team's presence proactively",
+    "acceptance_criteria": [
+     {
+      "given": "I log into the system",
+      "when": "I access the attendance dashboard",
+      "then": "I see a list of my team members grouped by their assigned shift"
+     },
+     {
+      "given": "I view the dashboard during a shift",
+      "when": "I look at a team member's status",
+      "then": "I can see their current attendance status (e.g., Present, Absent, On Leave)"
+     },
+     {
+      "given": "an employee is marked absent",
+      "when": "I view the dashboard",
+      "then": "their absence is highlighted for immediate attention"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 0
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 3,
+     "valuable": 5,
+     "estimable": 3,
+     "small": 3,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "The story does not specify the trigger or schedule for when the earned leave accrual calculation should run (e.g., daily, weekly, monthly, on punch-out)."
+    ],
+    "fix_instructions": "Update the acceptance criteria to include when the system performs the accrual calculation, for example: 'When a worker's attendance record for a month is finalized, their earned leave balance is updated based on days worked.'"
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 5,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": false,
+    "issues": [
+     "AC2.then has no observable outcome verb"
+    ],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 4,
+     "negotiable": 4,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [
+   [
+    "S-009",
+    "S-010"
+   ]
+  ],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "uncovered_goal",
+    "description": "The business goal to \"Automate the flow of attendance and leave data into GreytHR for payroll processing\" (Goal 9) and requirement R-012 (\"The system should automate the export...\") are not fully covered by backlog item S-011, which only addresses \"Establish GreytHR Integration Connectivity\" (R-011).",
+    "severity": "high",
+    "related_ids": [
+     "Goal-9",
+     "R-012",
+     "S-011",
+     "Stakeholder-Anjali Mehta"
+    ],
+    "suggested_question": "S-011 covers connectivity, but how will the *automation* of data export to GreytHR (as per Goal 9 and R-012) be implemented and ensured?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "Requirement R-017, stating the system implementation cost shall not exceed 8 lakh rupees for the first year, is not addressed by any backlog item.",
+    "severity": "high",
+    "related_ids": [
+     "R-017",
+     "Stakeholder-Sunita Rao"
+    ],
+    "suggested_question": "How will the project ensure the implementation cost, including licensing, remains within the 8 lakh rupee budget for the first year, as specified in R-017?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "Requirement R-018, mandating the system be live before the next audit cycle in April, is not addressed by any backlog item.",
+    "severity": "high",
+    "related_ids": [
+     "R-018",
+     "Stakeholder-Sunita Rao"
+    ],
+    "suggested_question": "What is the plan to ensure the system is live before the next audit cycle in April, as required by R-018?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Open question regarding specific technical details (API, data format) for integrating with existing biometric fingerprint scanners (R-002, S-001) remains unanswered.",
+    "severity": "medium",
+    "related_ids": [
+     "R-002",
+     "S-001",
+     "Open Question 1",
+     "Stakeholder-Anjali Mehta"
+    ],
+    "suggested_question": "What are the specific technical details (e.g., API, data format, communication protocol) required for integrating with the existing biometric fingerprint scanners?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Open question regarding exact integration capabilities and preferred method for automated export to GreytHR (Goal 9, R-011, R-012, S-011) needs clarification.",
+    "severity": "high",
+    "related_ids": [
+     "Goal-9",
+     "R-011",
+     "R-012",
+     "S-011",
+     "Open Question 2",
+     "Stakeholder-Anjali Mehta"
+    ],
+    "suggested_question": "Beyond establishing connectivity, what are the exact integration capabilities and the preferred method for automated export of data to GreytHR?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "The precise date of the 'next audit cycle in April' (R-018) is not specified, which is crucial for the go-live deadline.",
+    "severity": "high",
+    "related_ids": [
+     "R-018",
+     "Open Question 3",
+     "Stakeholder-Sunita Rao"
+    ],
+    "suggested_question": "What is the precise date of the 'next audit cycle in April' to confirm the exact go-live deadline?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "The specific requirements for the 'simple log for compliance reporting' for contract workers (R-019, S-003) are not detailed.",
+    "severity": "medium",
+    "related_ids": [
+     "R-019",
+     "S-003",
+     "Open Question 4",
+     "Stakeholder-Vikram Singh"
+    ],
+    "suggested_question": "What specific information needs to be captured and reported in the 'simple attendance log' for contract workers to meet compliance reporting needs?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "It's unclear if there are other specific leave types beyond casual, sick, and earned leave that need to be configured in the system.",
+    "severity": "medium",
+    "related_ids": [
+     "Open Question 5",
+     "Stakeholder-Sunita Rao"
+    ],
+    "suggested_question": "Are there any other specific leave types, besides casual, sick, and earned leave, that need to be configured and managed within the new system?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "The process for handling manual attendance adjustments or exceptions within the system is not defined.",
+    "severity": "medium",
+    "related_ids": [
+     "Open Question 6",
+     "Stakeholder-Deepak Joshi"
+    ],
+    "suggested_question": "What is the process for handling manual attendance adjustments or exceptions, and how should the system support this?"
+   }
+  ],
+  "coverage_note": "The backlog covers most core functional requirements for leave and attendance management, including biometric integration, mobile leave applications, supervisor approvals, earned leave accrual, and basic payroll data handling. However, critical non-functional requirements regarding budget and the precise go-live date for the April audit are not addressed in the backlog. Additionally, while GreytHR integration is planned, the explicit automation of data export, a key business goal, lacks specific backlog coverage. Several technical and operational details, such as exact integration methods and handling of manual attendance adjustments, remain ambiguous and require further clarification."
+ },
+ "trace": {
+  "run_id": "caf1c1175e",
+  "started_at": "2026-09-13T05:42:19.717593Z",
+  "prompt_version": "v2",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 10465,
+    "prompt_tokens": 1125,
+    "completion_tokens": 2119,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 24963,
+    "prompt_tokens": 2168,
+    "completion_tokens": 6457,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 39175,
+    "prompt_tokens": 1458,
+    "completion_tokens": 9472,
+    "attempt": 1,
+    "ok": false,
+    "error": "schema: [{\"type\":\"missing\",\"loc\":[\"stories\",0,\"title\"],\"msg\":\"Field required\",\"input\":{\"id\":\"S-001\",\"epic_id\":\"E-02\",\"as_a\":\"System\",\"i_want\":\"to automatically pull punch-in and punch-out data from biometric "
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 31852,
+    "prompt_tokens": 1880,
+    "completion_tokens": 7559,
+    "attempt": 2,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 19684,
+    "prompt_tokens": 4292,
+    "completion_tokens": 4481,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 24342,
+    "prompt_tokens": 3823,
+    "completion_tokens": 5717,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 26255,
+    "prompt_tokens": 4303,
+    "completion_tokens": 6318,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 4624,
+    "prompt_tokens": 2388,
+    "completion_tokens": 932,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 21151,
+    "prompt_tokens": 4305,
+    "completion_tokens": 4717,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v2",
+    "latency_ms": 31470,
+    "prompt_tokens": 2038,
+    "completion_tokens": 7996,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 5,
+  "guardrail_flags": [
+   "stories: schema repair on attempt 1",
+   "coverage: R-012 (should) has no story",
+   "coverage: R-017 (must) has no story",
+   "coverage: R-018 (must) has no story"
+  ]
+ }
+}

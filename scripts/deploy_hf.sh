@@ -64,7 +64,7 @@ short_description: Stakeholder notes → INVEST-reviewed user stories → Jira
 ---
 
 EOF
-  sed "s|<!-- demo: __DEMO_URL__ -->|**Live demo:** this Space · **Source:** https://github.com/prradyumn/storyforge|" README.md
+  sed "s|https://storyforge-lsnr.onrender.com|this Space|g" README.md
 } > "$TMP/README.md"
 (
   cd "$TMP"
