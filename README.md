@@ -75,7 +75,7 @@ No keys? Everything still runs on the offline stub backend:
 ```bash
 STORYFORGE_BACKEND=stub uvicorn storyforge.api:app
 python -m storyforge.cli examples/returns_portal.txt --backend stub --out out/
-pytest -q                                  # 45 tests, no network
+pytest -q                                  # 47 tests, no network
 python eval/run_eval.py --backend stub     # the eval harness end to end
 ```
 
@@ -130,7 +130,8 @@ storyforge/
   llm/                  groq, gemini, stub clients + fallback router (httpx, no SDKs)
   publishers/           Jira Cloud v3 (ADF descriptions, idempotent), Markdown BRD/backlog, CSV
   api.py · cli.py       FastAPI service and command line
-web/index.html          single-file UI: brief, requirements, backlog, gaps, trace, export/Jira
+web/index.html          single-file UI: live agent pipeline, brief, requirements, backlog, gaps, trace, export/Jira, recent runs
+examples/               4 synthetic discovery transcripts + 1 real public GitHub thread (2,600 words, 30 speakers)
 eval/
   golden/*.json         8 transcripts, 83 labelled requirements, distractors, out-of-scope, constraints
   run_eval.py           deterministic scorer; one JSON report per backend × prompt version
@@ -140,7 +141,7 @@ docs/
   ARCHITECTURE.md       why five agents, context engineering table, guardrail design
   UAT.md                14-step acceptance script
   StoryForge_Overview.pdf  two-page overview: what it does, how, stack
-tests/                  45 tests, offline
+tests/                  47 tests, offline
 ```
 
 ## Design decisions in one breath

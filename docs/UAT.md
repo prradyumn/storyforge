@@ -5,7 +5,7 @@ defect. Steps 1–8 work offline on the stub backend; 9–12 need live keys.
 
 | # | Step | Expected | ✓ |
 |---|---|---|---|
-| 1 | `pytest -q` | 45 passed, 0 failed | |
+| 1 | `pytest -q` | 47 passed, 0 failed | |
 | 2 | `ruff check .` | All checks passed | |
 | 3 | `STORYFORGE_BACKEND=stub uvicorn storyforge.api:app` → open `/` | UI loads; header says "stub only (no keys)"; example dropdown lists 1+ examples | |
 | 4 | Load "Returns Portal" example → Analyse | Results in < 2 s; KPIs show 12 requirements, 12/12 traceable, 12 stories | |

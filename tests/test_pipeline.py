@@ -54,3 +54,15 @@ def test_prompt_versions_all_run(notes):
     for v in ("v1", "v2", "v3"):
         r = analyze(notes, backend="stub", prompt_version=v, max_review_rounds=0)
         assert r.trace.prompt_version == v
+
+
+def test_progress_events_follow_the_pipeline_order(notes):
+    events = []
+    analyze(notes, backend="stub", on_progress=events.append)
+    stages = [e["stage"] for e in events if e["status"] == "running"]
+    assert stages[:3] == ["intake", "requirements", "stories"]
+    assert stages[-1] == "gaps"
+    assert "review" in stages
+    done = {e["stage"]: e for e in events if e["status"] == "done"}
+    assert done["requirements"]["count"] == done["requirements"]["traceable"] > 0
+    assert done["stories"]["stories"] > 0 and done["gaps"]["count"] >= 0

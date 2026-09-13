@@ -83,6 +83,8 @@ textarea::placeholder{color:var(--faint)}
 .empty{padding:56px 32px;text-align:center;color:var(--muted)}
 .empty h3{color:var(--ink);font-size:16px;font-weight:600;margin:0 0 6px}
 .empty p{margin:0 auto;max-width:520px;font-size:13.5px}
+.recent{margin:34px auto 0;max-width:560px;text-align:left}.recent h4{font-size:11px;text-transform:uppercase;letter-spacing:.06em;color:var(--ink2);margin:0 0 6px}
+.recent button{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:var(--r);padding:8px 10px;margin:4px 0;cursor:pointer;font-size:13px}.recent button:hover{background:var(--inset)}.recent button b{font-weight:600;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.recent button span{font:12px var(--mono);color:var(--muted);white-space:nowrap}
 .flow{display:flex;justify-content:center;gap:6px;flex-wrap:wrap;margin-top:22px;font:12px var(--mono);color:var(--ink2)}
 .flow span{border:1px solid var(--line);border-radius:var(--r);padding:4px 9px;background:var(--inset)}
 .flow i{color:var(--faint);font-style:normal;align-self:center}
@@ -212,6 +214,7 @@ Speaker labels help but are not required:
       <h3>No analysis yet</h3>
       <p>Load an example or paste your own notes, then run. Each requirement is traced back to the sentence it came from; each story is reviewed against INVEST before it reaches the backlog.</p>
       <div class="flow"><span>notes</span><i>→</i><span>brief</span><i>→</i><span>requirements</span><i>→</i><span>stories</span><i>→</i><span>review ⟲ revise</span><i>→</i><span>gaps</span><i>→</i><span>Jira</span></div>
+      <div class="recent" id="recent" hidden><h4>Recent runs on this browser</h4><div id="recentlist"></div></div>
     </div>
     <div id="out" hidden>
       <div class="strip" id="kpis"></div>
@@ -245,7 +248,7 @@ const STAGES=['intake','requirements','stories','review','gaps'];
 function resetPipe(){document.querySelectorAll('#pipe li').forEach(li=>{li.className='';li.querySelector('.s').textContent='';});$('#elapsed').textContent='';}
 function stageLabel(e){
   switch(e.stage){
-    case 'intake': return e.status==='done'?`${e.goals} goals · ${e.stakeholders} stakeholders`:null;
+    case 'intake': return e.status==='done'?(e.goals!=null?`${e.goals} goals · ${e.stakeholders} stakeholders`:'done'):null;
     case 'requirements': return e.status==='done'?`${e.count} requirements · ${e.traceable}/${e.count} traced`:null;
     case 'stories': return e.status==='done'?`${e.epics} epics · ${e.stories} stories`:null;
     case 'review': return e.status==='done'?`round ${e.round}: ${e.passed} pass · ${e.failing} to fix`:`round ${e.round}`;
@@ -278,8 +281,13 @@ async function init(){
   try{examples=await (await fetch('/api/examples')).json();
     examples.forEach((e,i)=>{const o=document.createElement('option');o.value=i;o.textContent=e.name;$('#examples').appendChild(o);});
   }catch(e){}
-  updCost();
+  updCost();renderRecent();
 }
+function loadRecent(){try{return JSON.parse(localStorage.getItem('sf:recent')||'[]');}catch(e){return [];}}
+function saveRecent(res,mode){try{const list=loadRecent().filter(x=>x.id!==res.trace.run_id);list.unshift({id:res.trace.run_id,title:res.brief.title,mode,pv:res.trace.prompt_version,at:Date.now(),n:res.requirements.length,s:res.backlog.stories.length,result:res});while(list.length>5)list.pop();localStorage.setItem('sf:recent',JSON.stringify(list));}catch(e){}}
+function renderRecent(){const list=loadRecent();$('#recent').hidden=!list.length;if(!list.length)return;
+  $('#recentlist').innerHTML=list.map((x,i)=>`<button data-i="${i}"><b>${esc(x.title)}</b><span>${x.n} req · ${x.s} stories · ${x.mode} ${esc(x.pv)} · ${new Date(x.at).toLocaleString([],{dateStyle:'medium',timeStyle:'short'})}</span></button>`).join('');
+  $('#recentlist').onclick=e=>{const b=e.target.closest('button');if(!b)return;R=list[+b.dataset.i].result;resetPipe();applyProgress([{stage:'intake',status:'done'},{stage:'requirements',status:'done',count:R.requirements.length,traceable:R.requirements.filter(r=>r.traceable).length},{stage:'stories',status:'done',epics:R.backlog.epics.length,stories:R.backlog.stories.length},{stage:'review',status:'done',round:R.trace.review_rounds,passed:R.reviews.reviews.filter(x=>x.passed).length,failing:R.reviews.reviews.filter(x=>!x.passed).length},{stage:'gaps',status:'done',count:R.gaps.gaps.length}]);tab='brief';render();$('#status').textContent=`Loaded a previous run · ${R.trace.calls.length} model calls · ${R.trace.review_rounds} review round${R.trace.review_rounds===1?'':'s'}`;};}
 const words=()=>($('#notes').value.trim().match(/\S+/g)||[]).length;
 function updCost(){const w=words();$('#wc').textContent=`${w.toLocaleString()} words`;
   const stub=$('#backend').value==='stub';$('#cost').textContent=stub?'Instant · no model calls':`≈ ${Math.max(2,Math.round(w/180))}–${Math.max(4,Math.round(w/110))} min on the free tier`;}
@@ -305,6 +313,7 @@ $('#run').onclick=async()=>{
       applyProgress(j.progress||[]);
       if(j.status==='done'){R=j.result;break;}
       if(j.status==='error')throw new Error(j.error||'analysis failed');}
+    saveRecent(R,$('#backend').value==='stub'?'stub':'live');
     tab='brief';render();
     $('#status').textContent=`Done in ${((Date.now()-t0)/1000).toFixed(1)} s · ${R.trace.calls.length} model calls · ${R.trace.review_rounds} review round${R.trace.review_rounds===1?'':'s'}`;
   }catch(e){$('#status').className='note err';$('#status').textContent=e.message;}
