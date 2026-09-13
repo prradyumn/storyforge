@@ -11,9 +11,9 @@ the questions to take back to stakeholders. One click publishes to Jira Cloud.
 > The hard part is not generating stories. It is producing stories a delivery
 > team would accept — and being able to point at the sentence each one came from.
 
-**Live demo:** <https://storyforge-lsnr.onrender.com> · **Source:** this repo · **Evals:** [`eval/DECISIONS.md`](eval/DECISIONS.md)
+**Live demo:** <https://storyforge-livid.vercel.app> · **API:** <https://storyforge-lsnr.onrender.com/docs> · **Evals:** [`eval/DECISIONS.md`](eval/DECISIONS.md)
 
-> The demo runs on a free Render instance: it sleeps after 15 idle minutes, so the first load can take up to a minute. Pick an example, choose *Live (Gemini → Groq)* for a real model run (~2–4 min, capped at 40 runs/day) or *Stub* for an instant offline walkthrough. Jira publishing is dry-run for visitors; the live publish needs the admin key.
+> The UI is served from Vercel's edge; the Python backend runs on a free Render instance that sleeps after 15 idle minutes, so the first request can take up to a minute to wake it (the header says so while it waits). Pick an example, choose *Live (Gemini → Groq)* for a real model run (~2–4 min, capped at 40 runs/day) or *Stub* for an instant offline walkthrough. Jira publishing is dry-run for visitors; the live publish needs the admin key.
 
 ---
 
@@ -103,8 +103,8 @@ requires a PRO plan for Docker Spaces.
 Public-demo guards: `STORYFORGE_DAILY_LIVE_LIMIT` caps live model runs per day (stub is unlimited) and
 `STORYFORGE_ADMIN_KEY` is required for live Jira publishing (dry run is open).
 
-`vercel.json` serves the same UI from Vercel's edge and rewrites `/api/*` and `/docs` to the Render
-backend — import the repo in Vercel and it deploys with no configuration. The Python service itself
+`vercel.json` serves the same UI from Vercel's edge (<https://storyforge-livid.vercel.app>) and rewrites `/api/*`
+and `/docs` to the Render backend — import the repo in Vercel with the "Other" preset and it deploys with no configuration. The Python service itself
 stays on Render because analyses run as multi-minute background jobs, which serverless functions cannot host.
 
 ### API
