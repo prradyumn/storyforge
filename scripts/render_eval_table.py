@@ -56,7 +56,7 @@ def render() -> str:
         rows.append(f"| {label} | " + " | ".join(cells) + " |")
     n_cases = reports[0]["aggregate"]["cases"] if reports else 0
     note = (
-        f"\n_{n_cases} transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline "
+        f"\n\n_{n_cases} transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline "
         "(it copies sentences verbatim, which the keyword rubric rewards on precision; read precision together with traceability)._"
     )
     return "\n".join([head, sep, *rows]) + note

@@ -54,6 +54,7 @@ string matching), fixed before any prompt was tuned.
 | `gemini` · v2 | 87% | 63% | 99.4% | 12% | 83% | 82% | 77% | 0% | 62% | 254 |
 | `gemini` · v3 | 82% | 57% | 99.5% | 25% | 82% | 76% | 85% | 0% | 62% | 245 |
 | `gemini` · v4 (1 case(s) failed) | 82% | 75% | 98% | 7% | 88% | 80% | 84% | 0% | 57% | 240 |
+
 _8 transcripts · lower is better for distractor leak and generic role · stub = offline heuristic baseline (it copies sentences verbatim, which the keyword rubric rewards on precision; read precision together with traceability)._
 <!-- eval-table:end -->
 
