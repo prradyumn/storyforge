@@ -56,29 +56,33 @@ tight enough that "retry on 429" is not a strategy.
 
 <!-- results-table:start -->
 Full matrix on `gemini-2.5-flash`, 2 review rounds, 8 transcripts, same
-golden set and rubric for every row. v3 is the shipped default. v4 (see §2)
-is queued; its row is added when `eval/results/gemini_v4.json` lands. The
-README table is generated from the same files by
-`scripts/render_eval_table.py`.
+golden set and rubric for every row. v3 is the shipped default; v4 is the
+requirements-prompt revision from §2. The README table is generated from the
+same files by `scripts/render_eval_table.py`.
 
-| Metric | stub baseline | v1 | v2 | v3 (shipped) |
-|---|---|---|---|---|
-| Requirement recall | 74% | 81% | **87%** | 82% |
-| Requirement precision (strict) | 70% | 59% | **63%** | 57% |
-| Requirements produced (83 labelled) | 90 | 168 | **155** | 200 |
-| Traceability (evidence verbatim in notes) | 100% | 74% | 99.4% | **99.5%** |
-| Evidence quotes below the 0.82 guardrail | 0 | 44 | 1 | 1 |
-| Distractor leakage (of 16) | 6% | 25% | **12%** | 25% |
-| Priority accuracy (MoSCoW) | 57% | **93%** | 83% | 82% |
-| Type accuracy | 57% | 82% | **86%** | 79% |
-| Must/should requirements with ≥ 1 story | 74% | 76% | **82%** | 76% |
-| Stories sprint-ready after loop | 71% | 35% | 77% | **85%** (93 / 109) |
-| Gherkin-clean stories | 100% | 75% | 95% | **98%** |
-| Generic "as a user" stories | 0% | 1% | **0%** | **0%** |
-| Out-of-scope recall | 0% | 50% | **62%** | **62%** |
-| Schema repairs | 0 | 0 | 3 | **0** in 68 calls |
-| Stories revised by the loop | 116 | 153 | 85 | 83 |
-| Mean latency / tokens per transcript | 0 s | 298 s / 95.6K | 254 s / 90.9K | 245 s / 88.7K |
+| Metric | stub baseline | v1 | v2 | v3 (shipped) | v4 |
+|---|---|---|---|---|---|
+| Requirement recall | 74% | 81% | **87%** | 82% | 82% |
+| Requirement precision (strict) | 70% | 59% | 63% | 57% | **75%** |
+| Requirements produced (83 labelled) | 90 | 168 | 155 | 200 | **95** (7 cases, 71 labelled) |
+| Traceability (evidence verbatim in notes) | 100% | 74% | 99.4% | **99.5%** | 97.9% |
+| Evidence quotes below the 0.82 guardrail | 0 | 44 | 1 | 1 | 2 |
+| Distractor leakage (of 16) | 6% | 25% | 12% | 25% | **7%** (1 / 14) |
+| Priority accuracy (MoSCoW) | 57% | **93%** | 83% | 82% | 88% |
+| Type accuracy | 57% | 82% | **86%** | 79% | **86%** |
+| Must/should requirements with ≥ 1 story | 74% | 76% | **82%** | 76% | 80% |
+| Stories sprint-ready after loop | 71% | 35% | 77% | **85%** (93 / 109) | 84% (76 / 90) |
+| Gherkin-clean stories | 100% | 75% | 95% | **98%** | 96% |
+| Generic "as a user" stories | 0% | 1% | **0%** | **0%** | **0%** |
+| Out-of-scope recall | 0% | 50% | **62%** | **62%** | 57% |
+| Schema repairs | 0 | 0 | 3 | **0** in 68 calls | 0 (but see the HR failure below) |
+| Stories revised by the loop | 116 | 153 | 85 | 83 | 69 |
+| Mean latency / tokens per transcript | 0 s | 298 s / 95.6K | 254 s / 90.9K | 245 s / 88.7K | 240 s / 85.7K |
+
+v4 numbers are over 7 of the 8 transcripts: the HR case failed in the
+stories agent because both providers returned JSON the repair pass could not
+fix (`Expecting ',' delimiter`). It is re-run and the row updated when it lands;
+until then the v4 column is not strictly comparable on the story-side metrics.
 
 Three things the matrix says, in order of how much they mattered:
 
@@ -114,10 +118,31 @@ definitions pushed the model to reason about business value instead of
 transcribing intent. That is arguably better BA practice and worse rubric
 performance; it is flagged rather than fixed.
 
-So v4 is a single-variable change to the requirements prompt only, keeping
+So v4 was a single-variable change to the requirements prompt only, keeping
 v3's context engineering (which the story metrics say is right) and
 targeting the v3 regression on the requirements side. Section 4 lists the
-specific failures it addresses.
+specific failures it addressed, and §4b what happened.
+
+**v4 did what it was designed to do.** The requirements agent produced 95
+requirements for 71 labelled ones (1.3×) instead of v3's 2.4×; strict
+precision rose from 57% to 75% and distractor leakage fell from 25% to 7% —
+the single leak is one logistics anecdote. Recall held at 82%, so the
+tighter prompt did not buy precision by dropping real asks. Priority and
+type accuracy recovered most of what v2 and v3 had lost. Story-side metrics
+were unchanged within noise (84% vs 85% sprint-ready), which is what a
+change to one prompt out of five should look like.
+
+**What it cost.** Two evidence quotes in the returns case fell below the
+0.82 guardrail (scores 0.69 and 0.73): the stakeholder said customers should
+get an email "at each step: item received, refund approved, refund issued",
+and the model split that into per-step requirements, each quoting a
+*reassembled* fragment ("Customers should get an email at each step: refund
+issued.") rather than a verbatim span. Splitting was correct; the quote was
+not. The v3 instruction "one requirement per sentence" is gone in v4 and this
+is the side-effect. A v5 rule would be: when one sentence yields several
+requirements, every one of them quotes the whole sentence. Out-of-scope recall
+also dropped 62% → 57% (one fewer exclusion caught), which is within the
+noise of a 14-item denominator but is noted.
 
 <!-- results-table:end -->
 
@@ -154,6 +179,49 @@ intake agent sometimes recorded an exclusion as a constraint rather than in
 
 Each of these is a prompt rule in v4. The measurement of v4 against the same
 rubric is what decides whether they helped.
+
+## 4b. v4 failure analysis
+
+Read from `eval/results/gemini_v4_*.json`.
+
+**The HR case did not complete.** The stories agent received a response
+that was not valid JSON from Gemini, retried, then failed over to Groq, which
+also produced malformed JSON; the one repair pass each is allowed did not fix
+it and the pipeline surfaced the error rather than shipping a partial
+backlog. That is the intended behaviour — a half-backlog silently published
+to Jira would be worse — but it means the default of one repair attempt is
+too tight for a 40-story output. Options, in order of preference: raise the
+repair budget to two for the stories agent only; ask for the stories in two
+halves when the requirement count exceeds ~20; or fall back to the previous
+round's stories with the failing ones marked. Not changed yet; the case is
+re-run first so the row can be compared like for like.
+
+**Fintech: 20 requirements for 10 labelled, 5 of 11 stories sprint-ready.**
+Two different things went wrong here. The requirements agent split
+faithfully but finely — "OFAC match → freeze, route to compliance, never
+auto-approve" became R-009, R-010 and R-011 — so precision suffered without
+anything being invented. The story failures are a different cause: all six
+failing stories scored **1 on Testable** with the same reviewer note, that the
+acceptance criteria describe internal actions ("sends the applicant's details
+to the sanctions screening service", "stores the full Experian payload")
+rather than outcomes a tester can observe. The stories prompt is unchanged
+since v2, so this is not a v4 regression; it is an integration-heavy domain
+exposing that the "observable outcome" rule has no example of *how* to phrase
+an integration criterion (e.g. "Then the application shows status *Screening
+complete* within 60 s"). That is a stories-prompt change for v5, and it was
+found by reading the reviewer's issues, not the aggregate.
+
+**Logistics: the one leak.** The distractor "Last month we had a rider go
+completely off-route for two hours and nobody noticed until the customer
+called to complain, that shouldn't be able to happen again" became R-012,
+"alert operations personnel when a rider deviates significantly from their
+assigned route". The v4 rule says anecdotes are not asks — but this one ends
+with "that shouldn't be able to happen again", which is as close to an ask as
+an anecdote gets. The label calls it a distractor because the stakeholder
+never said what should happen; the model chose the obvious remedy. A human BA
+would probably have written it down too, then asked. Arguably the label is
+harsh; it stays, because changing labels after seeing results is how evals
+stop meaning anything.
 
 ## 5. Things that were wrong before they were right
 

@@ -1,0 +1,1009 @@
+{
+ "brief": {
+  "title": "Self-service returns portal",
+  "business_goals": [
+   "Reduce customer support agent workload related to returns",
+   "Enable customers to initiate returns independently from their order history",
+   "Ensure refunds are only issued for items physically received and scanned by the warehouse",
+   "Improve financial reconciliation for return-related transactions",
+   "Provide real-time updates on return status and refund processing",
+   "Enhance customer communication regarding return progress via email",
+   "Accurately process partial refunds, including proportional shipping costs"
+  ],
+  "stakeholders": [
+   {
+    "name": "Meera Nair",
+    "role": "Head of Customer Operations",
+    "concerns": [
+     "Agents spend about 40% of their day creating return labels and answering 'where is my refund'",
+     "Customers need to start a return themselves without contacting support",
+     "Returns outside 30 days from delivery must be rejected automatically",
+     "Customers should get an email at each step: return approved with label, item received, refund issued",
+     "Project needs to be live before the Diwali sale (end of October)"
+    ]
+   },
+   {
+    "name": "Rahul Desai",
+    "role": "Finance Controller",
+    "concerns": [
+     "Refunds cannot be issued until the warehouse has scanned the item back in",
+     "Lost ₹18 lakh in refunds last quarter for items that never arrived",
+     "Need a daily report of refunds issued, pending, and rejected, broken down by reason code for reconciliation",
+     "Partial returns need to be handled accurately, including share of shipping"
+    ]
+   },
+   {
+    "name": "Priya Shah",
+    "role": "Warehouse Lead",
+    "concerns": [
+     "When item arrives, scanning the barcode on the return label should update status immediately and trigger refund",
+     "Our scanners are Zebra handhelds that post to a REST endpoint"
+    ]
+   },
+   {
+    "name": "Ankit Verma",
+    "role": "Engineering Manager",
+    "concerns": [
+     "Order history lives in Shopify, must read orders from Shopify API",
+     "Refunds go through Razorpay, same as today",
+     "Portal needs to handle peak volume (Diwali week: 12,000 orders/day, 8% returns)",
+     "Page loads should stay under 2 seconds at peak volume"
+    ]
+   }
+  ],
+  "constraints": [
+   "Return window is 30 days from delivery; anything outside must be rejected automatically",
+   "Refunds cannot be issued until the warehouse has scanned the item back in",
+   "Orders must be read from the Shopify API",
+   "Refunds must be processed through Razorpay",
+   "Warehouse scanners (Zebra handhelds) post to a REST endpoint for return status updates",
+   "Portal must handle peak volume of 12,000 orders/day with 8% returns",
+   "Page loads must stay under 2 seconds at peak volume",
+   "Project must be live before the Diwali sale (end of October)"
+  ],
+  "out_of_scope": [
+   "Exchanges are out of scope for this phase — refund only"
+  ],
+  "open_questions": [],
+  "domain": "E-commerce Returns"
+ },
+ "requirements": [
+  {
+   "id": "R-001",
+   "statement": "The system shall allow customers to initiate a return from their order history.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We need customers to be able to start a return themselves from their order history without contacting us.",
+   "stakeholder": "Meera Nair",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-002",
+   "statement": "The system shall automatically reject return requests submitted more than 30 days after delivery.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Anything outside that must be rejected automatically with a clear message, not sent to an agent.",
+   "stakeholder": "Meera Nair",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-003",
+   "statement": "The system shall display a clear message to the customer when a return request is rejected due to being outside the return window.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Anything outside that must be rejected automatically with a clear message, not sent to an agent.",
+   "stakeholder": "Meera Nair",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-004",
+   "statement": "The system shall prevent the issuance of a refund until the warehouse has confirmed receipt of the returned item.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "The system has to hold the refund until the warehouse confirms receipt.",
+   "stakeholder": "Rahul Desai",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-005",
+   "statement": "The system shall generate a daily report detailing refunds issued, pending, and rejected, categorized by reason code.",
+   "type": "data",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "We also need a daily report of refunds issued, pending, and rejected, broken down by reason code",
+   "stakeholder": "Rahul Desai",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-006",
+   "statement": "The system shall update the return status immediately upon receiving a scan event from the warehouse.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "The scan should update the return status immediately",
+   "stakeholder": "Priya Shah",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-007",
+   "statement": "The system shall trigger the refund process upon successful receipt confirmation from the warehouse.",
+   "type": "functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "and trigger the refund.",
+   "stakeholder": "Priya Shah",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-008",
+   "statement": "The system shall integrate with the warehouse scanning system via a REST endpoint to receive return item receipt confirmations.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Our scanners are Zebra handhelds that post to a REST endpoint",
+   "stakeholder": "Priya Shah",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-009",
+   "statement": "The system shall send an email notification to the customer when a return is approved, including the return label.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Customers should get an email at each step: return approved with the label attached",
+   "stakeholder": "Meera Nair",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-010",
+   "statement": "The system shall send an email notification to the customer when the returned item is received by the warehouse.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Customers should get an email at each step: item received",
+   "stakeholder": "Meera Nair",
+   "assumptions": [],
+   "traceable": false,
+   "trace_score": 0.686
+  },
+  {
+   "id": "R-011",
+   "statement": "The system shall send an email notification to the customer when a refund has been issued.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Customers should get an email at each step: refund issued.",
+   "stakeholder": "Meera Nair",
+   "assumptions": [],
+   "traceable": false,
+   "trace_score": 0.732
+  },
+  {
+   "id": "R-012",
+   "statement": "The system shall retrieve customer order history from the Shopify API.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Whatever we build has to read orders from the Shopify API",
+   "stakeholder": "Ankit Verma",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-013",
+   "statement": "The system shall process refunds through the Razorpay payment gateway.",
+   "type": "integration",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "Refunds go through Razorpay, same as today.",
+   "stakeholder": "Ankit Verma",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-014",
+   "statement": "The system shall load pages within 2 seconds during peak volume, defined as 12,000 orders per day with 8% returns.",
+   "type": "non_functional",
+   "priority": "should",
+   "rationale": "",
+   "evidence": "Page loads should stay under 2 seconds at that volume.",
+   "stakeholder": "Ankit Verma",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  },
+  {
+   "id": "R-015",
+   "statement": "The system shall calculate partial refunds for individual returned items, including their proportional share of shipping costs if applicable.",
+   "type": "functional",
+   "priority": "must",
+   "rationale": "",
+   "evidence": "the refund should be for that item only, including its share of shipping if we charged it.",
+   "stakeholder": "Rahul Desai",
+   "assumptions": [],
+   "traceable": true,
+   "trace_score": 1.0
+  }
+ ],
+ "backlog": {
+  "epics": [
+   {
+    "id": "E-01",
+    "title": "Customer Return Management",
+    "goal": "Empower customers to independently initiate, track, and receive updates on their return requests.",
+    "requirement_ids": [
+     "R-001",
+     "R-002",
+     "R-003",
+     "R-009",
+     "R-010",
+     "R-011",
+     "R-012"
+    ]
+   },
+   {
+    "id": "E-02",
+    "title": "Refund Processing Automation",
+    "goal": "Guarantee that refunds are processed correctly and only after returned items are confirmed received by the warehouse.",
+    "requirement_ids": [
+     "R-004",
+     "R-006",
+     "R-007",
+     "R-008",
+     "R-013",
+     "R-015"
+    ]
+   },
+   {
+    "id": "E-03",
+    "title": "Return Financial Reporting",
+    "goal": "Offer comprehensive reporting to support financial reconciliation and tracking of return-related transactions.",
+    "requirement_ids": [
+     "R-005"
+    ]
+   },
+   {
+    "id": "E-04",
+    "title": "Returns Portal Performance",
+    "goal": "Ensure the returns portal delivers a fast and responsive experience for customers.",
+    "requirement_ids": [
+     "R-014"
+    ]
+   }
+  ],
+  "stories": [
+   {
+    "id": "S-001",
+    "epic_id": "E-01",
+    "title": "Initiate Return from Order History",
+    "as_a": "Returning customer",
+    "i_want": "to select items from my order history for return",
+    "so_that": "I can easily start a return request without contacting support",
+    "acceptance_criteria": [
+     {
+      "given": "I am logged in and have an order with returnable items",
+      "when": "I view my order history and select an order",
+      "then": "I see an option to initiate a return for eligible items"
+     },
+     {
+      "given": "I am logged in and have an order with no returnable items",
+      "when": "I view my order history and select an order",
+      "then": "I do not see an option to initiate a return"
+     }
+    ],
+    "requirement_ids": [
+     "R-001"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-002",
+    "epic_id": "E-01",
+    "title": "Enforce Return Window Policy",
+    "as_a": "Returning customer",
+    "i_want": "to know if my return request is within the allowed timeframe",
+    "so_that": "I don't waste time submitting an ineligible return and understand the reason for rejection",
+    "acceptance_criteria": [
+     {
+      "given": "I am initiating a return for an item delivered 29 days ago",
+      "when": "I submit my return request",
+      "then": "My return request is successfully submitted"
+     },
+     {
+      "given": "I am initiating a return for an item delivered 31 days ago",
+      "when": "I submit my return request",
+      "then": "My return request is rejected and I see a message 'Return requests must be submitted within 30 days of delivery.'"
+     }
+    ],
+    "requirement_ids": [
+     "R-002",
+     "R-003"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-003",
+    "epic_id": "E-01",
+    "title": "Integrate Shopify Order History",
+    "as_a": "Returning customer",
+    "i_want": "to see my past orders",
+    "so_that": "I can easily select an item to return",
+    "acceptance_criteria": [
+     {
+      "given": "A customer logs into the returns portal",
+      "when": "The portal requests their order history",
+      "then": "The portal successfully retrieves and displays order data from the Shopify API"
+     },
+     {
+      "given": "The Shopify API is unavailable",
+      "when": "The portal attempts to retrieve order history",
+      "then": "The portal displays an error message 'Unable to load order history. Please try again later.'"
+     }
+    ],
+    "requirement_ids": [
+     "R-012"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-004",
+    "epic_id": "E-01",
+    "title": "Send Return Approval Email with Label",
+    "as_a": "Returning customer",
+    "i_want": "to receive an email with my return label",
+    "so_that": "I can easily print it and send back my items",
+    "acceptance_criteria": [
+     {
+      "given": "My return request has been approved",
+      "when": "The system processes the approval",
+      "then": "An email is sent to my registered email address with a printable return label attached"
+     },
+     {
+      "given": "My return request has been approved but email sending fails",
+      "when": "The system attempts to send the approval email",
+      "then": "The system logs the failure and marks the email for retry"
+     }
+    ],
+    "requirement_ids": [
+     "R-009"
+    ],
+    "priority": "must",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-005",
+    "epic_id": "E-01",
+    "title": "Send Item Received Email Notification",
+    "as_a": "Returning customer",
+    "i_want": "to be notified when my returned items arrive at the warehouse",
+    "so_that": "I know my return is progressing and I can expect my refund soon",
+    "acceptance_criteria": [
+     {
+      "given": "The warehouse confirms receipt of my returned item",
+      "when": "The system receives the receipt confirmation",
+      "then": "An email is sent to my registered email address confirming item receipt"
+     },
+     {
+      "given": "The warehouse confirms receipt of my returned item, but the email address is invalid",
+      "when": "The system attempts to send the receipt confirmation email",
+      "then": "The system logs the email sending failure"
+     }
+    ],
+    "requirement_ids": [
+     "R-010"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-006",
+    "epic_id": "E-01",
+    "title": "Send Refund Issued Email Notification",
+    "as_a": "Returning customer",
+    "i_want": "to be notified when my refund has been processed",
+    "so_that": "I can track the refund to my payment method",
+    "acceptance_criteria": [
+     {
+      "given": "My refund has been successfully issued",
+      "when": "The system processes the refund",
+      "then": "An email is sent to my registered email address confirming the refund amount and transaction details"
+     },
+     {
+      "given": "My refund has been successfully issued, but the email server is down",
+      "when": "The system attempts to send the refund confirmation email",
+      "then": "The system queues the email for later delivery and logs the initial failure"
+     }
+    ],
+    "requirement_ids": [
+     "R-011"
+    ],
+    "priority": "must",
+    "story_points": 2,
+    "notes": "",
+    "review_round": 0
+   },
+   {
+    "id": "S-007",
+    "epic_id": "E-02",
+    "title": "Integrate Warehouse Scan Events",
+    "as_a": "Returns operations manager",
+    "i_want": "the system to receive real-time updates from the warehouse scanning system",
+    "so_that": "I can ensure accurate tracking of returned items and initiate subsequent processes",
+    "acceptance_criteria": [
+     {
+      "given": "The warehouse scanning system sends a receipt confirmation for a returned item",
+      "when": "The returns portal receives the REST API call",
+      "then": "The returns portal successfully processes and records the item receipt"
+     },
+     {
+      "given": "The warehouse scanning system sends an invalid receipt confirmation",
+      "when": "The returns portal receives the REST API call",
+      "then": "The returns portal rejects the request and logs the error"
+     }
+    ],
+    "requirement_ids": [
+     "R-008"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-008",
+    "epic_id": "E-02",
+    "title": "Update Return Status Real-time",
+    "as_a": "Returning customer",
+    "i_want": "my return status to update instantly when the warehouse receives my item",
+    "so_that": "I always know the current progress of my return",
+    "acceptance_criteria": [
+     {
+      "given": "A return has a status of 'In Transit'",
+      "when": "The system receives a warehouse scan event confirming receipt",
+      "then": "The return status is updated to 'Received at Warehouse' within 1 second"
+     },
+     {
+      "given": "A return has a status of 'In Transit'",
+      "when": "The system receives a warehouse scan event for an unknown return ID",
+      "then": "The system logs an error and does not update any return status"
+     }
+    ],
+    "requirement_ids": [
+     "R-006"
+    ],
+    "priority": "should",
+    "story_points": 3,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-009",
+    "epic_id": "E-02",
+    "title": "Automate Refund Trigger on Receipt",
+    "as_a": "Finance administrator",
+    "i_want": "the system to automatically initiate the refund process only for received items",
+    "so_that": "I can be confident that refunds are processed securely and without manual intervention after item receipt",
+    "acceptance_criteria": [
+     {
+      "given": "A returned item's receipt is successfully confirmed by the warehouse",
+      "when": "The system processes the receipt confirmation",
+      "then": "A refund request is queued for the payment gateway"
+     },
+     {
+      "given": "A return request is approved but the item has not been confirmed received by the warehouse",
+      "when": "A refund attempt is triggered for that item",
+      "then": "The refund is blocked and an alert is generated for manual review"
+     }
+    ],
+    "requirement_ids": [
+     "R-007",
+     "R-004"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "Removed AC3 as it introduced new scope not covered by existing requirements and lacked specific criteria for eligibility.",
+    "review_round": 2
+   },
+   {
+    "id": "S-010",
+    "epic_id": "E-02",
+    "title": "Integrate Razorpay for Refunds",
+    "as_a": "Finance administrator",
+    "i_want": "the system to process refunds through Razorpay",
+    "so_that": "I can efficiently issue refunds to customers via their original payment method",
+    "acceptance_criteria": [
+     {
+      "given": "A refund request is initiated for a customer",
+      "when": "The system sends a refund request to the Razorpay API",
+      "then": "Razorpay successfully processes the refund and returns a confirmation"
+     },
+     {
+      "given": "A refund request is initiated, but Razorpay returns an error (e.g., insufficient funds, invalid transaction)",
+      "when": "The system sends a refund request to the Razorpay API",
+      "then": "The system logs the error and flags the refund for manual intervention"
+     }
+    ],
+    "requirement_ids": [
+     "R-013"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-011",
+    "epic_id": "E-02",
+    "title": "Calculate Partial Refunds",
+    "as_a": "Finance administrator",
+    "i_want": "the system to accurately calculate partial refunds for returned items",
+    "so_that": "customers receive the correct refund amount, including proportional shipping costs, and our financial records are accurate",
+    "acceptance_criteria": [
+     {
+      "given": "An order with multiple items and a total shipping cost",
+      "when": "A subset of items is returned",
+      "then": "The refund amount for the returned items is calculated based on their individual price and their proportional share of the original shipping cost"
+     },
+     {
+      "given": "An order with a single item and a shipping cost",
+      "when": "The item is returned",
+      "then": "The refund amount is calculated to include the item's full price and the full shipping cost"
+     }
+    ],
+    "requirement_ids": [
+     "R-015"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "Rephrased AC2.then to include an observable outcome verb.",
+    "review_round": 2
+   },
+   {
+    "id": "S-012",
+    "epic_id": "E-03",
+    "title": "Generate Daily Refund Status Report",
+    "as_a": "Finance administrator",
+    "i_want": "a daily report on refund statuses",
+    "so_that": "I can reconcile financial records and track return-related transactions",
+    "acceptance_criteria": [
+     {
+      "given": "It is the end of the business day",
+      "when": "The system generates the daily refund report",
+      "then": "The report is generated and contains all refunds issued, pending, and rejected for that day, categorized by reason code"
+     },
+     {
+      "given": "There are no refund activities for the day",
+      "when": "The system generates the daily refund report",
+      "then": "The report is generated with empty sections for each category"
+     }
+    ],
+    "requirement_ids": [
+     "R-005"
+    ],
+    "priority": "must",
+    "story_points": 5,
+    "notes": "",
+    "review_round": 1
+   },
+   {
+    "id": "S-013",
+    "epic_id": "E-04",
+    "title": "Fast Loading of Order History Page",
+    "as_a": "Returning customer",
+    "i_want": "the order history page in the returns portal to load within 2 seconds",
+    "so_that": "I can quickly find and select items for return without frustration",
+    "acceptance_criteria": [
+     {
+      "given": "The system is operating under peak load (12,000 orders/day, 8% returns)",
+      "when": "I navigate to my order history page in the returns portal",
+      "then": "The order history page loads completely within 2 seconds"
+     },
+     {
+      "given": "The system is operating under peak load",
+      "when": "Multiple customers simultaneously access their order history page",
+      "then": "The order history page loads for each customer within 2 seconds"
+     }
+    ],
+    "requirement_ids": [
+     "R-014"
+    ],
+    "priority": "should",
+    "story_points": 5,
+    "notes": "Revised to focus on a specific page (Order History) to make the story smaller, more estimable, and less vague, addressing NFR concerns by applying it to a concrete user flow. Story points adjusted to reflect more focused scope.",
+    "review_round": 2
+   }
+  ]
+ },
+ "reviews": {
+  "reviews": [
+   {
+    "story_id": "S-001",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-002",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-003",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-004",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-005",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-006",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-007",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-008",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-009",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-010",
+    "scores": {
+     "independent": 4,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-011",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-012",
+    "scores": {
+     "independent": 5,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 5,
+     "small": 5,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   },
+   {
+    "story_id": "S-013",
+    "scores": {
+     "independent": 3,
+     "negotiable": 5,
+     "valuable": 5,
+     "estimable": 4,
+     "small": 4,
+     "testable": 5
+    },
+    "passed": true,
+    "issues": [],
+    "fix_instructions": ""
+   }
+  ],
+  "duplicate_pairs": [],
+  "conflict_pairs": []
+ },
+ "gaps": {
+  "gaps": [
+   {
+    "kind": "missing_nfr",
+    "description": "The requirements do not include any security non-functional requirements for the customer-facing portal, which will handle customer order data and initiate financial transactions. This is a critical omission for an e-commerce platform.",
+    "severity": "high",
+    "related_ids": [],
+    "suggested_question": "What are our security requirements for the customer returns portal, especially regarding customer data protection, authentication, and preventing unauthorized refund initiation?"
+   },
+   {
+    "kind": "missing_nfr",
+    "description": "There are no explicit availability or uptime targets for the self-service returns portal, which is critical for customer satisfaction and reducing support load, especially during peak sales periods like Diwali.",
+    "severity": "medium",
+    "related_ids": [],
+    "suggested_question": "What are the expected uptime and availability targets for the returns portal, particularly during high-traffic periods like the Diwali sale?"
+   },
+   {
+    "kind": "missing_stakeholder",
+    "description": "The project involves handling customer personal data (order history) and financial transactions (refunds). There is no mention of a Legal or Compliance stakeholder, whose input would be crucial for data privacy regulations (e.g., GDPR, local laws) and financial compliance.",
+    "severity": "high",
+    "related_ids": [],
+    "suggested_question": "Who is responsible for ensuring the returns portal complies with data privacy regulations and financial compliance requirements, and have they reviewed these requirements?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Requirement R-006 states the return status should update 'immediately' upon receiving a scan event. 'Immediately' is subjective and lacks a measurable definition for acceptable latency, which is important for providing real-time updates.",
+    "severity": "medium",
+    "related_ids": [
+     "R-006",
+     "Goal: Provide real-time updates on return status and refund processing"
+    ],
+    "suggested_question": "What is the maximum acceptable delay for a return status update after a warehouse scan event to be considered 'immediate' or 'real-time'?"
+   },
+   {
+    "kind": "ambiguity",
+    "description": "Requirement R-003 states the system shall display a 'clear message' when a return request is rejected. The definition of 'clear' is subjective and could lead to different interpretations regarding the content and presentation of the message.",
+    "severity": "low",
+    "related_ids": [
+     "R-003"
+    ],
+    "suggested_question": "What specific information should be included in the rejection message for out-of-window returns to ensure it's 'clear' to customers?"
+   }
+  ],
+  "coverage_note": "The backlog provides good coverage for the stated business goals, particularly in enabling customer self-service for returns, automating refund triggers, and improving financial reconciliation. Key functional and integration requirements are addressed, and a critical performance non-functional requirement is included. However, there are some areas that need further clarification to ensure a robust and compliant solution, especially regarding security, availability, and legal compliance, which are not explicitly covered."
+ },
+ "trace": {
+  "run_id": "75084d7118",
+  "started_at": "2026-09-13T07:01:07.171785Z",
+  "prompt_version": "v4",
+  "backend": "gemini",
+  "calls": [
+   {
+    "agent": "intake",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 9604,
+    "prompt_tokens": 1005,
+    "completion_tokens": 1795,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "requirements",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 15980,
+    "prompt_tokens": 2330,
+    "completion_tokens": 3424,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 45806,
+    "prompt_tokens": 1579,
+    "completion_tokens": 10131,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 32622,
+    "prompt_tokens": 4756,
+    "completion_tokens": 7391,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 19173,
+    "prompt_tokens": 6076,
+    "completion_tokens": 4322,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 33477,
+    "prompt_tokens": 4795,
+    "completion_tokens": 7149,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "stories",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 23778,
+    "prompt_tokens": 3620,
+    "completion_tokens": 4638,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "review",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 28878,
+    "prompt_tokens": 4825,
+    "completion_tokens": 6512,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   },
+   {
+    "agent": "gaps",
+    "model": "gemini-2.5-flash",
+    "provider": "gemini",
+    "prompt_version": "v4",
+    "latency_ms": 16942,
+    "prompt_tokens": 1970,
+    "completion_tokens": 3293,
+    "attempt": 1,
+    "ok": true,
+    "error": null
+   }
+  ],
+  "review_rounds": 3,
+  "stories_revised": 11,
+  "guardrail_flags": [
+   "R-010: evidence not found in notes (score 0.686)",
+   "R-011: evidence not found in notes (score 0.732)"
+  ]
+ }
+}
