@@ -71,7 +71,7 @@ No keys? Everything still runs on the offline stub backend:
 ```bash
 STORYFORGE_BACKEND=stub uvicorn storyforge.api:app
 python -m storyforge.cli examples/returns_portal.txt --backend stub --out out/
-pytest -q                                  # 43 tests, no network
+pytest -q                                  # 45 tests, no network
 python eval/run_eval.py --backend stub     # the eval harness end to end
 ```
 
@@ -86,11 +86,14 @@ python -m storyforge.cli notes.txt --publish             # creates epics + stori
 
 Publishing is idempotent (label + summary); re-running the same analysis skips issues that already exist.
 
-### Deploy the demo (Hugging Face Spaces, free)
+### Deploy the demo (Render, free tier)
 
-```bash
-bash scripts/deploy_hf.sh      # creates the Space, pushes HEAD, sets secrets, waits for the build, runs preflight
-```
+`render.yaml` is a Render blueprint: **Dashboard → New → Blueprint → this repo**, paste the
+secrets it prompts for (`GEMINI_API_KEY`, `GROQ_API_KEY`, `JIRA_*`), deploy. Free instances sleep
+after 15 idle minutes, so the first request can take ~1 minute to wake. Analyses run as background
+jobs (`POST /api/analyze/start` → `GET /api/jobs/{id}`), so a slow model run never has to fit inside
+one HTTP request. `scripts/deploy_hf.sh` still targets Hugging Face Spaces, which as of Sep 2026
+requires a PRO plan for Docker Spaces.
 
 Public-demo guards: `STORYFORGE_DAILY_LIVE_LIMIT` caps live model runs per day (stub is unlimited) and
 `STORYFORGE_ADMIN_KEY` is required for live Jira publishing (dry run is open).
@@ -98,7 +101,8 @@ Public-demo guards: `STORYFORGE_DAILY_LIVE_LIMIT` caps live model runs per day (
 ### API
 
 ```
-POST /api/analyze   {"notes": "...", "backend": "gemini,groq", "prompt_version": "v3", "max_review_rounds": 2}
+POST /api/analyze         {"notes": "...", "backend": "gemini,groq", "prompt_version": "v3", "max_review_rounds": 2}   (synchronous)
+POST /api/analyze/start   same body → {"job_id"}; then GET /api/jobs/{job_id} until status is "done"
 POST /api/publish   {"result": <AnalysisResult>, "dry_run": true}
 POST /api/export    {"result": <AnalysisResult>, "format": "brd" | "backlog" | "csv"}
 GET  /api/health
@@ -126,7 +130,7 @@ docs/
   PRD.md                the product spec for StoryForge itself
   ARCHITECTURE.md       why five agents, context engineering table, guardrail design
   UAT.md                14-step acceptance script
-tests/                  43 tests, offline
+tests/                  45 tests, offline
 ```
 
 ## Design decisions in one breath

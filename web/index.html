@@ -112,16 +112,23 @@ $('#tabs').onclick=e=>{if(e.target.dataset.t){tab=e.target.dataset.t;render();}}
 
 $('#run').onclick=async()=>{
   const notes=$('#notes').value.trim();if(notes.length<40){$('#status').textContent='Give me at least a few sentences of notes.';return;}
-  $('#run').disabled=true;const t0=Date.now();
-  $('#status').innerHTML='<span class="spinner"></span>Running agents… Intake → Requirements → Stories → Review → Gaps. Live runs take 20–90 s.';
+  $('#run').disabled=true;const t0=Date.now();const stub=$('#backend').value==='stub';
+  const stages=['Intake','Requirements','Stories','INVEST review','Revise loop','Gap analysis'];
+  const tick=()=>{const s=((Date.now()-t0)/1000)|0;const i=Math.min(stages.length-1,Math.floor(s/40));$('#status').innerHTML=`<span class="spinner"></span>Running agents… <b>${stages[i]}</b> · ${s}s elapsed${stub?'':' · live runs take 3–5 min on the free tier'}`;};
+  tick();const timer=setInterval(tick,1000);
   try{
     const body={notes,prompt_version:$('#pv').value,max_review_rounds:+$('#rounds').value};if($('#backend').value)body.backend=$('#backend').value;
-    const r=await fetch('/api/analyze',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+    const r=await fetch('/api/analyze/start',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
     if(!r.ok){const e=await r.json().catch(()=>({detail:r.statusText}));throw new Error(e.detail||r.statusText);}
-    R=await r.json();tab='brief';render();
+    const {job_id}=await r.json();
+    for(;;){await new Promise(res=>setTimeout(res,stub?400:3000));
+      const j=await (await fetch('/api/jobs/'+job_id)).json();
+      if(j.status==='done'){R=j.result;break;}
+      if(j.status==='error')throw new Error(j.error||'analysis failed');}
+    tab='brief';render();
     $('#status').textContent=`Done in ${((Date.now()-t0)/1000).toFixed(1)} s · ${R.trace.calls.length} model calls · ${R.trace.review_rounds} review round(s).`;
   }catch(e){$('#status').innerHTML=`<span style="color:var(--bad)">${esc(e.message)}</span>`;}
-  $('#run').disabled=false;
+  clearInterval(timer);$('#run').disabled=false;
 };
 
 function render(){

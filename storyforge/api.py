@@ -64,6 +64,51 @@ class DailyBudget:
 
 BUDGET = DailyBudget(int(os.environ.get("STORYFORGE_DAILY_LIVE_LIMIT", "40")))
 
+
+class Jobs:
+    """Background analyses so a slow model run never has to fit inside one HTTP request.
+
+    In-memory, single process: right for one container. Finished jobs expire after an hour."""
+
+    TTL = 3600
+
+    def __init__(self):
+        self._jobs: dict[str, dict] = {}
+        self._lock = threading.Lock()
+
+    def start(self, fn) -> str:
+        import uuid
+
+        job_id = uuid.uuid4().hex[:12]
+        with self._lock:
+            self._jobs[job_id] = {"status": "running", "started": time.time(), "result": None, "error": None}
+
+        def run():
+            try:
+                res = fn()
+                with self._lock:
+                    self._jobs[job_id].update(status="done", result=res, finished=time.time())
+            except Exception as e:  # noqa: BLE001 — surfaced to the client as the job's error
+                with self._lock:
+                    self._jobs[job_id].update(status="error", error=str(e)[:500], finished=time.time())
+
+        threading.Thread(target=run, daemon=True).start()
+        self._sweep()
+        return job_id
+
+    def get(self, job_id: str) -> dict | None:
+        with self._lock:
+            return self._jobs.get(job_id)
+
+    def _sweep(self):
+        now = time.time()
+        with self._lock:
+            for k in [k for k, j in self._jobs.items() if j.get("finished") and now - j["finished"] > self.TTL]:
+                self._jobs.pop(k, None)
+
+
+JOBS = Jobs()
+
 app = FastAPI(
     title="StoryForge",
     version=__version__,
@@ -128,6 +173,34 @@ def api_analyze(req: AnalyzeRequest):
         raise HTTPException(422, str(e)) from e
     except (AgentError, LLMError) as e:
         raise HTTPException(502, f"model call failed: {e}") from e
+
+
+@app.post("/api/analyze/start")
+def api_analyze_start(req: AnalyzeRequest):
+    """Start an analysis in the background; poll /api/jobs/{id} for the result."""
+    if req.backend and req.backend != "stub" and os.environ.get("STORYFORGE_LOCK_BACKEND") == "1":
+        raise HTTPException(403, "backend selection is disabled on this deployment")
+    if req.backend != "stub":
+        ok, _ = BUDGET.take()
+        if not ok:
+            raise HTTPException(429, "This demo's daily budget of live model runs is used up — try the stub backend, or come back tomorrow (resets 00:00 UTC).")
+    if len(req.notes.strip()) < 40:
+        raise HTTPException(422, "notes are too short to analyse")
+    job_id = JOBS.start(lambda: analyze(req.notes, backend=req.backend, prompt_version=req.prompt_version, max_review_rounds=req.max_review_rounds))
+    return {"job_id": job_id, "status": "running"}
+
+
+@app.get("/api/jobs/{job_id}")
+def api_job(job_id: str):
+    job = JOBS.get(job_id)
+    if not job:
+        raise HTTPException(404, "unknown or expired job")
+    out = {"job_id": job_id, "status": job["status"], "elapsed_s": round(time.time() - job["started"], 1)}
+    if job["status"] == "done":
+        out["result"] = job["result"]
+    if job["status"] == "error":
+        out["error"] = job["error"]
+    return out
 
 
 @app.post("/api/publish")
