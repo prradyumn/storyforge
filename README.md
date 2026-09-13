@@ -142,6 +142,8 @@ docs/
   PRD.md                the product spec for StoryForge itself
   ARCHITECTURE.md       why five agents, context engineering table, guardrail design
   UAT.md                14-step acceptance script
+  DEMO.md               two-minute demo script
+  HANDOFF.md            full project context: deployments, UI design system, eval state, open issues
   StoryForge_Overview.pdf  two-page overview: what it does, how, stack
 tests/                  47 tests, offline
 ```
