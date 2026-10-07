@@ -49,54 +49,73 @@ notes → Intake → Requirements → [traceability guardrail]
 
 ## 3. The web UI — what it is built on and how to change it
 
-`web/index.html` is the entire front end: ~330 lines of CSS, ~120 lines of HTML,
-~200 lines of vanilla JS. No bundler, no framework, no dependencies except
-Google Fonts. Keep it that way unless there is a strong reason; it is the reason
-the UI can be served unchanged from both FastAPI and Vercel.
+`web/index.html` is the entire front end: roughly 400 lines of CSS, 120 of HTML
+and 560 of vanilla JS. No bundler, no framework, no dependencies except Google
+Fonts. Keep it that way unless there is a strong reason; it is the reason the UI
+can be served unchanged from both FastAPI and Vercel.
+
+The October 2026 redesign made the page explain itself: an animated diagram of
+the five agents (with the review/revise loop) doubles as the idle explainer and
+the live run view, and every results tab cross-links back to the step that
+produced it. It calls exactly the same endpoints with the same request bodies
+as before; nothing on the backend changed.
 
 ### Design system (CSS custom properties at the top of the file)
 
-| Token | Value | Use |
+| Token | Light value | Use |
 |---|---|---|
-| `--page` / `--surface` / `--inset` | `#f4f5f7` / `#fff` / `#f8f9fa` | page background, panels, table headers and inset blocks |
+| `--page` / `--surface` / `--inset` / `--hover` | `#f4f5f7` / `#fff` / `#f8f9fa` / `#fbfcfd` | page background, panels, inset blocks, row hover |
 | `--ink` / `--ink2` / `--muted` / `--faint` | `#1b2530` / `#3d4a5a` / `#6b7684` / `#98a2ae` | text hierarchy |
 | `--line` / `--line2` | `#dde2e8` / `#ebeef2` | borders, row dividers |
-| `--brand` / `--brand-soft` | `#0f5c73` / `#e6f0f4` | primary button, active tab underline, epic and story IDs, Gherkin keywords |
-| `--bar` / `--bar-ink` / `--bar-muted` | `#16212d` / `#e9edf2` / `#9aa7b6` | top bar and the dark publish log |
-| `--ok` `--warn` `--bad` `--info` (+ `-soft`) | greens, ambers, reds, blues | tags: sprint-ready / needs work / trace fail / revised |
-| `--sans` / `--mono` | IBM Plex Sans / IBM Plex Mono | text / IDs, Gherkin, trace, tags |
-| `--r` | `4px` | radius everywhere; deliberately square |
+| `--brand` / `--brand-hover` / `--brand-soft` / `--brand-glow` | `#0f5c73` / `#0c4b5e` / `#e6f0f4` / 28% brand | primary button, active tab, IDs, Gherkin keywords, active diagram node and its pulse |
+| `--bar` `--bar-ink` `--bar-muted` `--bar-line` `--bar-raised` | dark slate | top bar and pills |
+| `--ok` `--warn` `--bad` `--info` (+ `-soft`, `-line`) | greens, ambers, reds, blues | status only: sprint-ready / needs work / trace fail / revised and the revise loop |
+| `--mark` / `--mark-ink` | `#ffe58f` / ink | evidence highlight in the notes drawer |
+| `--log` `--log-ink` `--log-link` | dark | Jira publish log |
+| `--ease` | `cubic-bezier(.2,.8,.2,1)` | every transition and animation |
+| `--sans` / `--mono` / `--r` | IBM Plex Sans / Mono / `4px` | unchanged |
 
-Layout: 52 px dark top bar (brand + status pills + links) → `.wrap` (max 1360 px) →
-`.grid` two columns `400px | 1fr` (stacks under 980 px). Left column: **Source
-notes** panel (example picker, textarea, word count, controls, Run) and **Agent
-pipeline** panel (five steps, driven by real progress events). Right column:
-results panel with a six-cell metric strip, underline tabs (Brief, Requirements,
-Backlog, Gaps, Run trace, Export & Jira) and the content area.
+Dark theme: the same tokens are redefined under `prefers-color-scheme: dark`
+(guarded by `:root:not([data-theme=light])`) and under `:root[data-theme=dark]`.
+The toggle in the top bar stores the choice in `localStorage['sf:theme']`.
+Component CSS uses tokens only, so a new colour belongs in both blocks.
 
-Design intent (from the redesign brief): restrained enterprise tool, not a
-landing page. No gradients, no glass, no emoji, no purple. Dense tables with
-uppercase 11 px headers, monospace for anything identifier-like, colour used
-only for status. If you restyle, change tokens first; component CSS is written
-against tokens.
+Design intent still holds: a restrained enterprise tool. No gradients, no glass,
+no emoji, no purple; colour carries status. Motion is short (0.3–0.9 s),
+explains a hand-off or a change of state, and is switched off entirely under
+`prefers-reduced-motion`.
+
+Layout: sticky 52 px top bar → `.wrap` (max 1360 px) → `.grid` `400px | 1fr`
+(stacks under 980 px). Left: **Source notes** (example chips, textarea, length
+meter, segmented backend and review-round controls, Run) and **Agent pipeline**
+(five rows with a progress rail). Right: one of three views.
+
+- `intro` — headline, "Watch a demo run" (loads the returns example and runs the stub), the diagram on an auto-playing tour (pauses on hover; click a node to pin its explanation), recent runs.
+- `run` — the same diagram driven by real progress events, a narration box for the current step, and a timestamped event feed.
+- `out` — stage ribbon (each step links to its tab), six KPIs with count-up and ratio bars, tabs with a sliding indicator, and the tab content.
+
+The diagram switches to a vertical layout when the panel is under 700 px wide (a CSS container query); `drawWires()` measures node positions and redraws the SVG connectors on resize.
 
 ### JS structure (all in one `<script>`)
 
-- `init()` — fetches `/api/health` (fills status pills, prompt versions, disables live if no keys; shows "waking the backend" after 4 s because Render sleeps) and `/api/examples`, then `renderRecent()`.
-- `$('#run').onclick` — POST `/api/analyze/start`, poll `/api/jobs/{id}` every 300 ms (stub) or 2.5 s (live), call `applyProgress(j.progress)` to animate the pipeline, then `saveRecent()` and `render()`.
-- `applyProgress(events)` / `stageLabel(e)` — maps pipeline events (`intake`, `requirements`, `stories`, `review`, `revise`, `gaps`; status `running`/`done` plus counts) onto the five `<li data-s>` rows.
-- `render()` — metric strip, tab counts, then one of `brief() reqs() backlog() gaps() trace() exportPanel()` which return HTML strings; `wireExport()` binds download and Jira buttons.
-- Recent runs: last five results in `localStorage['sf:recent']`, listed on the empty state, reopenable. Per browser only.
-- `esc()` escapes all model output before it hits `innerHTML`. Keep doing that.
+- `NODES` / `REVISE` — the copy for each step: what it does, what it sees, what it produces, which guardrail checks it. Keep it in step with `agents/__init__.py` and `guardrails/`.
+- `init()` — `/api/health` (status pills, prompt versions, disables Live if no keys; "waking the backend" after 4 s) and `/api/examples` (chips).
+- `run()` — POST `/api/analyze/start`, poll `/api/jobs/{id}` every 300 ms (stub) or 2.5 s (live). Events go to a small player (`playerFeed` / `playerStep`) that shows each one for about half a second, so an instant stub run can still be followed; "Skip playback" drops the delay. The player calls `applyProgress()` (left panel), `liveFlow()` (diagram) and `feedLine()` (feed).
+- `buildFlow()` / `drawWires()` / `paintFlow()` / `packet()` — the diagram: HTML nodes, SVG wires, animated packets along the wires (`animateMotion`).
+- `tourStart()` / `tourStep()` / `pin()` — the idle tour.
+- `render()` → `setTab()` → one of `brief() reqs() backlog() gaps() trace() exportPanel()`, which return HTML strings. Filters re-render only their list (`reqRows`, `storyList`, `gapList`) so the search box keeps focus. Clicks inside the panel are delegated: `data-goto-req`, `data-goto-story`, `data-ev` (evidence drawer), `data-f` (filters), `data-sh` (collapse a story).
+- `showEvidence()` / `findQuote()` — opens the drawer with the run's notes and highlights the quote (exact match, then a punctuation-tolerant match, then the longest matching run of words).
+- Recent runs: last five results in `localStorage['sf:recent']`, now with the notes they were run on so the evidence drawer works for old runs too (falls back to the editor text for entries saved before this change).
+- `esc()` escapes all model output, IDs included, before it hits `innerHTML`. Keep doing that.
+- Keyboard: Ctrl/⌘ + Enter runs; Escape closes the drawer.
 
 ### Ideas that were discussed but not built
 
-Dark theme (tokens are already there to add `@media (prefers-color-scheme: dark)`),
-keyboard shortcut to run, a diff view between two prompt versions on the same
-notes, a real "load a saved JSON" button (the CLI has `--from-json`; the UI only
-has recent runs), progress inside the review loop (which stories are being
-rewritten), and a proper story title (the model sometimes returns lower-case
-fragments like "to see all my photos…" — a prompt fix in the stories prompt).
+A diff view between two prompt versions on the same notes, a real "load a saved
+JSON" button (the CLI has `--from-json`; the UI only has recent runs), progress
+inside the review loop (which stories are being rewritten), and a proper story
+title (the model sometimes returns lower-case fragments like "to see all my
+photos…" — a prompt fix in the stories prompt).
 
 ## 4. Deployment and infrastructure
 
@@ -167,7 +186,7 @@ On Pradyumn's Mac: `~/Downloads/storyforge/linkedin/` (seven screenshots of a re
 ## 9. If you want to improve the UI, start here
 
 1. Run locally with the stub backend; load the GitHub-thread example; every tab renders in under two seconds.
-2. Change tokens in `:root` first and look at all six tabs before touching component CSS.
+2. Change tokens in `:root` (and the two dark blocks) first and look at all six tabs, in both themes, before touching component CSS.
 3. Keep `esc()` around every model string; keep the page a single file; keep `vercel.json` rewrites in sync if you add API routes.
-4. Test at 400 px width; the grid stacks and the metric strip goes to three columns at 700 px.
+4. Test at 390 px width; the grid stacks, the diagram turns vertical and the metric strip goes to three columns at 700 px. Test once with reduced motion turned on.
 5. Push to `main`; both Vercel and Render redeploy on their own. Vercel takes ~20 s, Render ~40 s.
